@@ -6,6 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FBC47E732DE7BBA90008DEFF /* Buy in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E722DE7BBA90008DEFF /* Buy */; };
+		FBC47E762DE7BC100008DEFF /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E752DE7BC100008DEFF /* Swinject */; };
+		FBC47E792DE7BC310008DEFF /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E782DE7BC310008DEFF /* Alamofire */; };
+		FBC4809A2DE7BFE50008DEFF /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = FBC480992DE7BFE50008DEFF /* FirebaseAnalytics */; };
+		FBC4809C2DE7BFE50008DEFF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FBC4809B2DE7BFE50008DEFF /* FirebaseAuth */; };
+		FBC4809E2DE7BFE50008DEFF /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = FBC4809D2DE7BFE50008DEFF /* FirebaseCore */; };
+		FBC480A02DE7BFE50008DEFF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FBC4809F2DE7BFE50008DEFF /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FBC47E552DE7BB5A0008DEFF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +62,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FBC47E792DE7BC310008DEFF /* Alamofire in Frameworks */,
+				FBC4809C2DE7BFE50008DEFF /* FirebaseAuth in Frameworks */,
+				FBC47E732DE7BBA90008DEFF /* Buy in Frameworks */,
+				FBC4809A2DE7BFE50008DEFF /* FirebaseAnalytics in Frameworks */,
+				FBC4809E2DE7BFE50008DEFF /* FirebaseCore in Frameworks */,
+				FBC47E762DE7BC100008DEFF /* Swinject in Frameworks */,
+				FBC480A02DE7BFE50008DEFF /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +129,13 @@
 			);
 			name = "Shopped-In";
 			packageProductDependencies = (
+				FBC47E722DE7BBA90008DEFF /* Buy */,
+				FBC47E752DE7BC100008DEFF /* Swinject */,
+				FBC47E782DE7BC310008DEFF /* Alamofire */,
+				FBC480992DE7BFE50008DEFF /* FirebaseAnalytics */,
+				FBC4809B2DE7BFE50008DEFF /* FirebaseAuth */,
+				FBC4809D2DE7BFE50008DEFF /* FirebaseCore */,
+				FBC4809F2DE7BFE50008DEFF /* FirebaseFirestore */,
 			);
 			productName = "Shopped-In";
 			productReference = FBC47E452DE7BB580008DEFF /* Shopped-In.app */;
@@ -195,6 +219,12 @@
 			);
 			mainGroup = FBC47E3C2DE7BB580008DEFF;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				FBC47E712DE7BBA90008DEFF /* XCRemoteSwiftPackageReference "mobile-buy-sdk-ios" */,
+				FBC47E742DE7BC100008DEFF /* XCRemoteSwiftPackageReference "Swinject" */,
+				FBC47E772DE7BC310008DEFF /* XCRemoteSwiftPackageReference "Alamofire" */,
+				FBC480982DE7BFE50008DEFF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FBC47E462DE7BB580008DEFF /* Products */;
 			projectDirPath = "";
@@ -400,6 +430,8 @@
 				DEVELOPMENT_TEAM = FS6H834LK2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Shopped In";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -410,7 +442,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "eg.gov.iti.mad45-sv.ios-team3.Shopped-In";
+				PRODUCT_BUNDLE_IDENTIFIER = "iti.mad45-sv.ios-team3.Shopped-In";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -428,6 +460,8 @@
 				DEVELOPMENT_TEAM = FS6H834LK2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Shopped In";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -438,7 +472,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "eg.gov.iti.mad45-sv.ios-team3.Shopped-In";
+				PRODUCT_BUNDLE_IDENTIFIER = "iti.mad45-sv.ios-team3.Shopped-In";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -558,6 +592,79 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FBC47E712DE7BBA90008DEFF /* XCRemoteSwiftPackageReference "mobile-buy-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Shopify/mobile-buy-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2025.4.0;
+			};
+		};
+		FBC47E742DE7BC100008DEFF /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
+			};
+		};
+		FBC47E772DE7BC310008DEFF /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+		FBC480982DE7BFE50008DEFF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FBC47E722DE7BBA90008DEFF /* Buy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC47E712DE7BBA90008DEFF /* XCRemoteSwiftPackageReference "mobile-buy-sdk-ios" */;
+			productName = Buy;
+		};
+		FBC47E752DE7BC100008DEFF /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC47E742DE7BC100008DEFF /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+		FBC47E782DE7BC310008DEFF /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC47E772DE7BC310008DEFF /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		FBC480992DE7BFE50008DEFF /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC480982DE7BFE50008DEFF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		FBC4809B2DE7BFE50008DEFF /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC480982DE7BFE50008DEFF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		FBC4809D2DE7BFE50008DEFF /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC480982DE7BFE50008DEFF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		FBC4809F2DE7BFE50008DEFF /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FBC480982DE7BFE50008DEFF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FBC47E3D2DE7BB580008DEFF /* Project object */;
 }
