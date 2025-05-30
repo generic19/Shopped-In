@@ -12,18 +12,16 @@ enum AuthenticationRoute: Route {
 }
 
 struct AuthenticationRootView: View {
-    @State var path = NavigationPath()
+    @EnvironmentObject var appSwitch: AppSwitch
     
     var body: some View {
-        NavigationStack(path: $path) {
-            SignUpView()
-                .navigationDestination(for: AuthenticationRoute.self) { route in
-                    switch route {
-                        case .signIn: SignInView()
-                        case .verifyEmail: VerifyEmailView()
-                    }
-                }
+        VStack {
+            Text("Authentication")
+            
+            Button("Continue as Guest") {
+                appSwitch.switchTo(.mainTabs)
+            }
+            .buttonStyle(.borderedProminent)
         }
     }
 }
-

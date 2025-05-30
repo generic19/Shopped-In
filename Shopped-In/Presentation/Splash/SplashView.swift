@@ -3,11 +3,12 @@ import SwiftUI
 import AVKit
 
 struct SplashView: View {
-    @State private var isVideoFinished = false
+    @EnvironmentObject private var appSwitch: AppSwitch
     
     private let player: AVPlayer = {
         let url = Bundle.main.url(forResource: "splash", withExtension: "mp4")!
-        return AVPlayer(url: url)
+        let player = AVPlayer(url: url)
+        return player
     }()
     
     var body: some View {
@@ -15,27 +16,34 @@ struct SplashView: View {
             ZStack {
                 VideoPlayer(player: player)
                     .ignoresSafeArea()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .onAppear {
-                        NotificationCenter.default.addObserver(
-                            forName: .AVPlayerItemDidPlayToEndTime,
-                            object: player.currentItem,
-                            queue: .main
-                        ) { _ in
-                            
-                        }
+                        addVideoObserver()
+                        player.play()
                     }
                     .onDisappear {
                         player.pause()
-                        NotificationCenter.default.removeObserver(self)
+                        removeVideoObserver()
                     }
             }
         }
     }
 
-    func playVideo() {
+    private func playVideo() {
         try! AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [])
         try! AVAudioSession.sharedInstance().setActive(true)
         
         player.play()
+    }
+    
+    private func addVideoObserver() {
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
+            appSwitch.switchTo(.onboarding)
+        }
+    }
+    
+    private func removeVideoObserver() {
+        NotificationCenter.default.removeObserver(self)
     }
 }
