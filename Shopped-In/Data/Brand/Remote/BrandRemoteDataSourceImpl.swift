@@ -8,7 +8,7 @@
 import Buy
 
 final class BrandRemoteDataSourceImpl: BrandRemoteDataSource {
-    let service: APIService
+    private let service: APIService
     
     init(service: APIService) {
         self.service = service
