@@ -14,7 +14,7 @@ final class BrandRemoteDataSourceImpl: BrandRemoteDataSource {
         self.service = service
     }
     
-    func getAllBrands(completion: @escaping (Result<[BrandDTO], any Error>) -> Void) {
+    func getAllBrands(completion: @escaping (Result<[BrandDTO], Error>) -> Void) {
         let query = Storefront.buildQuery {
             $0.collections(first: 100, query: "-title:MEN -title:WOMEN -title:KID -title:SALE") {
                 $0.nodes {

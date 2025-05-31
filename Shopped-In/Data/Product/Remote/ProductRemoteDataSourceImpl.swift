@@ -14,7 +14,7 @@ final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
         self.service = service
     }
     
-    func getProductsForBrand(brandID: String, completion: @escaping (Result<[ProductListItem], any Error>) -> Void) {
+    func getProductsForBrand(brandID: String, completion: @escaping (Result<[ProductListItem], Error>) -> Void) {
         let query = Storefront.buildQuery {
             $0.collection(id: .init(rawValue: brandID)) {
                 $0.products(first: 100, sortKey: .bestSelling) {
