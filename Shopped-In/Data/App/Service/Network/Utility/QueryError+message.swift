@@ -33,7 +33,7 @@ extension Graph.QueryError? {
                 
             case .invalidQuery(reasons: let reasons):
                 print("invalid query \(reasons)")
-                return "Requset format for \(object) no longer supported."
+                return "Request format for \(object) no longer supported."
                 
             case .schemaViolation(violation: let violation):
                 print("schema violation \(violation)")
