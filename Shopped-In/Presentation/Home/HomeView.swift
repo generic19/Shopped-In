@@ -1,7 +1,17 @@
 import SwiftUI
 
+enum HomeRoute: Route {
+    case home
+    case brandProducts(Brand)
+}
+
 struct HomeView: View {
     var body: some View {
-        Text("home tab")
+        NavigationStack {
+            VStack {
+                BrandsView()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
     }
 }
