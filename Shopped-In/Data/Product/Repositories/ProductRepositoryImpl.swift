@@ -2,7 +2,7 @@
 import Buy
 
 final class ProductRepositoryImpl: ProductRepository {
-    let remote: ProductRemoteDataSource
+    private let remote: ProductRemoteDataSource
     
     init(remote: ProductRemoteDataSource) {
         self.remote = remote
