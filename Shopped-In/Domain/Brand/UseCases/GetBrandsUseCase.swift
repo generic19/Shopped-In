@@ -1,6 +1,6 @@
 
 final class GetBrandsUseCase {
-    let repository: BrandRepository
+    private let repository: BrandRepository
     
     init(repository: BrandRepository) {
         self.repository = repository
