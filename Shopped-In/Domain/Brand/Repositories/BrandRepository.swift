@@ -4,6 +4,8 @@ enum BrandsResponse {
     case error(String)
 }
 
+
+
 protocol BrandRepository {
-    func getAllBrands(completion: @escaping (BrandsResponse) -> Void)
+    func getAllBrands(sort: BrandsSort, forceNetwork: Bool, completion: @escaping (BrandsResponse) -> Void)
 }

@@ -14,9 +14,20 @@ final class BrandRemoteDataSourceImpl: BrandRemoteDataSource {
         self.service = service
     }
     
-    func getAllBrands(completion: @escaping (Result<[BrandDTO], Error>) -> Void) {
+    func getAllBrands(sort: BrandsSort, forceNetwork: Bool, completion: @escaping (Result<[BrandDTO], Error>) -> Void) {
+        let (sortKey, reversed): (Storefront.CollectionSortKeys?, Bool) = switch sort {
+            case .title: (.title, false)
+            case .mostRecent: (.updatedAt, true)
+            case .relevance: (.relevance, false)
+        }
+        
         let query = Storefront.buildQuery {
-            $0.collections(first: 100, query: "-title:MEN -title:WOMEN -title:KID -title:SALE") {
+            $0.collections(
+                first: 100,
+                reverse: reversed,
+                sortKey: sortKey,
+                query: "-title:MEN -title:WOMEN -title:KID -title:SALE",
+            ) {
                 $0.nodes {
                     $0.id()
                     .title()
@@ -29,11 +40,14 @@ final class BrandRemoteDataSourceImpl: BrandRemoteDataSource {
         
         service.client.queryGraphWith(
             query,
-            cachePolicy: .cacheFirst(expireIn: 24*3600),
-        ) { query, error in
-            if let collections = query?.collections.nodes {
+            cachePolicy: forceNetwork ?
+                .networkFirst(expireIn: 24*3600) :
+                    .cacheFirst(expireIn: 24*3600),
+        ) { q, error in
+            if let collections = q?.collections.nodes {
                 completion(.success(collections))
             } else {
+                print("problem with ", query.description)
                 completion(.failure(error ?? .noData))
             }
         }.resume()
