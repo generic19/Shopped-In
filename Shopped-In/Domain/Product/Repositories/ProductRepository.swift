@@ -5,5 +5,5 @@ enum ProductsResponse {
 }
 
 protocol ProductRepository {
-    func getProductsByBrand(brandID: String, completion: @escaping (ProductsResponse) -> Void)
+    func getProductsByBrand(brandID: String, sort: ProductsSort, completion: @escaping (ProductsResponse) -> Void)
 }

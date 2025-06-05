@@ -1,4 +1,4 @@
 
 protocol ProductRemoteDataSource {
-    func getProductsForBrand(brandID: String, completion: @escaping (Result<[ProductListItem], Error>) -> Void)
+    func getProductsForBrand(brandID: String, sort: ProductsSort, completion: @escaping (Result<[ProductListItem], Error>) -> Void)
 }
