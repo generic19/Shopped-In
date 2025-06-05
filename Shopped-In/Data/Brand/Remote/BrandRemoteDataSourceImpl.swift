@@ -15,7 +15,7 @@ final class BrandRemoteDataSourceImpl: BrandRemoteDataSource {
     }
     
     func getAllBrands(sort: BrandsSort, forceNetwork: Bool, completion: @escaping (Result<[BrandDTO], Error>) -> Void) {
-        let (sort, reversed): (Storefront.CollectionSortKeys?, Bool) = switch sort {
+        let (sortKey, reversed): (Storefront.CollectionSortKeys?, Bool) = switch sort {
             case .title: (.title, false)
             case .mostRecent: (.updatedAt, true)
             case .relevance: (.relevance, false)
@@ -25,7 +25,7 @@ final class BrandRemoteDataSourceImpl: BrandRemoteDataSource {
             $0.collections(
                 first: 100,
                 reverse: reversed,
-                sortKey: sort,
+                sortKey: sortKey,
                 query: "-title:MEN -title:WOMEN -title:KID -title:SALE",
             ) {
                 $0.nodes {

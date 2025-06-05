@@ -15,7 +15,7 @@ final class BrandsViewModel: ObservableObject {
         debouncedQuery.isEmpty
             ? allBrands
             : allBrands?.filter {
-                $0.title.localizedCaseInsensitiveContains(query)
+                $0.title.localizedCaseInsensitiveContains(debouncedQuery)
             }
     }
     
