@@ -20,4 +20,17 @@ final class ProductRepositoryImpl: ProductRepository {
             }
         }
     }
+    
+    func getProducts(sort: ProductsSort, completion: @escaping (CategorizedProductsResponse) -> Void) {
+        remote.getProducts(sort: sort) { result in
+            switch result {
+                case .success(let products):
+                    completion(.success(products))
+                    
+                case .failure(let error):
+                    let message = (error as? Graph.QueryError).message(object: "products")
+                    completion(.error(message))
+            }
+        }
+    }
 }
