@@ -36,8 +36,21 @@ struct CategoriesView: View {
                     DemographicFilterMenu(categoryFilter: $viewModel.categoryFilter)
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     ProductsSortMenu(sort: $viewModel.sort)
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.categoryFilter = viewModel.categoryFilter.withOnSale(
+                            viewModel.categoryFilter.onSale == true ? nil : true
+                        )
+                    } label: {
+                        Image(
+                            systemName: viewModel.categoryFilter.onSale == true ? "tag.circle.fill" : "tag.circle"
+                        )
+                        .foregroundStyle(.orange)
+                    }
                 }
             })
             .searchable(text: $viewModel.query, prompt: "Search")
