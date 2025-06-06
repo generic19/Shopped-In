@@ -17,3 +17,8 @@ struct ProductListItem {
     let image: URL?
     let price: Amount
 }
+
+struct CategorizedProductListItem {
+    let item: ProductListItem
+    let category: Category
+}
