@@ -39,5 +39,4 @@ struct Review {
 struct CategorizedProductListItem {
     let item: ProductListItem
     let category: Category
-    
 }

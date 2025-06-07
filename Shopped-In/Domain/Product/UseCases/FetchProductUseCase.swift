@@ -1,3 +1,4 @@
+
 class FetchProductUseCase {
     private let repository: ProductRepository
     
@@ -9,4 +10,3 @@ class FetchProductUseCase {
         repository.fetchProduct(by: id, completion: completion)
     }
 }
-

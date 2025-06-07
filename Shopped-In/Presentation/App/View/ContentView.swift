@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
-import CoreData
 
 struct ContentView: View {
+    @StateObject private var appSwitch = AppSwitch()
+    
     var body: some View {
-//        ProductDetailView(productID: "gid://shopify/Product/7869515825188")
-
+        AppSwitchView()
+            .environmentObject(appSwitch)
     }
 }
 
