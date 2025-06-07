@@ -18,6 +18,7 @@ struct ProductListItem {
     let image: URL?
     let price: Amount
 }
+
 struct Product {
     let title: String
     let price: String
@@ -33,4 +34,10 @@ struct Review {
     let name: String
     let comment: String
     let avatar: UIImage
+}
+
+struct CategorizedProductListItem {
+    let item: ProductListItem
+    let category: Category
+    
 }

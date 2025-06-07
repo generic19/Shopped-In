@@ -9,8 +9,8 @@ final class BrandRepositoryImpl: BrandRepository {
         self.remote = remote
     }
     
-    func getAllBrands(completion: @escaping (BrandsResponse) -> Void) {
-        remote.getAllBrands { result in
+    func getAllBrands(sort: BrandsSort, forceNetwork: Bool, completion: @escaping (BrandsResponse) -> Void) {
+        remote.getAllBrands(sort: sort, forceNetwork: forceNetwork) { result in
             switch result {
                 case .success(let dtos):
                     let brands = dtos.compactMap({ $0.toDomain() })
