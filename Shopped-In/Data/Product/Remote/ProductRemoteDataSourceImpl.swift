@@ -8,7 +8,7 @@
 import Buy
 
 final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
-    private let service: APIService
+    let service: APIService
     
     init(service: APIService) {
         self.service = service
@@ -20,16 +20,16 @@ final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
                 $0.products(first: 100, sortKey: .bestSelling) {
                     $0.nodes {
                         $0.id()
-                        .title()
-                        .featuredImage {
-                            $0.url()
-                        }
-                        .priceRange {
-                            $0.minVariantPrice {
-                                $0.amount()
-                                .currencyCode()
+                            .title()
+                            .featuredImage {
+                                $0.url()
                             }
-                        }
+                            .priceRange {
+                                $0.minVariantPrice {
+                                    $0.amount()
+                                        .currencyCode()
+                                }
+                            }
                     }
                 }
             }
@@ -44,4 +44,41 @@ final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
             }
         }.resume()
     }
+    
+    
+    func fetchProduct(by id: String, completion: @escaping (Product?) -> Void) {
+        let gqlID = GraphQL.ID(rawValue: id)
+        let query = Storefront.buildQuery { $0
+            .node(id: gqlID) { $0
+                .onProduct { $0
+                    .title()
+                    .description()
+                    .options { $0.name().values() }
+                    .images(first: 5) { $0.edges { $0.node { $0.url() } } }
+                    .variants(first: 10) { $0.edges { $0.node {
+                        $0.price { $0.amount() }
+                        $0.selectedOptions { $0.name().value() }
+                    }}}
+                }
+            }
+        }
+        
+        service.client.queryGraphWith(query) { response, error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+            
+            guard let storefrontProduct = response?.node as? Storefront.Product else {
+                print("Failed to cast node as product")
+                completion(nil)
+                return
+            }
+            
+            let product = ProductMapper.map(storefrontProduct: storefrontProduct)
+            completion(product)
+        }.resume()
+    }
+    
 }

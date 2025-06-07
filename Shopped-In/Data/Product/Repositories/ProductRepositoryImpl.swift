@@ -20,4 +20,7 @@ final class ProductRepositoryImpl: ProductRepository {
             }
         }
     }
+    func fetchProduct(by id: String, completion: @escaping (Product?) -> Void) {
+        remote.fetchProduct(by: id, completion: completion)
+        }
 }
