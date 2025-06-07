@@ -10,7 +10,7 @@ import CoreData
 
 struct ContentView: View {
     var body: some View {
-        ProductDetailView(productID: "gid://shopify/Product/7869515825188")
+//        ProductDetailView(productID: "gid://shopify/Product/7869515825188")
 
     }
 }
