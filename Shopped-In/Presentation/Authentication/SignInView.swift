@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SignInView: View {
     @FocusState private var focusedField: FocusedField?
-    @StateObject var viewModel: AuthViewModel
+    @ObservedObject var viewModel: AuthViewModel
 
     var body: some View {
         NavigationStack {

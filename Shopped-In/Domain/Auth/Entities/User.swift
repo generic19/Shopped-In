@@ -4,5 +4,4 @@ struct User{
     let phone: String
     let firstName: String
     let lastName: String
-    
 }

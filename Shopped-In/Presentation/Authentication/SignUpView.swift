@@ -16,7 +16,7 @@ struct SignUpView: View {
     @FocusState private var focusedField: FocusedField?
     @State private var isValidEmail: Bool = true
 
-    @StateObject var viewModel: AuthViewModel
+    @ObservedObject var viewModel: AuthViewModel
 
     var body: some View {
         NavigationStack {

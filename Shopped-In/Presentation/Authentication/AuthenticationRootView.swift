@@ -10,12 +10,17 @@ import SwiftUI
 
 
 struct WelcomeScreen: View {
-    var body: some View {
+    @StateObject var viewModel: AuthViewModel={
         let authRepository = AuthRepositoryImpl()
         let signUpUseCase = SignUpUseCase(authRepository: authRepository)
         let signInUseCase = SignInUseCase(authRepository: authRepository)
-        let viewModel = AuthViewModel(signUpUseCase: signUpUseCase, signInUseCase: signInUseCase)
+        return AuthViewModel(signUpUseCase: signUpUseCase, signInUseCase: signInUseCase)
         
+    }()
+    
+    var body: some View {
+    
+      
         return NavigationStack {
             ZStack {
                 Image("fashion")
