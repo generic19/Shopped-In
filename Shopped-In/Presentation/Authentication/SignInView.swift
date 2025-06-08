@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SignInView: View {
+    @EnvironmentObject var appSwitch: AppSwitch
+
     @FocusState private var focusedField: FocusedField?
     @ObservedObject var viewModel: AuthViewModel
 

@@ -13,6 +13,8 @@ struct Validator {
 }
 
 struct SignUpView: View {
+    @EnvironmentObject var appSwitch: AppSwitch
+
     @FocusState private var focusedField: FocusedField?
     @State private var isValidEmail: Bool = true
 
