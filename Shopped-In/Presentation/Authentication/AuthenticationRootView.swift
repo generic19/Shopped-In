@@ -1,4 +1,5 @@
-//
+
+
 //  Welcome Screen.swift
 //  Shopped-In
 //
@@ -10,6 +11,7 @@ import SwiftUI
 
 
 struct WelcomeScreen: View {
+
     @StateObject var viewModel: AuthViewModel={
         let authRepository = AuthRepositoryImpl()
         let signUpUseCase = SignUpUseCase(authRepository: authRepository)
@@ -75,3 +77,4 @@ struct WelcomeScreen: View {
 #Preview {
     WelcomeScreen()
 }
+
