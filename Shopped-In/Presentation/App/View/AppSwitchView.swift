@@ -20,7 +20,7 @@ struct AppSwitchView: View {
         switch appSwitch.selectedRoute {
             case .splash: SplashView()
             case .onboarding: OnboardingView()
-            case .authentication: AuthenticationRootView()
+            case .authentication: WelcomeScreen()
             case .mainTabs: MainTabsView()
         }
     }

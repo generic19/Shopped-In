@@ -6,8 +6,8 @@ class IsVerifiedUseCase {
         self.authRepository = authRepository
     }
 
-    func execute(completion: @escaping (Result<Bool, Error>) -> Void) {
-        authRepository.isVerified(completion: completion)
+    func execute() -> Bool{
+        authRepository.isVerified()
     }
 }
 

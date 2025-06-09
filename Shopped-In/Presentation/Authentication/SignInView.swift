@@ -64,8 +64,8 @@ struct SignInView: View {
                     .padding(.horizontal)
                     .padding(.top, 50)
 
-                    if !viewModel.errorMessage.isEmpty {
-                        Text(viewModel.errorMessage)
+                    if let error = viewModel.errorMessage {
+                        Text(error)
                             .foregroundColor(.red)
                             .padding()
                     }
@@ -105,12 +105,4 @@ struct SignInView: View {
             }
         }
     }
-}
-#Preview {
-    let authRepository = AuthRepositoryImpl()
-    let signInUseCase = SignInUseCase(authRepository: authRepository)
-    let signUpUseCase = SignUpUseCase(authRepository: authRepository)
-    let authViewModel = AuthViewModel(signUpUseCase: signUpUseCase, signInUseCase: signInUseCase)
-
-    return SignInView(viewModel: authViewModel)
 }

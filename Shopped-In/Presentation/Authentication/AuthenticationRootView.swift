@@ -13,7 +13,11 @@ import SwiftUI
 struct WelcomeScreen: View {
 
     @StateObject var viewModel: AuthViewModel={
-        let authRepository = AuthRepositoryImpl()
+        let tokenRepository: TokenRepo = StubTokenRepo()
+        let apiService: APIService = APIService.shared
+        let apiSource: APIAuthRemoteDataSource = APIAuthRemoteDataSourceImpl(service: apiService)
+        let firebaseSource: FireBaseAuthRemoteDataSource = FireBaseAuthRemoteDataSourceImpl()
+        let authRepository = AuthRepositoryImpl(tokenRepository: tokenRepository, apiSource: apiSource, firebaseSource: firebaseSource)
         let signUpUseCase = SignUpUseCase(authRepository: authRepository)
         let signInUseCase = SignInUseCase(authRepository: authRepository)
         return AuthViewModel(signUpUseCase: signUpUseCase, signInUseCase: signInUseCase)

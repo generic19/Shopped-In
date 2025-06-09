@@ -1,4 +1,4 @@
-
+import FirebaseAuth
 class GetCurrentUserUseCase {
     private let authRepository: AuthRepository
 
@@ -6,8 +6,8 @@ class GetCurrentUserUseCase {
         self.authRepository = authRepository
     }
 
-    func execute(completion: @escaping (Result<User?, Error>) -> Void) {
-        authRepository.getCurrentUser(completion: completion)
+    func execute()->FirebaseAuth.User? {
+        authRepository.getCurrentUser()
     }
 }
 

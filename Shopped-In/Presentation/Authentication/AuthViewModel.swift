@@ -19,7 +19,7 @@ class AuthViewModel: ObservableObject {
     
     // MARK: - Output
     
-    @Published var errorMessage: String = ""
+    @Published var errorMessage: String? 
     @Published var isGuest: Bool = false
     @Published var isAuthenticated: Bool = false
     
@@ -34,7 +34,7 @@ class AuthViewModel: ObservableObject {
     // MARK: - Sign Up
     
     func signUp() {
-        errorMessage = ""
+        errorMessage=nil
         
         guard isValidEmail(email) else {
             errorMessage = "Invalid email format"
@@ -76,7 +76,7 @@ class AuthViewModel: ObservableObject {
     // MARK: - Sign In
     
     func signIn() {
-        errorMessage = ""
+        errorMessage = nil
         isGuest = false
         
         guard isValidEmail(email) else {
