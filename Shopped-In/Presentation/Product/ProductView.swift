@@ -19,6 +19,8 @@ extension Color {
 // MARK: - ProductDetailView
 struct ProductDetailView: View {
     @StateObject private var viewModel: ProductDetailViewModel
+    @StateObject private var favoriteViewModel: FavoriteViewModel
+
     let productID: String
     @State private var navigateToFavorites = false
 
@@ -42,10 +44,14 @@ struct ProductDetailView: View {
                 checkFavoriteUseCase: checkFavoriteUseCase
             )
         )
+
+        _favoriteViewModel = StateObject(
+            wrappedValue: FavoriteViewModel(addFavoriteUseCase:addFavoriteUseCase, removeFavoriteUseCase: removeFavoriteUseCase, checkFavoriteUseCase: checkFavoriteUseCase)
+        )
     }
 
     var body: some View {
-        Group {
+        VStack {
             if viewModel.isLoading {
                 ProgressView("Loading...")
             } else if let product = viewModel.product {
@@ -148,7 +154,7 @@ struct ProductDetailView: View {
                         .padding(.top)
 
                         // Navigation to Favorites View
-                        NavigationLink(destination: FavoriteProductsView(), isActive: $navigateToFavorites) {
+                        NavigationLink(destination: FavoriteProductsView(viewModel: favoriteViewModel), isActive: $navigateToFavorites) {
                             EmptyView()
                         }
                     }

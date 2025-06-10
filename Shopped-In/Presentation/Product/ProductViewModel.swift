@@ -6,14 +6,14 @@ class ProductDetailViewModel: ObservableObject {
     @Published var product: Product? = nil
     @Published var isLoading = false
     @Published var isFavorite = false
-    
+
     private let fetchProductUseCase: FetchProductUseCase
     private let addFavoriteUseCase: AddFavoriteProductUseCase
     private let removeFavoriteUseCase: RemoveFavoriteProductUseCase
     private let checkFavoriteUseCase: CheckFavoriteProductUseCase
 
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(
         fetchProductUseCase: FetchProductUseCase,
         addFavoriteUseCase: AddFavoriteProductUseCase,
@@ -25,29 +25,34 @@ class ProductDetailViewModel: ObservableObject {
         self.removeFavoriteUseCase = removeFavoriteUseCase
         self.checkFavoriteUseCase = checkFavoriteUseCase
     }
-    
+
     func fetchProduct(by id: String) {
         isLoading = true
-        fetchProductUseCase.execute(id: id) { [weak self] product in
+        
+        fetchProductUseCase.execute(id: id) { [weak self] fetchedProduct in
             DispatchQueue.main.async {
-                self?.product = product
-                self?.isLoading = false
-                // Check if product is favorite
-                if let productID = product?.title {
-                    self?.checkFavoriteUseCase.checkFavorite(productID: productID) { isFav in
-                        DispatchQueue.main.async {
-                            self?.isFavorite = isFav
-                        }
+                guard let self = self else { return }
+                self.product = fetchedProduct
+                self.isLoading = false
+
+                guard let productID = fetchedProduct?.title else {
+                    self.isFavorite = false
+                    return
+                }
+
+                self.checkFavoriteUseCase.checkFavorite(productID: productID) { isFav in
+                    DispatchQueue.main.async {
+                        self.isFavorite = isFav
                     }
                 }
             }
         }
     }
-    
+
     func toggleFavorite() {
         guard let product = product else { return }
         let productID = product.title
-        
+
         if isFavorite {
             removeFavoriteUseCase.removeFavorite(productID: productID) { [weak self] error in
                 DispatchQueue.main.async {
@@ -67,3 +72,4 @@ class ProductDetailViewModel: ObservableObject {
         }
     }
 }
+

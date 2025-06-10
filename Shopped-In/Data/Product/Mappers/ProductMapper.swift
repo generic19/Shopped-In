@@ -109,6 +109,7 @@ struct ProductMapper {
         let review = Review(name: "Ayatullah", comment: "Good product", avatar: UIImage(systemName: "person.fill")!)
 
         return Product(
+            
             title: title,
             price: price,
             images: images,

@@ -20,6 +20,7 @@ struct ProductListItem {
 }
 
 struct Product {
+    
     let title: String
     let price: String
     let images: [String]
