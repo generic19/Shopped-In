@@ -4,70 +4,65 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class AuthRepositoryImpl: AuthRepository {
-  
-    
-    
     private let tokenRepository: TokenRepo
     private let apiSource:APIAuthRemoteDataSource
     private let firebaseSource:FireBaseAuthRemoteDataSource
+    
     init(tokenRepository: TokenRepo, apiSource: APIAuthRemoteDataSource, firebaseSource: FireBaseAuthRemoteDataSource) {
         self.tokenRepository = tokenRepository
         self.apiSource = apiSource
         self.firebaseSource = firebaseSource
     }
     
-    
-    func signIn(email: String, password: String, completion:@escaping (Result<Void, Error>) -> Void){
-        firebaseSource.signIn(email:email, password:password){result in
+    func signIn(email: String, password: String, completion: @escaping (Error?) -> Void){
+        firebaseSource.signIn(email: email, password: password) { [unowned self] result in
             switch result {
-            case .success(let userDTO):
-                
-                self.apiSource.signInCustomer(email: email, password:userDTO.randomToken) { result in
-                    switch result {
-                    case .success(let accessToken):
-                        self.tokenRepository.saveToken(accessToken)
-                        
-                        completion(.success(()))
-                    case .failure(let error):
-                        completion(.failure(error))
+                case .success(let userDTO):
+                    self.apiSource.signInCustomer(email: email, password: userDTO.randomToken) { result in
+                        switch result {
+                            case .success(let accessToken):
+                                self.tokenRepository.saveToken(accessToken)
+                                completion(nil)
+                                
+                            case .failure(let error):
+                                self.firebaseSource.signOut()
+                                completion(error)
+                        }
                     }
-                }
-                
-            case .failure(let error):
-                completion(.failure(error))
+                    
+                case .failure(let error):
+                    completion(error)
             }
         }
     }
     
-    func signUp(user: User, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        firebaseSource.signUp(user: user, password: password) { result
-            in
-            switch result{
-            case .success(let userDTO):
-                self.apiSource.createCustomer(email: user.email, password:userDTO.randomToken, phone:user.phone , firstName: user.firstName, lastName: user.lastName) { result in
-                    switch result {
-                    case .success(let customerId):
-                        self.apiSource.signInCustomer(email: user.email, password:userDTO.randomToken) { result in
-                            switch result {
-                            case .success(let accessToken):
-                                self.tokenRepository.saveToken(accessToken)
-                            case .failure(let error):
-                                completion(.failure(error))
+    func signUp(user: User, password: String, completion: @escaping (Error?) -> Void) {
+        firebaseSource.signUp(user: user, password: password) { [unowned self] result in
+            switch result {
+                case .success(let userDTO):
+                    self.apiSource.createCustomer(user: user, password: userDTO.randomToken) { error in
+                        if let error = error {
+                            self.firebaseSource.rollbackSignUp {
+                                completion(error)
                             }
-                            
-                            
+                            return
                         }
                         
-                    case .failure(let error):
-                        completion(.failure(error))
+                        self.apiSource.signInCustomer(email: user.email, password: userDTO.randomToken) { result in
+                            switch result {
+                                case .success(let accessToken):
+                                    self.tokenRepository.saveToken(accessToken)
+                                    completion(nil)
+                                    
+                                case .failure(let error):
+                                    self.firebaseSource.signOut()
+                                    completion(error)
+                            }
+                        }
                     }
                     
-                    
-                    
-                }
-            case .failure(let error):
-                completion(.failure(error))
-                
+                case .failure(let error):
+                    completion(error)
             }
         }
     }
@@ -78,6 +73,7 @@ class AuthRepositoryImpl: AuthRepository {
             completion()
             return
         }
+        
         apiSource.signOutCustomer(token: token) {
             self.firebaseSource.signOut()
             self.tokenRepository.deleteToken()
@@ -85,19 +81,8 @@ class AuthRepositoryImpl: AuthRepository {
         }
     }
     
-    func continueAsGuest() {
-        
+    func getCurrentUser() -> User? {
+        guard let user = firebaseSource.getCurrentUser() else { return nil }
+        return User.from(firebaseUser: user, customer: nil)
     }
-    
-    func isVerified()-> Bool {
-        return firebaseSource.isVerified()
-    }
-    
-    func getCurrentUser() -> FirebaseAuth.User?{
-       return  firebaseSource.getCurrentUser()
-        }
-    
-   
-    
 }
-

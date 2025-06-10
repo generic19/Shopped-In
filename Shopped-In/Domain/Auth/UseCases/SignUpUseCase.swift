@@ -7,7 +7,7 @@ class SignUpUseCase
           self.authRepository = authRepository
       }
 
-    func execute(user: User, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    func execute(user: User, password: String, completion: @escaping (Error?) -> Void) {
             authRepository.signUp(user: user, password: password, completion: completion)
         }
 }

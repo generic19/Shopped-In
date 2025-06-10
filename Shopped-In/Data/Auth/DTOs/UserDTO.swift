@@ -13,5 +13,4 @@ import FirebaseFirestore
 struct UserDTO{
     let firebaseUser:FirebaseAuth.User
     let randomToken:String
-    
 }

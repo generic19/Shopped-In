@@ -11,10 +11,8 @@ struct ContentView: View {
     @StateObject private var appSwitch = AppSwitch()
     
     var body: some View {
-
         AppSwitchView()
             .environmentObject(appSwitch)
-
     }
 }
 

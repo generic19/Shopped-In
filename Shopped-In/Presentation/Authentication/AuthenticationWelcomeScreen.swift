@@ -8,10 +8,9 @@
 
 
 import SwiftUI
+import Combine
 
-
-struct WelcomeScreen: View {
-
+struct AuthenticationWelcomeScreen: View {
     @StateObject var viewModel: AuthViewModel={
         let tokenRepository: TokenRepo = StubTokenRepo()
         let apiService: APIService = APIService.shared
@@ -20,13 +19,15 @@ struct WelcomeScreen: View {
         let authRepository = AuthRepositoryImpl(tokenRepository: tokenRepository, apiSource: apiSource, firebaseSource: firebaseSource)
         let signUpUseCase = SignUpUseCase(authRepository: authRepository)
         let signInUseCase = SignInUseCase(authRepository: authRepository)
-        return AuthViewModel(signUpUseCase: signUpUseCase, signInUseCase: signInUseCase)
+        let getCurrentUserUseCase = GetCurrentUserUseCase(authRepository: authRepository)
+        let signOutUseCase = SignOutUseCase(authRepository: authRepository)
         
+        return AuthViewModel(signUpUseCase: signUpUseCase, signInUseCase: signInUseCase, getCurrentUserUseCase: getCurrentUserUseCase, signOutUseCase: signOutUseCase)
     }()
     
-    var body: some View {
+    @EnvironmentObject var appSwitch: AppSwitch
     
-      
+    var body: some View {
         return NavigationStack {
             ZStack {
                 Image("fashion")
@@ -74,11 +75,15 @@ struct WelcomeScreen: View {
                 }
             }
         }
+        .onChange(of: viewModel.isAuthenticated) { oldValue, newValue in
+            if newValue {
+                appSwitch.switchTo(.mainTabs)
+            }
+        }
     }
 }
 
-
 #Preview {
-    WelcomeScreen()
+    AuthenticationWelcomeScreen()
 }
 

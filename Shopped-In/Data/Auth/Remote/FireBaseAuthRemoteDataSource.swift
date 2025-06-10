@@ -7,13 +7,9 @@
 import FirebaseAuth
 protocol FireBaseAuthRemoteDataSource {
     func signIn(email: String, password: String, completion:@escaping (Result<UserDTO, Error>) -> Void)
-    
     func signUp(user: User, password: String, completion: @escaping (Result<UserDTO, Error>) -> Void)
-    
+    func rollbackSignUp(completion: @escaping () -> Void)
     func signOut()
-    func isVerified()->Bool
-    func getCurrentUser()->FirebaseAuth.User?
-
-
-
+    
+    func getCurrentUser() -> FirebaseAuth.User?
 }

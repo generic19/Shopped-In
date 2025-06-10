@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 class SignOutUseCase {
     private let authRepository: AuthRepository
 
@@ -17,4 +18,3 @@ class SignOutUseCase {
         authRepository.signOut( completion: completion)
     }
 }
-

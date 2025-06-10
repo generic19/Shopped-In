@@ -6,8 +6,7 @@ class GetCurrentUserUseCase {
         self.authRepository = authRepository
     }
 
-    func execute()->FirebaseAuth.User? {
+    func execute() -> User? {
         authRepository.getCurrentUser()
     }
 }
-

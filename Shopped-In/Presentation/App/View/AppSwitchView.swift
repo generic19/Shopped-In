@@ -18,10 +18,10 @@ struct AppSwitchView: View {
     
     var body: some View {
         switch appSwitch.selectedRoute {
-            case .splash: SplashView()
-            case .onboarding: OnboardingView()
-            case .authentication: WelcomeScreen()
-            case .mainTabs: MainTabsView()
+            case .splash: SplashView().environmentObject(appSwitch)
+            case .onboarding: OnboardingView().environmentObject(appSwitch)
+            case .authentication: AuthenticationWelcomeScreen().environmentObject(appSwitch)
+            case .mainTabs: MainTabsView().environmentObject(appSwitch)
         }
     }
 }

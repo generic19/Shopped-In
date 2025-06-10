@@ -19,103 +19,75 @@ class AuthViewModel: ObservableObject {
     
     // MARK: - Output
     
-    @Published var errorMessage: String? 
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    @Published var shouldShowErrorAlert = false
     @Published var isGuest: Bool = false
     @Published var isAuthenticated: Bool = false
     
     private let signUpUseCase: SignUpUseCase
     private let signInUseCase: SignInUseCase
+    private let getCurrentUserUseCase: GetCurrentUserUseCase
+    private let signOutUseCase: SignOutUseCase
     
-    init(signUpUseCase: SignUpUseCase, signInUseCase: SignInUseCase) {
+    init(
+        signUpUseCase: SignUpUseCase,
+        signInUseCase: SignInUseCase,
+        getCurrentUserUseCase: GetCurrentUserUseCase,
+        signOutUseCase: SignOutUseCase
+    ) {
         self.signUpUseCase = signUpUseCase
         self.signInUseCase = signInUseCase
+        self.getCurrentUserUseCase = getCurrentUserUseCase
+        self.signOutUseCase = signOutUseCase
+        
+        $errorMessage
+            .map { $0 != nil }
+            .removeDuplicates()
+            .assign(to: &$shouldShowErrorAlert)
+    }
+    
+    func checkIsAuthenticated() {
+        self.isAuthenticated = self.getCurrentUserUseCase.execute()?.isAuthenticated ?? false
     }
     
     // MARK: - Sign Up
     
     func signUp() {
-        errorMessage=nil
+        validateSignUp()
+        if errorMessage != nil { return }
         
-        guard isValidEmail(email) else {
+        let user = User(email: email, phone: phone, firstName: firstName, lastName: lastName, customerID: nil)
+        
+        isLoading = true
+        
+        signUpUseCase.execute(user: user, password: password) { [unowned self] error in
+            isLoading = false
+            
+            if let error = error {
+                self.errorMessage = error.localizedDescription
+                return
+            }
+            
+            self.isAuthenticated = true
+        }
+    }
+    
+    private func validateSignUp() {
+        if !isValidEmail(email) {
             errorMessage = "Invalid email format"
-            return
-        }
-        guard isValidPassword(password) else {
+        } else if !isValidPassword(password) {
             errorMessage = "Password must be at least 6 characters long"
-            return
-        }
-        guard isValidPhoneNumber(phone) else {
+        } else if !isValidPhoneNumber(phone) {
             errorMessage = "Invalid phone number"
-            return
-        }
-        guard !firstName.isEmpty else {
+        } else if firstName.isEmpty {
             errorMessage = "First name is required"
-            return
-        }
-        guard !lastName.isEmpty else {
+        } else if lastName.isEmpty {
             errorMessage = "Last name is required"
-            return
-        }
-        
-        
-        let user = User(id: UUID().uuidString, email: email, phone: phone, firstName: firstName, lastName: lastName)
-        
-        signUpUseCase.execute(user: user, password: password) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    self?.isAuthenticated = true
-                case .failure(let error):
-                    self?.errorMessage = error.localizedDescription
-                }
-            }
+        } else {
+            errorMessage = nil
         }
     }
-    
-    
-    // MARK: - Sign In
-    
-    func signIn() {
-        errorMessage = nil
-        isGuest = false
-        
-        guard isValidEmail(email) else {
-            errorMessage = "Invalid email format"
-            return
-        }
-        guard isValidPassword(password) else {
-            errorMessage = "Password must be at least 6 characters long"
-            return
-        }
-        
-        signInUseCase.execute(email: email, password: password) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    
-                    self?.isAuthenticated = true
-                    
-                case .failure(let error):
-                    self?.errorMessage = error.localizedDescription
-                }
-            }
-        }
-    }
-    
-    // MARK: - Continue as Guest
-    
-    func continueAsGuest() {
-        isGuest = true
-        isAuthenticated = false
-    }
-    
-    // MARK: - Sign Out
-    
-    func signOut() {
-        isAuthenticated = false
-    }
-    
-    // MARK: - Validation
     
     private func isValidEmail(_ email: String) -> Bool {
         let regex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
@@ -129,10 +101,52 @@ class AuthViewModel: ObservableObject {
     private func isValidPhoneNumber(_ phone: String) -> Bool {
         return phone.count >= 10
     }
+    
+    // MARK: - Sign In
+    
+    func signIn() {
+        validateSignIn()
+        if errorMessage != nil { return }
+        
+        isLoading = true
+        
+        signInUseCase.execute(email: email, password: password) { [unowned self] error in
+            isLoading = false
+            
+            if let error = error {
+                self.errorMessage = error.localizedDescription
+                return
+            }
+            
+            self.isAuthenticated = true
+        }
+    }
+    
+    private func validateSignIn() {
+        if !isValidEmail(email) {
+            errorMessage = "Invalid email format"
+        } else if !isValidPassword(password) {
+            errorMessage = "Password must be at least 6 characters long"
+        } else {
+            errorMessage = nil
+        }
+    }
+    
+    // MARK: - Continue as Guest
+    
+    func continueAsGuest() {
+        isGuest = true
+        isAuthenticated = false
+    }
+    
+    // MARK: - Sign Out
+    
+    func signOut() {
+        isLoading = true
+        
+        signOutUseCase.execute { [unowned self] in
+            self.isLoading = false
+            self.isAuthenticated = false
+        }
+    }
 }
-
-
-
-
-
-
