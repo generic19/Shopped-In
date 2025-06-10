@@ -7,6 +7,4 @@ struct Address: Identifiable {
     let city: String
     let country: String
     let phone: String
-    let latitude: Double?
-    let longitude: Double?
 }

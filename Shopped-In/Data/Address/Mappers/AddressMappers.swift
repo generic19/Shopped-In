@@ -1,7 +1,7 @@
 import Buy
 extension AddressDTO {
     func toDomain() -> Address {
-        return Address(id: self.id.rawValue,name: self.firstName ?? "", address1: self.address1 ?? "", address2: self.address2, city: self.city ?? "", country: self.country ?? "", phone: self.phone ?? "", latitude: self.latitude, longitude: self.longitude)
+        return Address(id: self.id.rawValue,name: self.firstName ?? "", address1: self.address1 ?? "", address2: self.address2, city: self.city ?? "", country: self.country ?? "", phone: self.phone ?? "")
     }
 }
 

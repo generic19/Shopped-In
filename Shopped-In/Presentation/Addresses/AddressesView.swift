@@ -2,12 +2,16 @@
 import SwiftUI
 
 struct AddressesView: View {
-    @StateObject var viewModel: AddressViewModel
+    @ObservedObject var viewModel: AddressViewModel
     @State private var showToast: Bool = false
     @State private var toastMessage: String = ""
     @State private var showAddressForm = false
+    @State private var selectedAddress: Address?
 
-    
+    init(viewModel: AddressViewModel) {
+        self.viewModel = viewModel
+    }
+
     var body: some View {
         ZStack {
             Group {
@@ -24,7 +28,11 @@ struct AddressesView: View {
                     List(viewModel.addresses) { address in
                         let isDefault = address.id == viewModel.defaultAddress?.id
                         AddressCell(address: address, isDefault: isDefault)
-                        
+                            .onTapGesture(perform: {
+                                selectedAddress = address
+                                showAddressForm = true
+                            })
+
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button(role: .destructive) {
                                     viewModel.deleteAddress(address)
@@ -64,7 +72,7 @@ struct AddressesView: View {
                 }
             }
             .onAppear {
-                viewModel.fetchData()
+                viewModel.getAddresses()
             }
             .onChange(of: viewModel.successMessage) { _, newValue in
                 guard let newValue else { return }
@@ -78,19 +86,14 @@ struct AddressesView: View {
             }
 
             .sheet(isPresented: $showAddressForm) {
-                let apiService = APIService.shared
-                let remote = AddressRemoteDataSourceImpl(service: apiService)
-                let repo = AddressRepositoryImpl(remote: remote)
-                let addAddressUseCase = AddAddressUseCase(repository: repo)
-                let updateAddressUseCase = UpdateAddressUseCase(repository: repo)
-
-                let addressFormViewModel = AddressFormViewModel(
-                    addAddressUseCase: addAddressUseCase,
-                    updateAddressUseCase: updateAddressUseCase,
-                    tokenRepo: viewModel.tokenRepo,
-                    address: nil
-                )
-                AddressFormView(viewModel: addressFormViewModel)
+                let repo = viewModel.addressRepository
+                let token = viewModel.tokenRepo
+                let selected = selectedAddress
+                let addressFormViewModel = AddressFormViewModel(repo: repo, tokenRepo: token, address: selected)
+                AddressFormView(viewModel: addressFormViewModel).onDisappear {
+                    viewModel.getAddresses()
+                    selectedAddress = nil
+                }
             }
 
             if showToast {
@@ -146,16 +149,7 @@ struct AddressCell: View {
     let apiService = APIService.shared
     let remote = AddressRemoteDataSourceImpl(service: apiService)
     let repo = AddressRepositoryImpl(remote: remote)
-    let getAddressUseCase = GetAddressesUseCase(repository: repo)
-    let getDefaultAddressUseCase = GetDefaultAddressUseCase(repository: repo)
-    let deleteAddressUseCase = DeleteAddressUseCase(repository: repo)
-    let setDefaultAddressUseCase = SetDefaultAddressUseCase(repository: repo)
-
     let tokenRepo: TokenRepo = TokenRepoImpl()
-    let addressesViewModel = AddressViewModel(getAddressUseCase: getAddressUseCase,
-                                              getDefaultAddressUseCase: getDefaultAddressUseCase,
-                                              deleteAddressUseCase: deleteAddressUseCase,
-                                              setDefaultAddressUseCase: setDefaultAddressUseCase,
-                                              tokenRepo: tokenRepo)
+    let addressesViewModel = AddressViewModel(repository: repo, tokenRepo: tokenRepo)
     AddressesView(viewModel: addressesViewModel)
 }

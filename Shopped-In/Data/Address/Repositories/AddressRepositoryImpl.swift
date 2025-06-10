@@ -12,8 +12,9 @@ final class AddressRepositoryImpl: AddressRepository {
         remote.fetchAddresses(customerAccessToken: customerAccessToken) { result in
             switch result {
             case let .success(value):
-                let addresses = value.compactMap({ $0.toDomain() })
-                completion(.success(addresses))
+                let addresses = value.addresses.compactMap({ $0.toDomain() })
+                let defaultAddress = value.defaultAddress.toDomain()
+                completion(.success((addresses, defaultAddress)))
             case let .failure(error):
                 let message = (error as? Graph.QueryError).message(object: "addresses")
                 completion(.error(message))
@@ -45,19 +46,6 @@ final class AddressRepositoryImpl: AddressRepository {
                 completion(.errorMessage(message))
             case .success:
                 completion(.success)
-            }
-        }
-    }
-
-    func getDefaultAddress(customerAccessToken: String, completion: @escaping (AddressResponse) -> Void) {
-        remote.getDefaultAddress(customerAccessToken: customerAccessToken) { result in
-            switch result {
-            case let .success(value):
-                let address = value.toDomain()
-                completion(.success([address]))
-            case let .failure(error):
-                let message = (error as? Graph.QueryError).message(object: "default address")
-                completion(.error(message))
             }
         }
     }

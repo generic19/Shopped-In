@@ -8,7 +8,7 @@ class AddressRemoteDataSourceImpl: AddressRemoteDataSource {
         self.service = service
     }
 
-    func fetchAddresses(customerAccessToken: String, completion: @escaping (Result<[AddressDTO], Error>) -> Void) {
+    func fetchAddresses(customerAccessToken: String, completion: @escaping (Result<(addresses:[AddressDTO], defaultAddress: AddressDTO), Error>) -> Void) {
         let query = Storefront.buildQuery {
             $0.customer(customerAccessToken: customerAccessToken) {
                 $0.addresses(first: 100) {
@@ -19,17 +19,25 @@ class AddressRemoteDataSourceImpl: AddressRemoteDataSource {
                         $0.city()
                         $0.country()
                         $0.firstName()
-                        $0.latitude()
-                        $0.longitude()
                         $0.phone()
                     }
+                }
+                $0.defaultAddress {
+                    $0.id()
+                    $0.address1()
+                    $0.address2()
+                    $0.city()
+                    $0.country()
+                    $0.firstName()
+                    $0.phone()
                 }
             }
         }
 
         service.client.queryGraphWith(query) { response, error in
-            if let addresses = response?.customer?.addresses.nodes {
-                completion(.success(addresses))
+            if let addresses = response?.customer?.addresses.nodes,
+               let defaultAddress = response?.customer?.defaultAddress {
+                completion(.success((addresses, defaultAddress)))
             } else {
                 completion(.failure(error ?? .noData))
             }
@@ -77,31 +85,6 @@ class AddressRemoteDataSourceImpl: AddressRemoteDataSource {
                 completion(.failure(error))
             } else {
                 completion(.success)
-            }
-        }.resume()
-    }
-
-    func getDefaultAddress(customerAccessToken: String, completion: @escaping (Result<AddressDTO, Error>) -> Void) {
-        let query = Storefront.buildQuery {
-            $0.customer(customerAccessToken: customerAccessToken) {
-                $0.defaultAddress {
-                    $0.id()
-                    $0.address1()
-                    $0.address2()
-                    $0.city()
-                    $0.country()
-                    $0.firstName()
-                    $0.latitude()
-                    $0.longitude()
-                    $0.phone()
-                }
-            }
-        }
-        service.client.queryGraphWith(query) { response, error in
-            if let defaultAddress = response?.customer?.defaultAddress {
-                completion(.success(defaultAddress))
-            } else {
-                completion(.failure(error ?? .noData))
             }
         }.resume()
     }

@@ -6,14 +6,12 @@
 //
 
 protocol AddressRemoteDataSource {
-    func fetchAddresses(customerAccessToken: String, completion: @escaping (Result<[AddressDTO], Error>) -> Void)
-    
+    func fetchAddresses(customerAccessToken: String, completion: @escaping (Result<(addresses:[AddressDTO], defaultAddress: AddressDTO), Error>) -> Void)
+
     func createAddress(forCustomerWithAccessToken customerAccessToken: String, address: Address, completion: @escaping (AddressOperationResponse) -> Void)
     
     func deleteAddress(customerAccessToken: String, addressId: String, completion: @escaping (AddressOperationResponse) -> Void)
-    
-    func getDefaultAddress(customerAccessToken: String, completion: @escaping (Result<AddressDTO, Error>) -> Void)
-    
+        
     func setDefaultAddress(customerAccessToken: String, addressId: String, completion: @escaping (AddressOperationResponse) -> Void)
     
     func updateAddress(customerAccessToken: String, addressId: String, address: Address, completion: @escaping (AddressOperationResponse) -> Void)
