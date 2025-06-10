@@ -6,7 +6,7 @@ final class GetBrandsUseCase {
         self.repository = repository
     }
     
-    func execute(completion: @escaping (BrandsResponse) -> Void) {
-        repository.getAllBrands(completion: completion)
+    func execute(sort: BrandsSort = .title, forceNetwork: Bool = false, completion: @escaping (BrandsResponse) -> Void) {
+        repository.getAllBrands(sort: sort, forceNetwork: forceNetwork, completion: completion)
     }
 }

@@ -1,5 +1,6 @@
 
 import Foundation
+import UIKit
 
 enum Currency: String {
     case EGP
@@ -16,4 +17,26 @@ struct ProductListItem {
     let title: String
     let image: URL?
     let price: Amount
+}
+
+struct Product {
+    let title: String
+    let price: String
+    let images: [String]
+    let sizes: [String]
+    let colors: [String]
+    let rating: Int
+    let description: String
+    let reviews: [Review]
+}
+
+struct Review {
+    let name: String
+    let comment: String
+    let avatar: UIImage
+}
+
+struct CategorizedProductListItem {
+    let item: ProductListItem
+    let category: Category
 }

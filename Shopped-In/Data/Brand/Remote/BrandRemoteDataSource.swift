@@ -1,4 +1,4 @@
 
 protocol BrandRemoteDataSource {
-    func getAllBrands(completion: @escaping (Result<[BrandDTO], Error>) -> Void)
+    func getAllBrands(sort: BrandsSort, forceNetwork: Bool, completion: @escaping (Result<[BrandDTO], Error>) -> Void)
 }

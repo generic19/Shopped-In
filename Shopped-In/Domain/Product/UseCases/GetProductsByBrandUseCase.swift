@@ -8,7 +8,7 @@ final class GetProductsByBrandUseCase {
         self.repository = repository
     }
     
-    func execute(brand: Brand, completion: @escaping (ProductsResponse) -> Void) {
-        repository.getProductsByBrand(brandID: brand.id, completion: completion)
+    func execute(brand: Brand, sort: ProductsSort, completion: @escaping (ProductsResponse) -> Void) {
+        repository.getProductsByBrand(brandID: brand.id, sort: sort, completion: completion)
     }
 }
