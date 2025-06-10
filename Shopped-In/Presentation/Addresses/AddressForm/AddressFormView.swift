@@ -23,7 +23,6 @@ struct AddressFormView: View {
                     TextField("Phone*", text: $viewModel.phone)
                 }
                 Section(header: Text("Coordinates")) {
-                    
                     Map(
                         coordinateRegion: $viewModel.mapRegion,
                         interactionModes: .all,
@@ -32,12 +31,16 @@ struct AddressFormView: View {
                     ) { item in
                         MapMarker(coordinate: item.coordinate, tint: .red)
                     }
-                    .gesture(
-                        TapGesture()
-                            .onEnded { _ in
-                                let center = viewModel.mapRegion.center
-                                selectedCoordinates = center
-                                viewModel.fetchAddressDetails(for: center)
+                    .simultaneousGesture(
+                        DragGesture(minimumDistance: 0)
+                            .onEnded { value in
+                                let tapLocation = value.location
+                                let mapFrame = CGRect(origin: .zero, size: CGSize(width: 1, height: 1))
+                                let mapSize = CGSize(width: 300, height: 300)
+                                let region = viewModel.mapRegion
+                                let coordinates = convertTapToCoordinate(tapLocation, in: mapSize, region: region)
+                                selectedCoordinates = coordinates
+                                viewModel.fetchAddressDetails(for: coordinates)
                             }
                     )
                     .frame(height: 300)
@@ -49,8 +52,6 @@ struct AddressFormView: View {
                             viewModel.mapRegion.center = coord
                         }
                     }
-                        
-                        
                 }
                 if let error = viewModel.errorMessage {
                     Text(error)
@@ -115,14 +116,11 @@ struct AddressFormView: View {
     }
 }
 
- extension CLLocationCoordinate2D: Equatable {
+extension CLLocationCoordinate2D: Equatable {
     public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
         lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
     }
- }
-
-
-
+}
 
 #Preview {
     let remote = AddressRemoteDataSourceImpl(service: APIService.shared)
@@ -130,4 +128,17 @@ struct AddressFormView: View {
     let tokenRepo = TokenRepoImpl()
     let viewModel = AddressFormViewModel(repo: repo, tokenRepo: tokenRepo)
     AddressFormView(viewModel: viewModel)
+}
+
+private func convertTapToCoordinate(_ tap: CGPoint, in mapSize: CGSize, region: MKCoordinateRegion) -> CLLocationCoordinate2D {
+    let span = region.span
+    let center = region.center
+
+    let xPercent = tap.x / mapSize.width
+    let yPercent = tap.y / mapSize.height
+
+    let longitude = center.longitude - span.longitudeDelta / 2 + span.longitudeDelta * Double(xPercent)
+    let latitude = center.latitude + span.latitudeDelta / 2 - span.latitudeDelta * Double(yPercent)
+
+    return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
 }

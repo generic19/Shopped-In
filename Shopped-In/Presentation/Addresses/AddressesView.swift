@@ -119,13 +119,8 @@ struct AddressCell: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(address.address1)
+                Text(address.name)
                     .font(.headline)
-                if let address2 = address.address2 {
-                    Text(address2)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
                 Text("\(address.city), \(address.country)")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
