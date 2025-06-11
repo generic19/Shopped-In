@@ -36,7 +36,6 @@ class AuthRepositoryImpl: AuthRepository {
                         completion(nil)
 
                     case .failure:
-                        // Ask for phone number
                         let alert = UIAlertController(
                             title: "Phone Number",
                             message: "Please enter your phone number",
