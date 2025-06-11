@@ -10,6 +10,7 @@ protocol TokenRepo {
     func loadToken() -> String?
     func deleteToken()
 }
+
 class StubTokenRepo : TokenRepo {
     private var tokemKey:String?
     func saveToken(_ token: String) {
@@ -23,6 +24,4 @@ class StubTokenRepo : TokenRepo {
     func deleteToken() {
         self.tokemKey = nil
     }
-    
-    
 }
