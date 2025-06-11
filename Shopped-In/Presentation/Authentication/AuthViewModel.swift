@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseAuth
+import UIKit
 
 class AuthViewModel: ObservableObject {
     // MARK: - Input
@@ -29,18 +30,20 @@ class AuthViewModel: ObservableObject {
     private let signInUseCase: SignInUseCase
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private let signOutUseCase: SignOutUseCase
+    private let signInwithGoogleUseCase: SignInWithGoogleUseCase
     
     init(
         signUpUseCase: SignUpUseCase,
         signInUseCase: SignInUseCase,
         getCurrentUserUseCase: GetCurrentUserUseCase,
         signOutUseCase: SignOutUseCase
+        , signInwithGoogleUseCase: SignInWithGoogleUseCase
     ) {
         self.signUpUseCase = signUpUseCase
         self.signInUseCase = signInUseCase
         self.getCurrentUserUseCase = getCurrentUserUseCase
         self.signOutUseCase = signOutUseCase
-        
+        self.signInwithGoogleUseCase=signInwithGoogleUseCase
         $errorMessage
             .map { $0 != nil }
             .removeDuplicates()
@@ -149,4 +152,21 @@ class AuthViewModel: ObservableObject {
             self.isAuthenticated = false
         }
     }
+    // MARK: - Sign In with Google
+    func signInWithGoogle(presentingViewController: UIViewController) {
+        isLoading = true
+
+        signInwithGoogleUseCase.execute(presentingViewController: presentingViewController) { [weak self] error in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                if let error = error {
+                    self?.errorMessage = error.localizedDescription
+                } else {
+                    self?.isAuthenticated = true
+                }
+            }
+        }
+    }
+
+    
 }

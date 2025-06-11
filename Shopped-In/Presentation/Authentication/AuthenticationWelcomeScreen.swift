@@ -6,23 +6,37 @@
 //  Created by Ayatullah Salah on 31/05/2025.
 //
 
-
 import SwiftUI
 import Combine
 
 struct AuthenticationWelcomeScreen: View {
-    @StateObject var viewModel: AuthViewModel={
+    @StateObject var viewModel: AuthViewModel = {
         let tokenRepository: TokenRepo = StubTokenRepo()
         let apiService: APIService = APIService.shared
         let apiSource: APIAuthRemoteDataSource = APIAuthRemoteDataSourceImpl(service: apiService)
         let firebaseSource: FireBaseAuthRemoteDataSource = FireBaseAuthRemoteDataSourceImpl()
-        let authRepository = AuthRepositoryImpl(tokenRepository: tokenRepository, apiSource: apiSource, firebaseSource: firebaseSource)
+        let googleSource: GoogleAuthRemoteDataSource = GoogleAuthRemoteDataSourceImpl()  
+
+        let authRepository = AuthRepositoryImpl(
+            tokenRepository: tokenRepository,
+            apiSource: apiSource,
+            firebaseSource: firebaseSource,
+            googleSource: googleSource
+        )
+
         let signUpUseCase = SignUpUseCase(authRepository: authRepository)
         let signInUseCase = SignInUseCase(authRepository: authRepository)
         let getCurrentUserUseCase = GetCurrentUserUseCase(authRepository: authRepository)
         let signOutUseCase = SignOutUseCase(authRepository: authRepository)
-        
-        return AuthViewModel(signUpUseCase: signUpUseCase, signInUseCase: signInUseCase, getCurrentUserUseCase: getCurrentUserUseCase, signOutUseCase: signOutUseCase)
+        let signInWithGoogleUseCase = SignInWithGoogleUseCase(authRepository: authRepository) // ✅ هنا الإضافة
+
+        return AuthViewModel(
+            signUpUseCase: signUpUseCase,
+            signInUseCase: signInUseCase,
+            getCurrentUserUseCase: getCurrentUserUseCase,
+            signOutUseCase: signOutUseCase,
+            signInwithGoogleUseCase: signInWithGoogleUseCase
+        )
     }()
     
     @EnvironmentObject var appSwitch: AppSwitch
@@ -86,4 +100,3 @@ struct AuthenticationWelcomeScreen: View {
 #Preview {
     AuthenticationWelcomeScreen()
 }
-
