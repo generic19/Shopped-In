@@ -1,0 +1,15 @@
+//
+//  FireBaseAuthRemoteDataSource.swift
+//  Shopped-In
+//
+//  Created by Ayatullah Salah on 08/06/2025.
+//
+import FirebaseAuth
+protocol FireBaseAuthRemoteDataSource {
+    func signIn(email: String, password: String, completion:@escaping (Result<UserDTO, Error>) -> Void)
+    func signUp(user: User, password: String, completion: @escaping (Result<UserDTO, Error>) -> Void)
+    func rollbackSignUp(completion: @escaping () -> Void)
+    func signOut()
+    
+    func getCurrentUser() -> FirebaseAuth.User?
+}
