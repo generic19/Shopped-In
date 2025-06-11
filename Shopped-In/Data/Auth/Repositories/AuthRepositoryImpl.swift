@@ -28,21 +28,75 @@ class AuthRepositoryImpl: AuthRepository {
                     completion(AuthError.noData)
                     return
                 }
+
                 self.apiSource.signInCustomer(email: email, password: userDTO.randomToken) { result in
                     switch result {
                     case .success(let accessToken):
                         self.tokenRepository.saveToken(accessToken)
                         completion(nil)
-                    case .failure(let error):
-                        self.googleSource.signOut()
-                        completion(error)
+
+                    case .failure:
+                        // Ask for phone number
+                        let alert = UIAlertController(
+                            title: "Phone Number",
+                            message: "Please enter your phone number",
+                            preferredStyle: .alert
+                        )
+                        alert.addTextField { textField in
+                            textField.placeholder = "Phone Number"
+                            textField.keyboardType = .phonePad
+                        }
+
+                        let submitAction = UIAlertAction(title: "Submit", style: .default) { _ in
+                            let phone = alert.textFields?.first?.text ?? ""
+                            let name = userDTO.firebaseUser.displayName ?? ""
+                            let nameComponents = name.split(separator: " ")
+                            let firstName = nameComponents.first.map(String.init) ?? "User"
+                            let lastName = nameComponents.dropFirst().joined(separator: " ")
+
+                            let user = User(
+                                email: email,
+                                phone: phone,
+                                firstName: firstName,
+                                lastName: lastName,
+                                customerID: nil
+                            )
+
+                            self.apiSource.createCustomer(user: user, password: userDTO.randomToken) { error in
+                                if let error = error {
+                                    self.googleSource.signOut()
+                                    completion(error)
+                                } else {
+                                    self.tokenRepository.saveToken(userDTO.randomToken)
+                                    completion(nil)
+                                }
+                            }
+                        }
+
+                        alert.addAction(submitAction)
+
+                        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+                            self.googleSource.signOut()
+                            let cancelError = NSError(
+                                domain: "Auth",
+                                code: 999,
+                                userInfo: [NSLocalizedDescriptionKey: "User cancelled phone input"]
+                            )
+                            completion(cancelError)
+                        }
+
+                        alert.addAction(cancelAction)
+                        presentingViewController.present(alert, animated: true)
                     }
                 }
+
             case .failure(let error):
                 completion(error)
             }
         }
     }
+
+
     func signIn(email: String, password: String, completion: @escaping (Error?) -> Void){
         firebaseSource.signIn(email: email, password: password) { [unowned self] result in
             switch result {
@@ -51,6 +105,7 @@ class AuthRepositoryImpl: AuthRepository {
                         switch result {
                             case .success(let accessToken):
                                 self.tokenRepository.saveToken(accessToken)
+                            print("save token:\(self.tokenRepository.loadToken())")
                                 completion(nil)
                                 
                             case .failure(let error):
