@@ -8,24 +8,21 @@ class AuthRepositoryImpl: AuthRepository {
     private let tokenRepository: TokenRepo
     private let apiSource: APIAuthRemoteDataSource
     private let firebaseSource: FireBaseAuthRemoteDataSource
-    private let googleSource: GoogleAuthRemoteDataSource
 
     init(
         tokenRepository: TokenRepo,
         apiSource: APIAuthRemoteDataSource,
         firebaseSource: FireBaseAuthRemoteDataSource,
-        googleSource: GoogleAuthRemoteDataSource
     ) {
         self.tokenRepository = tokenRepository
         self.apiSource = apiSource
         self.firebaseSource = firebaseSource
-        self.googleSource = googleSource
     }
     func signInWithGoogle(
         presentingViewController: UIViewController,
         completion: @escaping (Error?) -> Void
     ) {
-        googleSource.signInWithGoogle(
+        firebaseSource.signInWithGoogle(
             presentingViewController: presentingViewController
         ) { [weak self] result in
             switch result {
@@ -72,7 +69,7 @@ class AuthRepositoryImpl: AuthRepository {
                             password: userDTO.randomToken
                         ) { error in
                             if let error = error {
-                                self?.googleSource.signOut()
+                                self?.firebaseSource.signOut()
                                 completion(error)
 
                                 return
@@ -87,7 +84,7 @@ class AuthRepositoryImpl: AuthRepository {
                                     completion(nil)
 
                                 case .failure(let error):
-                                    self?.googleSource.signOut()
+                                    self?.firebaseSource.signOut()
                                     completion(error)
                                 }
                             }

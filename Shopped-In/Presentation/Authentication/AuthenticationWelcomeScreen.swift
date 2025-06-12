@@ -15,20 +15,18 @@ struct AuthenticationWelcomeScreen: View {
         let apiService: APIService = APIService.shared
         let apiSource: APIAuthRemoteDataSource = APIAuthRemoteDataSourceImpl(service: apiService)
         let firebaseSource: FireBaseAuthRemoteDataSource = FireBaseAuthRemoteDataSourceImpl()
-        let googleSource: GoogleAuthRemoteDataSource = GoogleAuthRemoteDataSourceImpl()  
 
         let authRepository = AuthRepositoryImpl(
             tokenRepository: tokenRepository,
             apiSource: apiSource,
             firebaseSource: firebaseSource,
-            googleSource: googleSource
         )
 
         let signUpUseCase = SignUpUseCase(authRepository: authRepository)
         let signInUseCase = SignInUseCase(authRepository: authRepository)
         let getCurrentUserUseCase = GetCurrentUserUseCase(authRepository: authRepository)
         let signOutUseCase = SignOutUseCase(authRepository: authRepository)
-        let signInWithGoogleUseCase = SignInWithGoogleUseCase(authRepository: authRepository) // ✅ هنا الإضافة
+        let signInWithGoogleUseCase = SignInWithGoogleUseCase(authRepository: authRepository)
 
         return AuthViewModel(
             signUpUseCase: signUpUseCase,
