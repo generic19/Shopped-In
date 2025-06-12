@@ -45,8 +45,8 @@ class AuthRepositoryImpl: AuthRepository {
                         print("success sign in ")
                         self?.tokenRepository.saveToken(accessToken)
                         print(accessToken)
-                        
-                        print("acess token 2 \(accessToken)")
+
+                        print("acess token 2 \(self?.tokenRepository.loadToken())")
                         completion(nil)
 
                     case .failure:
@@ -74,10 +74,24 @@ class AuthRepositoryImpl: AuthRepository {
                             if let error = error {
                                 self?.googleSource.signOut()
                                 completion(error)
-                            } else {
-                               
-                                completion(nil)
+
+                                return
                             }
+                            self?.apiSource.signInCustomer(
+                                email: user.email,
+                                password: userDTO.randomToken
+                            ) { result in
+                                switch result {
+                                case .success(let accessToken):
+                                    self?.tokenRepository.saveToken(accessToken)
+                                    completion(nil)
+
+                                case .failure(let error):
+                                    self?.googleSource.signOut()
+                                    completion(error)
+                                }
+                            }
+
                         }
 
                     }
