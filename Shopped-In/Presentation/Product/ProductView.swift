@@ -74,8 +74,13 @@ struct ProductDetailView: View {
                                         Text(size)
                                             .padding(.vertical, 8)
                                             .padding(.horizontal, size.count > 1 ? 16 : 12)
-                                            .background(Color.gray.opacity(0.2))
+                                            .background(viewModel.selectedSize == size ? Color.orange.opacity(0.7) : Color.gray.opacity(0.2))
+                                            .foregroundColor(.black)
                                             .cornerRadius(8)
+                                            .onTapGesture {
+                                                   viewModel.selectedSize = size
+                                                   viewModel.updateSelectedVariant()
+                                               }
                                     }
                                 }
                             }
@@ -84,14 +89,24 @@ struct ProductDetailView: View {
                             Text("Colors").font(.headline)
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
-                                    ForEach(product.colors, id: \.self) { hex in
+                                    ForEach(product.colors, id: \.name) { colorOption in
                                         Circle()
-                                            .fill(Color(hex: hex))
+                                            .fill(Color(hex: colorOption.hexCode))
                                             .frame(width: 30, height: 30)
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(viewModel.selectedColor == colorOption.name ? Color.orange : Color.clear, lineWidth: 3)
+                                            )
                                             .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                            .onTapGesture {
+                                                viewModel.selectedColor = colorOption.name
+                                                viewModel.updateSelectedVariant()
+                                            }
                                     }
+
                                 }
                             }
+
 
                             // Description
                             Text("Description").font(.headline)
@@ -121,7 +136,11 @@ struct ProductDetailView: View {
                     VStack {
                         Divider()
                         Button(action: {
-                            print("Add to cart pressed")
+                            if let variantId = viewModel.selectedVariantId {
+                                print("Add to cart: \(variantId)")
+                            } else {
+                                print("choose color and image")
+                            }
                         }) {
                             Text("Add to Cart")
                                 .bold()
@@ -133,6 +152,7 @@ struct ProductDetailView: View {
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 10)
+
                     }
                     .background(Color.white.shadow(radius: 5))
                 }
