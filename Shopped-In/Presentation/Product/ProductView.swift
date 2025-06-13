@@ -1,8 +1,7 @@
-import SwiftUI
 import Buy
+import SwiftUI
 
 // MARK: - Color Extension
-
 extension Color {
     init(hex: String) {
         let scanner = Scanner(string: hex)
@@ -17,7 +16,6 @@ extension Color {
 }
 
 // MARK: - ProductDetailView
-
 struct ProductDetailView: View {
     @StateObject private var viewModel: ProductDetailViewModel
     let productID: String
@@ -36,70 +34,92 @@ struct ProductDetailView: View {
             if viewModel.isLoading {
                 ProgressView("Loading...")
             } else if let product = viewModel.product {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        TabView {
-                            ForEach(product.images, id: \.self) { image in
-                                AsyncImage(url: URL(string: image)) { img in
-                                    img.resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                } placeholder: {
-                                    Color.gray.opacity(0.3)
+                VStack(spacing: 0) {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            // Images
+                            TabView {
+                                ForEach(product.images, id: \.self) { image in
+                                    AsyncImage(url: URL(string: image)) { img in
+                                        img.resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                    } placeholder: {
+                                        Color.gray.opacity(0.3)
+                                    }
                                 }
                             }
-                        }
-                        .frame(height: 300)
-                        .tabViewStyle(PageTabViewStyle())
+                            .frame(height: 300)
+                            .tabViewStyle(PageTabViewStyle())
 
-                        Text(product.title)
-                            .font(.title2).bold()
-                        Text("\(product.price) EGP")
-                            .font(.title3)
-                            .foregroundColor(.gray)
+                            // Title and Price
+                            Text(product.title)
+                                .font(.title2).bold()
+                            Text("\(product.price) EGP")
+                                .font(.title3)
+                                .foregroundColor(.gray)
 
-                        HStack {
-                            ForEach(0..<5) { index in
-                                Image(systemName: index < product.rating ? "star.fill" : "star")
-                                    .foregroundColor(.orange)
-                            }
-                        }
-
-                        Text("Sizes").font(.headline)
-                        HStack {
-                            ForEach(product.sizes, id: \.self) { size in
-                                Text(size)
-                                    .padding(8)
-                                    .background(Color.gray.opacity(0.2))
-                                    .cornerRadius(8)
-                            }
-                        }
-
-                        Text("Colors").font(.headline)
-                        HStack {
-                            ForEach(product.colors, id: \.self) { hex in
-                                Circle()
-                                    .fill(Color(hex: hex))
-                                    .frame(width: 30, height: 30)
-                            }
-                        }
-
-                        Text("Description").font(.headline)
-                        Text(product.description)
-
-                        Text("Customer Reviews").font(.headline)
-                        ForEach(product.reviews, id: \.name) { review in
-                            HStack(alignment: .top) {
-                                Image(uiImage: review.avatar)
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                                VStack(alignment: .leading) {
-                                    Text(review.name).bold()
-                                    Text(review.comment)
+                            // Rating
+                            HStack {
+                                ForEach(0..<5) { index in
+                                    Image(systemName: index < product.rating ? "star.fill" : "star")
+                                        .foregroundColor(.orange)
                                 }
                             }
-                        }
 
+                            // Sizes
+                            Text("Sizes").font(.headline)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(product.sizes, id: \.self) { size in
+                                        Text(size)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, size.count > 1 ? 16 : 12)
+                                            .background(Color.gray.opacity(0.2))
+                                            .cornerRadius(8)
+                                    }
+                                }
+                            }
+
+                            // Colors
+                            Text("Colors").font(.headline)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(product.colors, id: \.self) { hex in
+                                        Circle()
+                                            .fill(Color(hex: hex))
+                                            .frame(width: 30, height: 30)
+                                            .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    }
+                                }
+                            }
+
+                            // Description
+                            Text("Description").font(.headline)
+                            Text(product.description)
+
+                            // Reviews
+                            Text("Customer Reviews").font(.headline)
+                            ForEach(product.reviews, id: \.name) { review in
+                                HStack(alignment: .top) {
+                                    Image(uiImage: review.avatar)
+                                        .resizable()
+                                        .frame(width: 40, height: 40)
+                                        .clipShape(Circle())
+                                    VStack(alignment: .leading) {
+                                        Text(review.name).bold()
+                                        Text(review.comment)
+                                    }
+                                }
+                            }
+
+                            Spacer(minLength: 80)
+                        }
+                        .padding()
+                    }
+
+                   
+                    VStack {
+                        Divider()
                         Button(action: {
                             print("Add to cart pressed")
                         }) {
@@ -111,9 +131,10 @@ struct ProductDetailView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(10)
                         }
-                        .padding(.top)
+                        .padding(.horizontal)
+                        .padding(.bottom, 10)
                     }
-                    .padding()
+                    .background(Color.white.shadow(radius: 5))
                 }
             } else {
                 Text("Product not found.")
@@ -127,7 +148,6 @@ struct ProductDetailView: View {
 }
 
 // MARK: - Preview
-
 struct ProductDetailView_Previews: PreviewProvider {
     static var previews: some View {
         ProductDetailView(productID: "gid://shopify/Product/8327391827341")
