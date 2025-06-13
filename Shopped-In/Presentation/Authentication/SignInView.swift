@@ -79,7 +79,9 @@ struct SignInView: View {
                         .padding(.top, 8)
                         
                         Button(action: {
-                            // TODO: Google Sign-In
+                            if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+                                   viewModel.signInWithGoogle(presentingViewController: rootVC)
+                               }
                         }) {
                             HStack {
                                 Image("googleIcon")
