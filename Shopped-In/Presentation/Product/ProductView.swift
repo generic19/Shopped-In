@@ -167,6 +167,7 @@ struct ProductDetailView: View {
         }
         .onAppear {
             viewModel.fetchProduct(by: productID)
+            
         }
     }
 }

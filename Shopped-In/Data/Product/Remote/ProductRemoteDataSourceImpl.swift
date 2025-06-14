@@ -50,6 +50,7 @@ final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
         let query = Storefront.buildQuery { $0
             .node(id: gqlID) { $0
                 .onProduct { $0
+                    .id()
                     .title()
                     .description()
                     .options { $0.name().values() }

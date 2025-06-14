@@ -38,11 +38,27 @@ class FavoriteViewModel: ObservableObject {
                 if let docs = snapshot?.documents {
                     self?.favoriteProducts = docs.compactMap { doc -> Product? in
                         let data = doc.data()
-                        let title = data["title"] as? String ?? ""
-                        let price = data["price"] as? String ?? ""
-                        let images = data["images"] as? [String] ?? []
-                        let description = data["description"] as? String ?? ""
-                        return Product(title: title, price: price, images: images, sizes: [], colors: [], rating: 0, description: description, reviews: [])
+                              
+                              if let id = data["id"] as? String,
+                                 let title = data["title"] as? String,
+                                 let price = data["price"] as? String,
+                                 let images = data["images"] as? [String],
+                                 let description = data["description"] as? String {
+
+                                  return Product(
+                                      id: id,
+                                      title: title,
+                                      price: price,
+                                      images: images,
+                                      sizes: [],
+                                      colors: [],
+                                      rating: 0,
+                                      description: description,
+                                      reviews: []
+                                  )
+                              } else {
+                                  return nil
+                              }
                     }
                 } else {
                     self?.favoriteProducts = []

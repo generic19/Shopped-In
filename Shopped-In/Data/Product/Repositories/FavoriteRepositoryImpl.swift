@@ -36,6 +36,7 @@ class FavoriteRepositoryImpl: FavoriteRepository {
              }
              let favRef = db.collection("users").document(uid).collection("favorites").document(product.title) 
              let data: [String: Any] = [
+                "id": product.id,
                  "title": product.title,
                  "price": product.price,
                  "images": product.images,

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct FavoriteProductsView: View {
     @StateObject var viewModel: FavoriteViewModel
+    @State private var selectedProductID: String?
+    @State private var navigateToDetails = false
 
     @State private var showAlert = false
     @State private var productToDelete: Product?
@@ -15,20 +17,25 @@ struct FavoriteProductsView: View {
                     .foregroundColor(.gray)
             } else {
                 ForEach(viewModel.favoriteProducts, id: \.title) { product in
-                    HStack {
-                        AsyncImage(url: URL(string: product.images.first ?? "")) { image in
-                            image.resizable()
-                                .frame(width: 50, height: 50)
-                                .cornerRadius(5)
-                        } placeholder: {
-                            Color.gray.opacity(0.3)
-                                .frame(width: 50, height: 50)
-                        }
+                    Button {
+                        selectedProductID = product.id
+                        navigateToDetails = true
+                    } label: {
+                        HStack {
+                            AsyncImage(url: URL(string: product.images.first ?? "")) { image in
+                                image.resizable()
+                                    .frame(width: 50, height: 50)
+                                    .cornerRadius(5)
+                            } placeholder: {
+                                Color.gray.opacity(0.3)
+                                    .frame(width: 50, height: 50)
+                            }
 
-                        VStack(alignment: .leading) {
-                            Text(product.title).bold()
-                            Text("\(product.price) EGP")
-                                .foregroundColor(.gray)
+                            VStack(alignment: .leading) {
+                                Text(product.title).bold()
+                                Text("\(product.price) EGP")
+                                    .foregroundColor(.gray)
+                            }
                         }
                     }
                     .swipeActions {
@@ -50,6 +57,14 @@ struct FavoriteProductsView: View {
             }
             Button("Cancel", role: .cancel) {}
         }
+        .background(
+            NavigationLink(
+                destination:ProductDetailView(productID: selectedProductID ?? ""),
+                isActive: $navigateToDetails,
+                label: { EmptyView() }
+            )
+            .hidden()
+        )
         .navigationTitle("Favorites")
         .onAppear {
             viewModel.fetchFavorites()
