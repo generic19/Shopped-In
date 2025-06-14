@@ -1,5 +1,5 @@
 
-struct Address: Identifiable {
+struct Address: Identifiable, Hashable{
     let id: String
     let name: String
     let address1: String

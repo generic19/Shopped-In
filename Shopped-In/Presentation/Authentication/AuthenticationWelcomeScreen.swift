@@ -12,7 +12,7 @@ import Combine
 
 struct AuthenticationWelcomeScreen: View {
     @StateObject var viewModel: AuthViewModel={
-        let tokenRepository: TokenRepo = StubTokenRepo()
+        let tokenRepository: TokenRepo = TokenRepoImpl()
         let apiService: APIService = APIService.shared
         let apiSource: APIAuthRemoteDataSource = APIAuthRemoteDataSourceImpl(service: apiService)
         let firebaseSource: FireBaseAuthRemoteDataSource = FireBaseAuthRemoteDataSourceImpl()
