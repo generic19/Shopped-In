@@ -43,7 +43,7 @@ class FavoriteViewModel: ObservableObject {
                                  let title = data["title"] as? String,
                                  let price = data["price"] as? String,
                                  let images = data["images"] as? [String],
-                                 let description = data["description"] as? String {
+                                 let description = data["description"] as?String {
 
                                   return Product(
                                       id: id,
@@ -54,7 +54,8 @@ class FavoriteViewModel: ObservableObject {
                                       colors: [],
                                       rating: 0,
                                       description: description,
-                                      reviews: []
+                                      reviews: [],
+                                      variants: []
                                   )
                               } else {
                                   return nil
