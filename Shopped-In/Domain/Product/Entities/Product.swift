@@ -18,17 +18,32 @@ struct ProductListItem {
     let image: URL?
     let price: Amount
 }
+struct SelectedOption {
+    let name: String
+    let value: String
+}
+struct ColorOption {
+    let name: String
+    let hexCode: String
+}
 
+
+struct Variant {
+    let id: String
+    let selectedOptions: [String: String]
+    let price: String
+}
 struct Product {
     let id: String  
     let title: String
     let price: String
     let images: [String]
     let sizes: [String]
-    let colors: [String]
+    let colors: [ColorOption] 
     let rating: Int
     let description: String
     let reviews: [Review]
+    let variants: [Variant]
 }
 
 struct Review {

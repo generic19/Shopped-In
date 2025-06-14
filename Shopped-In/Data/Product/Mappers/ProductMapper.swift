@@ -104,7 +104,26 @@ struct ProductMapper {
             "beige": "#F5F5DC",
             "yellow": "#FFFF00"
         ]
-        let hexColors = colors.map { colorHexMap[$0.lowercased()] ?? "#CCCCCC" }
+
+        let colorOptions = colors.map { colorName in
+            ColorOption(
+                name: colorName.lowercased(),
+                hexCode: colorHexMap[colorName.lowercased()] ?? "#CCCCCC"
+            )
+        }
+
+        let variants: [Variant] = storefrontProduct.variants.edges.map { edge in
+            let node = edge.node
+            let id = node.id.rawValue
+            print("varaientid  \(node.id.rawValue)")
+            let price = String(describing: node.price.amount)
+
+            let optionsDict = node.selectedOptions.reduce(into: [String: String]()) {
+                $0[$1.name.lowercased()] = $1.value
+            }
+
+            return Variant(id: id, selectedOptions: optionsDict, price: price)
+        }
 
         let review = Review(name: "Ayatullah", comment: "Good product", avatar: UIImage(systemName: "person.fill")!)
 
@@ -114,10 +133,11 @@ struct ProductMapper {
             price: price,
             images: images,
             sizes: sizes,
-            colors: hexColors,
+            colors: colorOptions,  
             rating: 4,
             description: description,
-            reviews: [review]
+            reviews: [review],
+            variants: variants
         )
     }
 }
