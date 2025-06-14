@@ -30,7 +30,7 @@ class CartViewModel: ObservableObject {
         updateCartItemQuantityUseCase = UpdateCartItemQuantityUseCaseImpl(repository: cartRepo)
 
         $lineItemQuantities
-            .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
+            .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
             .sink { [weak self] updatedQuantities in
                 guard let self = self, let cart = self.cart else { return }
                 for (lineItemId, quantity) in updatedQuantities {
@@ -64,16 +64,22 @@ class CartViewModel: ObservableObject {
     }
 
     func addToCart(variantId: String, quantity: Int) {
+        print("from view Model variant is: \(variantId), and quantity is : \(quantity)")
         if let cartId = CartSessionRepo.cartId {
+            print("cartId is : \(cartId)")
             addToCartUseCase.execute(cartId: cartId, variantId: variantId, quantity: quantity) { [weak self] response in
                 if case .failure = response {
+                    print("add to cart failure")
+
                     CartSessionRepo.clear()
                     self?.createCart(variantId: variantId, quantity: quantity)
                 } else {
+                    print("add to cart success or error message")
                     self?.handleResponse(response)
                 }
             }
         } else {
+            print("add to cart no cart id then create cart")
             createCart(variantId: variantId, quantity: quantity)
         }
     }
@@ -130,12 +136,11 @@ class CartViewModel: ObservableObject {
     }
 
     func applyDiscountCode(_ code: String) {
-        
     }
-    
+
     func removeDiscountCode() {
-        
     }
+
     func placeOrder(addressId: String, discountCode: String?) {
         // call use case to process the order
         // show toastMessage or navigate to order confirmation

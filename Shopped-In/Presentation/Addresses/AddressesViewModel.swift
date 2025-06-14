@@ -28,7 +28,6 @@ class AddressViewModel: ObservableObject {
             self.isLoading = false
             self.errorMessage = "No customer access token found"
             return }
-
     }
 
     func getAddresses() {

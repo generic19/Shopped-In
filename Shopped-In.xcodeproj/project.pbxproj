@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D11246F22DF996C000C8EDE6 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D11246F12DF996C000C8EDE6 /* GoogleSignIn */; };
+		D11246F42DF996C000C8EDE6 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D11246F32DF996C000C8EDE6 /* GoogleSignInSwift */; };
 		FBC47E732DE7BBA90008DEFF /* Buy in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E722DE7BBA90008DEFF /* Buy */; };
 		FBC47E762DE7BC100008DEFF /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E752DE7BC100008DEFF /* Swinject */; };
 		FBC47E792DE7BC310008DEFF /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E782DE7BC310008DEFF /* Alamofire */; };
@@ -39,9 +41,22 @@
 		FBC47E5E2DE7BB5A0008DEFF /* Shopped-InUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shopped-InUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D11246FC2DF9B3C200C8EDE6 /* Exceptions for "Shopped-In" folder in "Shopped-In" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FBC47E442DE7BB580008DEFF /* Shopped-In */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FBC47E472DE7BB580008DEFF /* Shopped-In */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D11246FC2DF9B3C200C8EDE6 /* Exceptions for "Shopped-In" folder in "Shopped-In" target */,
+			);
 			path = "Shopped-In";
 			sourceTree = "<group>";
 		};
@@ -62,7 +77,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D11246F42DF996C000C8EDE6 /* GoogleSignInSwift in Frameworks */,
 				FBC47E792DE7BC310008DEFF /* Alamofire in Frameworks */,
+				D11246F22DF996C000C8EDE6 /* GoogleSignIn in Frameworks */,
 				FBC4809C2DE7BFE50008DEFF /* FirebaseAuth in Frameworks */,
 				FBC47E732DE7BBA90008DEFF /* Buy in Frameworks */,
 				FBC4809A2DE7BFE50008DEFF /* FirebaseAnalytics in Frameworks */,
@@ -136,6 +153,8 @@
 				FBC4809B2DE7BFE50008DEFF /* FirebaseAuth */,
 				FBC4809D2DE7BFE50008DEFF /* FirebaseCore */,
 				FBC4809F2DE7BFE50008DEFF /* FirebaseFirestore */,
+				D11246F12DF996C000C8EDE6 /* GoogleSignIn */,
+				D11246F32DF996C000C8EDE6 /* GoogleSignInSwift */,
 			);
 			productName = "Shopped-In";
 			productReference = FBC47E452DE7BB580008DEFF /* Shopped-In.app */;
@@ -224,6 +243,7 @@
 				FBC47E742DE7BC100008DEFF /* XCRemoteSwiftPackageReference "Swinject" */,
 				FBC47E772DE7BC310008DEFF /* XCRemoteSwiftPackageReference "Alamofire" */,
 				FBC480982DE7BFE50008DEFF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				D11246F02DF996C000C8EDE6 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FBC47E462DE7BB580008DEFF /* Products */;
@@ -427,9 +447,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FS6H834LK2;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Shopped-In/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Shopped In";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to place a delivery address on the map.";
@@ -459,9 +480,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FS6H834LK2;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Shopped-In/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Shopped In";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.shopping";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to place a delivery address on the map.";
@@ -598,6 +620,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		D11246F02DF996C000C8EDE6 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 		FBC47E712DE7BBA90008DEFF /* XCRemoteSwiftPackageReference "mobile-buy-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Shopify/mobile-buy-sdk-ios";
@@ -633,6 +663,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D11246F12DF996C000C8EDE6 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D11246F02DF996C000C8EDE6 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		D11246F32DF996C000C8EDE6 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D11246F02DF996C000C8EDE6 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
 		FBC47E722DE7BBA90008DEFF /* Buy */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FBC47E712DE7BBA90008DEFF /* XCRemoteSwiftPackageReference "mobile-buy-sdk-ios" */;

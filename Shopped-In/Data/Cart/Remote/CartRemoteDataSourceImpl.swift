@@ -37,7 +37,8 @@ class CartRemoteDataSourceImpl: CartRemoteDataSource {
                 completion(.errorMessage(errorMessages))
             } else if let error = error {
                 completion(.failure(error))
-            } else {
+            } else if let cartId = response?.cartCreate?.cart?.id {
+                CartSessionRepo.cartId = cartId.rawValue
                 completion(.success)
             }
         }.resume()
@@ -80,6 +81,7 @@ class CartRemoteDataSourceImpl: CartRemoteDataSource {
                                 }
                                 $0.quantityAvailable()
                                 $0.product {
+                                    $0.title()
                                     $0.featuredImage {
                                         $0.url()
                                     }

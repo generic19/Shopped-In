@@ -34,7 +34,11 @@ class AddressFormViewModel: ObservableObject {
         let id = UUID()
         let coordinate: CLLocationCoordinate2D
     }
-
+    
+    
+    
+    
+    
     let addAddressUseCase: AddAddressUseCase
     let updateAddressUseCase: UpdateAddressUseCase
 
@@ -49,6 +53,7 @@ class AddressFormViewModel: ObservableObject {
         updateAddressUseCase = UpdateAddressUseCase(repository: repo)
         self.tokenRepo = tokenRepo
         customerAccessToken = self.tokenRepo.loadToken()
+
         self.address = address
         if let address {
             name = address.name

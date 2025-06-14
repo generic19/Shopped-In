@@ -137,7 +137,7 @@ struct CartView: View {
                     viewModel.toastMessage = ""
                 }
             }
-            
+
             if !viewModel.toastMessage.isEmpty {
                 VStack {
                     ToastView(message: viewModel.toastMessage, backgroundColor: .green.opacity(85))
@@ -154,6 +154,20 @@ struct CartItemRow: View {
 
     let onRemove: (CartItem) -> Void
 
+    let colorHexMap = [
+        "burgandy": "#FF660033",
+        "red": "#FFFF0000",
+        "white": "#FFFFFFFF",
+        "blue": "#FF0000FF",
+        "black": "#FF000000",
+        "gray": "#FF808080",
+        "light_brown": "#FFA52A2A",
+        "beige": "#FFF5F5DC",
+        "yellow": "#FFFFFF00",
+    ]
+
+    @State private var showDeleteAlert = false
+
     var body: some View {
         HStack(alignment: .top) {
             AsyncImage(url: item.imageURL) { image in
@@ -161,11 +175,26 @@ struct CartItemRow: View {
             } placeholder: {
                 Color.gray
             }
-            .frame(width: 60, height: 60)
-            .cornerRadius(8)
+            .frame(width: 80, height: 80)
+            .cornerRadius(10)
 
             VStack(alignment: .leading, spacing: 5) {
-                Text(item.title).font(.headline)
+                Text(item.title).bold()
+                HStack(spacing: 8) {
+                    let sizeThenColor = item.variantTitle.split(separator: " / ")
+                    if let size = sizeThenColor.first, let color = sizeThenColor.last {
+                        Text("Size: \(size)")
+                        Text("Color:")
+                        Circle()
+                            .fill(Color(hex: colorHexMap[String(color)] ?? "FFFFFFFF"))
+                            .frame(width: 20, height: 20)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.clear, lineWidth: 3)
+                            )
+                            .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                    }
+                }
                 Text("Unit Price: \(item.price, specifier: "%.2f")")
                 Text("Total: \(item.price * Double(item.quantity), specifier: "%.2f")")
 
@@ -178,16 +207,28 @@ struct CartItemRow: View {
 
                     Button(action: { onAddQuantity(item) }) {
                         Image(systemName: "plus.circle")
-                    }
+                    }.disabled(item.quantity == item.availableQuantity)
 
                     Spacer()
 
-                    Button(role: .destructive, action: { onRemove(item) }) {
+                    Button(role: .destructive) {
+                        showDeleteAlert = true
+                    } label: {
                         Image(systemName: "trash")
+                    }
+                    .alert("Remove Item", isPresented: $showDeleteAlert) {
+                        Button("Yes", role: .destructive) {
+                            onRemove(item)
+                        }
+                        Button("No", role: .cancel) { }
+                    } message: {
+                        Text("Are you sure you want to remove \(item.title) from the cart?")
                     }
                 }
             }
         }.padding(.vertical, 8)
     }
 }
+
+
 

@@ -11,7 +11,8 @@ extension Cart {
             }
             return CartItem(
                 id: node.id.rawValue,
-                title: variant.title,
+                title: variant.product.title,
+                variantTitle: variant.title,
                 quantity: Int(node.quantity),
                 price: Double(variant.price.amount),
                 imageURL: variant.product.featuredImage?.url,
@@ -19,7 +20,6 @@ extension Cart {
                 availableQuantity: Int(variant.quantityAvailable ?? 0)
             )
         }
-
 
         let discount = Discount(from: storefrontCart.discountCodes, allocations: storefrontCart.discountAllocations)
 
