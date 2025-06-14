@@ -2,6 +2,7 @@ import Buy
 import SwiftUI
 
 // MARK: - Color Extension
+
 extension Color {
     init(hex: String) {
         let scanner = Scanner(string: hex)
@@ -16,8 +17,10 @@ extension Color {
 }
 
 // MARK: - ProductDetailView
+
 struct ProductDetailView: View {
     @StateObject private var viewModel: ProductDetailViewModel
+    @StateObject private var cartViewModel: CartViewModel
     let productID: String
 
     init(productID: String) {
@@ -26,6 +29,9 @@ struct ProductDetailView: View {
         let repo = ProductRepositoryImpl(remote: remote)
         let useCase = FetchProductUseCase(repository: repo)
         _viewModel = StateObject(wrappedValue: ProductDetailViewModel(fetchProductUseCase: useCase))
+        let cartRemote = CartRemoteDataSourceImpl(service: apiService)
+        let cartRepo = CartRepositoryImpl(remote: cartRemote)
+        _cartViewModel = StateObject(wrappedValue: CartViewModel(cartRepo: cartRepo))
         self.productID = productID
     }
 
@@ -60,7 +66,7 @@ struct ProductDetailView: View {
 
                             // Rating
                             HStack {
-                                ForEach(0..<5) { index in
+                                ForEach(0 ..< 5) { index in
                                     Image(systemName: index < product.rating ? "star.fill" : "star")
                                         .foregroundColor(.orange)
                                 }
@@ -78,9 +84,9 @@ struct ProductDetailView: View {
                                             .foregroundColor(.black)
                                             .cornerRadius(8)
                                             .onTapGesture {
-                                                   viewModel.selectedSize = size
-                                                   viewModel.updateSelectedVariant()
-                                               }
+                                                viewModel.selectedSize = size
+                                                viewModel.updateSelectedVariant()
+                                            }
                                     }
                                 }
                             }
@@ -103,10 +109,8 @@ struct ProductDetailView: View {
                                                 viewModel.updateSelectedVariant()
                                             }
                                     }
-
                                 }
                             }
-
 
                             // Description
                             Text("Description").font(.headline)
@@ -131,13 +135,13 @@ struct ProductDetailView: View {
                         }
                         .padding()
                     }
-
-                   
                     VStack {
                         Divider()
+
                         Button(action: {
                             if let variantId = viewModel.selectedVariantId {
-                                print("Add to cart: \(variantId)")
+                                print("add to cart")
+                                cartViewModel.addToCart(variantId: variantId, quantity: 1)
                             } else {
                                 print("choose color and image")
                             }
@@ -152,7 +156,6 @@ struct ProductDetailView: View {
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 10)
-
                     }
                     .background(Color.white.shadow(radius: 5))
                 }
@@ -163,14 +166,31 @@ struct ProductDetailView: View {
         }
         .onAppear {
             viewModel.fetchProduct(by: productID)
+            cartViewModel.loadCart()
         }
     }
 }
 
 // MARK: - Preview
+
 struct ProductDetailView_Previews: PreviewProvider {
     static var previews: some View {
         ProductDetailView(productID: "gid://shopify/Product/8327391827341")
     }
 }
 
+// MARK: - Extension CartViewModel
+
+extension CartViewModel {
+    func cartItemFor(variantId: String?) -> CartItem? {
+        guard let variantId, let cart else { return nil }
+
+        for ct in cart.items {
+            if ct.variantId == variantId {
+                return ct
+            }
+        }
+
+        return nil
+    }
+}

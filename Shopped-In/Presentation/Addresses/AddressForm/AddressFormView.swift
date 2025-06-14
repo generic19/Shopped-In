@@ -101,16 +101,7 @@ struct AddressFormView: View {
             }
 
             if showToast {
-                VStack {
-                    Spacer()
-                    Text(toastMessage)
-                        .padding()
-                        .background(Color.green.opacity(0.85))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .padding(.bottom, 40)
-                        .transition(.opacity)
-                }
+                ToastView(message: toastMessage, backgroundColor: Color.green)
             }
         }
     }
@@ -120,14 +111,6 @@ extension CLLocationCoordinate2D: Equatable {
     public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
         lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
     }
-}
-
-#Preview {
-    let remote = AddressRemoteDataSourceImpl(service: APIService.shared)
-    let repo = AddressRepositoryImpl(remote: remote)
-    let tokenRepo = TokenRepoImpl()
-    let viewModel = AddressFormViewModel(repo: repo, tokenRepo: tokenRepo)
-    AddressFormView(viewModel: viewModel)
 }
 
 private func convertTapToCoordinate(_ tap: CGPoint, in mapSize: CGSize, region: MKCoordinateRegion) -> CLLocationCoordinate2D {
@@ -141,4 +124,12 @@ private func convertTapToCoordinate(_ tap: CGPoint, in mapSize: CGSize, region: 
     let latitude = center.latitude + span.latitudeDelta / 2 - span.latitudeDelta * Double(yPercent)
 
     return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+}
+
+#Preview {
+    let remote = AddressRemoteDataSourceImpl(service: APIService.shared)
+    let repo = AddressRepositoryImpl(remote: remote)
+    let tokenRepo = TokenRepoImpl()
+    let viewModel = AddressFormViewModel(repo: repo, tokenRepo: tokenRepo)
+    AddressFormView(viewModel: viewModel)
 }
