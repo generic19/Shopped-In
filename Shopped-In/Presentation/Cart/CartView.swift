@@ -56,6 +56,7 @@ struct CartView: View {
                                     TextField("Enter Discount Code", text: $viewModel.discountCode)
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .disabled(cart.discount?.isApplicable ?? false)
+                                        .foregroundColor((cart.discount?.isApplicable ?? false) ? .gray : .primary)
                                     Button("Apply") {
                                         viewModel.applyDiscountCode(viewModel.discountCode)
                                     }
@@ -90,10 +91,7 @@ struct CartView: View {
                             .padding(.top, 6)
 
                             Button("Place Order") {
-                                //                        viewModel.placeOrder(
-                                //                            addressId: selectedAddressId,
-                                //                            discountCode: isDiscountApplied ? discountCode : nil
-                                //                        )
+                                viewModel.placeOrder()
                             }
                             .padding(.vertical)
                             .frame(maxWidth: .infinity)

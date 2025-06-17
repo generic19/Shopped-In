@@ -177,7 +177,7 @@ class CartViewModel: ObservableObject {
         }
     }
 
-    func placeOrder(addressId: String, discountCode: String?) {
+    func placeOrder() {
         // call use case to process the order
         // show toastMessage or navigate to order confirmation
     }
