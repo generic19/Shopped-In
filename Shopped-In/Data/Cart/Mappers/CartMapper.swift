@@ -17,7 +17,7 @@ extension Cart {
                 price: Double(variant.price.amount),
                 imageURL: variant.product.featuredImage?.url,
                 variantId: variant.id.rawValue,
-                availableQuantity: Int(variant.quantityAvailable ?? 0)
+                totalQuantity: Int(variant.quantityAvailable ?? 0)
             )
         }
 
@@ -49,13 +49,18 @@ extension Discount {
             case let percent as Storefront.PricingPercentageValue:
                 percentage = percent.percentage
             case let money as Storefront.MoneyV2:
-                fixedAmount = Double(money.amount)
+                fixedAmount = allocations.reduce(0, { partialResult, cartDiscountAllocation in
+                    let val = Double((cartDiscountAllocation.discountApplication.value as? Storefront.MoneyV2)?.amount ?? 0)
+                    return partialResult + val
+                })
             default:
                 break
             }
         }
 
-        let actualAmount = allocation.flatMap { Double($0.discountedAmount.amount) } ?? 0.0
+        let actualAmount = allocations.reduce(0.0) { partialResult, cartDiscountAllocation in
+            partialResult + Double(cartDiscountAllocation.discountedAmount.amount)
+        }
 
         self.init(
             code: code,

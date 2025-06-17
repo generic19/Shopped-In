@@ -9,13 +9,12 @@
 import Buy
 import Foundation
 
-class CartRepositoryImpl : CartRepository  {
+class CartRepositoryImpl: CartRepository {
     private let remote: CartRemoteDataSource
 
     init(remote: CartRemoteDataSource) {
         self.remote = remote
     }
-
 
     func createCart(variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
         remote.createCart(variantId: variantId, quantity: quantity, completion: completion)
@@ -30,7 +29,7 @@ class CartRepositoryImpl : CartRepository  {
                     completion(.failure(CartError.noCartFound))
                     return
                 }
-                
+
                 completion(.success(cart))
 
             case let .failure(error):
@@ -49,6 +48,10 @@ class CartRepositoryImpl : CartRepository  {
 
     func removeItem(cartId: String, lineItemId: String, completion: @escaping (CartOperationResponse) -> Void) {
         remote.removeItem(cartId: cartId, lineItemId: lineItemId, completion: completion)
+    }
+
+    func addDiscountCode(cartId: String, code: String, completion: @escaping (CartOperationResponse) -> Void) {
+        remote.addDiscountCode(cartId: cartId, code: code, completion: completion)
     }
 }
 

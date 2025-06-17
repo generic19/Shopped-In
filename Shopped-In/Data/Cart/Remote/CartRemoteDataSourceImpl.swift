@@ -199,4 +199,31 @@ class CartRemoteDataSourceImpl: CartRemoteDataSource {
             }
         }.resume()
     }
+
+    func addDiscountCode(cartId: String, code: String, completion: @escaping (CartOperationResponse) -> Void) {
+        let mutation = Storefront.buildMutation {
+            $0.cartDiscountCodesUpdate(cartId: .init(rawValue: cartId), discountCodes: [code]) {
+                $0.cart {
+                    $0.discountCodes {
+                        $0.applicable()
+                    }
+                }
+                $0.userErrors {
+                    $0.message()
+                }
+            }
+        }
+        service.client.mutateGraphWith(mutation) { response, error in
+            if let errors = response?.cartDiscountCodesUpdate?.userErrors, !errors.isEmpty {
+                let messages = errors.compactMap { $0.message }.joined(separator: ", ")
+                completion(.errorMessage(messages))
+            } else if let error = error {
+                completion(.failure(error))
+            } else if response?.cartDiscountCodesUpdate?.cart?.discountCodes.first?.applicable == false {
+                completion(.errorMessage("Discount code not applicable."))
+            } else {
+                completion(.success)
+            }
+        }.resume()
+    }
 }
