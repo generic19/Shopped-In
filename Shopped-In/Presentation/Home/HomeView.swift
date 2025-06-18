@@ -6,12 +6,33 @@ enum HomeRoute: Route {
 }
 
 struct HomeView: View {
+    @State var showCopyMessage: Bool = false
+    @ObservedObject var brandsViewModel = BrandsViewModel(getBrandsUseCase: GetBrandsUseCase(repository: BrandRepositoryImpl(remote: BrandRemoteDataSourceImpl(service: APIService.shared))))
     var body: some View {
         NavigationStack {
-            VStack {
-                BrandsView()
+            ZStack {
+                ScrollView {
+                    VStack {
+                        AdsCarouselView(images: ["Discount20Percent", "Discount100EGP"]) { index in
+                            showCopyMessage = true
+                            if index == 0 {
+                                UIPasteboard.general.string = "FREE20"
+                            } else if index == 1 {
+                                UIPasteboard.general.string = "SHOP100"
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                showCopyMessage = false
+                            }
+                        }
+
+                        BrandsView(viewModel: brandsViewModel)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                if showCopyMessage {
+                    ToastView(message: "Discount Code Copied to Clipboard", backgroundColor: .green)
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Text("Shopped In")
