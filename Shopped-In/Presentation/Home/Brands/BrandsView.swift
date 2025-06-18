@@ -2,7 +2,7 @@
 import SwiftUI
 
 struct BrandsView: View {
-    @ObservedObject var viewModel = BrandsViewModel(getBrandsUseCase: GetBrandsUseCase(repository: BrandRepositoryImpl(remote: BrandRemoteDataSourceImpl(service: APIService.shared))))
+    @ObservedObject var viewModel: BrandsViewModel
     
     var body: some View {
         ScrollView {

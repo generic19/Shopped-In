@@ -57,6 +57,18 @@ struct CartView: View {
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .disabled(cart.discount?.isApplicable ?? false)
                                         .foregroundColor((cart.discount?.isApplicable ?? false) ? .gray : .primary)
+                                    
+                                    if let clipboardText = UIPasteboard.general.string, !clipboardText.isEmpty, let isApplicable = viewModel.cart?.discount?.isApplicable,  !isApplicable{
+                                        Button(action: {
+                                                viewModel.discountCode = clipboardText
+                                        }) {
+                                            Image(systemName: "doc.on.clipboard")
+                                                .font(.title2)
+                                                .foregroundStyle(.black)
+                                        }
+                                        .buttonStyle(BorderlessButtonStyle())
+                                        .help("Paste from clipboard")
+                                    }
                                     Button("Apply") {
                                         viewModel.applyDiscountCode(viewModel.discountCode)
                                     }

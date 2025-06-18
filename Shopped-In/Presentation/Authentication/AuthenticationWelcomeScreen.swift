@@ -50,7 +50,7 @@ struct AuthenticationWelcomeScreen: View {
                 VStack {
                     Spacer()
 
-                    Text("ShppedIn")
+                    Text("ShoppedIn")
                         .font(.system(size: 50, weight: .bold))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
