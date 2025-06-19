@@ -1,5 +1,4 @@
 import Combine
-
 import Foundation
 
 fileprivate let DEBUG_IS_HAPPY_SCENARIO = true
@@ -58,21 +57,19 @@ class CheckoutViewModel: ObservableObject {
         
         loadingMessage = "Loading cart for checkout..."
         
-        DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(1))) { [weak self] in
-            guard let self = self else { return }
-            
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
             if DEBUG_IS_HAPPY_SCENARIO {
                 self.loadingMessage = nil
                 let cartItems = [
-                    CartItem(id: "1", title: "Cart Item 1", quantity: 5, price: 1100, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834030628", availableQuantity: 11),
-                    CartItem(id: "2", title: "Cart Item 2", quantity: 4, price: 1200, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834161700", availableQuantity: 12),
-                    CartItem(id: "3", title: "Cart Item 3", quantity: 3, price: 1300, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834194468", availableQuantity: 13),
-                    CartItem(id: "4", title: "Cart Item 4", quantity: 2, price: 1400, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834423844", availableQuantity: 14),
-                    CartItem(id: "5", title: "Cart Item 5", quantity: 1, price: 1500, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322835079204", availableQuantity: 15),
+                    CartItem(id: "1", title: "Cart Item 1", variantTitle: "variant title", quantity: 5, price: 1100, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834030628", totalQuantity: 11),
+                    CartItem(id: "2", title: "Cart Item 2", variantTitle: "variant title", quantity: 4, price: 1200, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834161700", totalQuantity: 12),
+                    CartItem(id: "3", title: "Cart Item 3", variantTitle: "variant title", quantity: 3, price: 1300, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834194468", totalQuantity: 13),
+                    CartItem(id: "4", title: "Cart Item 4", variantTitle: "variant title", quantity: 2, price: 1400, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834423844", totalQuantity: 14),
+                    CartItem(id: "5", title: "Cart Item 5", variantTitle: "variant title", quantity: 1, price: 1500, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322835079204", totalQuantity: 15),
                 ]
-                self.cart = Cart(items: cartItems, subtotal: 2500, discountAmount: 110, total: 2390)
+                self.cart = Cart(id: "", items: cartItems, subtotal: 2500, total: 2390, discount: Discount(code: "FREE10", isApplicable: true, percentage: nil, fixedAmount: 110, actualDiscountAmount: 110), totalQuantity: 15)
             } else {
-                errorMessage = "Could not load cart items."
+                self.errorMessage = "Could not load cart items."
             }
         }
     }

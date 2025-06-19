@@ -7,14 +7,14 @@ struct CheckoutView: View {
     
     var body: some View {
         ZStack {
-            if let loadingMessage = viewModel.loadingMessage {
+            if let loadingMessage: String = viewModel.loadingMessage {
                 ProgressView {
                     Text(loadingMessage)
                 }
-            } else if let errorMessage = viewModel.errorMessage {
+            } else if let errorMessage: String = viewModel.errorMessage {
                 Text(errorMessage)
                     .foregroundStyle(.red)
-            } else if let cart = viewModel.cart {
+            } else if let cart: Cart = viewModel.cart {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Order Items")
@@ -22,7 +22,7 @@ struct CheckoutView: View {
                             .padding(.bottom, 16)
                         
                         VStack(spacing: 12) {
-                            ForEach(cart.items, id: \.id) { item in
+                            ForEach(cart.items, id: \.id) { (item: CartItem) in
                                 HStack(spacing: 12) {
                                     AsyncImage(url: item.imageURL) { image in
                                         image
@@ -99,9 +99,9 @@ struct CheckoutView: View {
                         }
                         .padding(.bottom, 8)
                         
-                        if let addresses = viewModel.addresses {
+                        if let addresses: [Address] = viewModel.addresses {
                             LazyVStack(alignment: .leading) {
-                                ForEach(addresses, id: \.id) { address in
+                                ForEach(addresses, id: \.id) { (address: Address) in
                                     Button {
                                         viewModel.selectedAddress = address
                                     } label: {
@@ -153,7 +153,7 @@ struct CheckoutView: View {
                             .padding(.bottom, 16)
                         
                         VStack(alignment: .leading) {
-                            ForEach(PaymentMethod.allCases, id: \.self) { paymentMethod in
+                            ForEach(PaymentMethod.allCases, id: \.self) { (paymentMethod: PaymentMethod) in
                                 Button {
                                     viewModel.selectedPaymentMethod = paymentMethod
                                 } label: {
@@ -189,10 +189,12 @@ struct CheckoutView: View {
                                     Text(String(format: "EGP %.2f", cart.subtotal))
                                 }
                                 
-                                HStack {
-                                    Text("Discount")
-                                    Spacer()
-                                    Text(String(format: "EGP %.2f", -cart.discountAmount))
+                                if let discountAmount = cart.discountAmount {
+                                    HStack {
+                                        Text("Discount")
+                                        Spacer()
+                                        Text(String(format: "EGP %.2f", -discountAmount))
+                                    }
                                 }
                             }
                             .font(.caption.weight(.bold))
@@ -224,7 +226,12 @@ struct CheckoutView: View {
                                     default: "Complete Order"
                                 }
                             }())
-                            .font(.title3)
+                            .font({
+                                switch viewModel.selectedPaymentMethod {
+                                    case .applePay: .title3
+                                    default: .body
+                                }
+                            }())
                             .frame(maxWidth: .infinity)
                         }
                         .disabled(viewModel.isCheckoutDisabled)

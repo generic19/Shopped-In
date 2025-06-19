@@ -12,7 +12,7 @@ import SwiftUI
 struct AuthenticationWelcomeScreen: View {
     @StateObject var viewModel: AuthViewModel = {
         let tokenRepository: TokenRepo = TokenRepoImpl()
-        let apiService: APIService = APIService.shared
+        let apiService: BuyAPIService = BuyAPIService.shared
         let apiSource: APIAuthRemoteDataSource = APIAuthRemoteDataSourceImpl(service: apiService)
         let firebaseSource: FireBaseAuthRemoteDataSource = FireBaseAuthRemoteDataSourceImpl()
 
