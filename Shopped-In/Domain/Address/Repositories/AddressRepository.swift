@@ -14,6 +14,6 @@ protocol AddressRepository {
 }
 
 enum AddressResponse {
-    case success((addresses: [Address], defaultAddress: Address))
+    case success(addresses: [Address], defaultAddress: Address?)
     case error(String)
 }

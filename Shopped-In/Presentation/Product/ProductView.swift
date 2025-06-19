@@ -21,7 +21,7 @@ struct ProductDetailView: View {
     let productID: String
 
     init(productID: String) {
-        let apiService = APIService.shared
+        let apiService = BuyAPIService.shared
         let remote = ProductRemoteDataSourceImpl(service: apiService)
         let repo = ProductRepositoryImpl(remote: remote)
         let useCase = FetchProductUseCase(repository: repo)

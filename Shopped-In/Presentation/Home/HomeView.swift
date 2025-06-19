@@ -23,6 +23,15 @@ struct HomeView: View {
                         .background(in: RoundedRectangle(cornerRadius: 3))
                         .backgroundStyle(.background)
                 }
+                
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink {
+                        CheckoutView()
+                    } label: {
+                        Image(systemName: "cart")
+                    }
+
+                }
             }
             .toolbarTitleDisplayMode(.inline)
         }

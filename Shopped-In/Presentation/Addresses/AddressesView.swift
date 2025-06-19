@@ -141,7 +141,7 @@ struct AddressCell: View {
 }
 
 #Preview {
-    let apiService = APIService.shared
+    let apiService = BuyAPIService.shared
     let remote = AddressRemoteDataSourceImpl(service: apiService)
     let repo = AddressRepositoryImpl(remote: remote)
     let tokenRepo: TokenRepo = TokenRepoImpl()

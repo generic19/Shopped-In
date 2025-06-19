@@ -123,7 +123,7 @@ extension CLLocationCoordinate2D: Equatable {
 }
 
 #Preview {
-    let remote = AddressRemoteDataSourceImpl(service: APIService.shared)
+    let remote = AddressRemoteDataSourceImpl(service: BuyAPIService.shared)
     let repo = AddressRepositoryImpl(remote: remote)
     let tokenRepo = TokenRepoImpl()
     let viewModel = AddressFormViewModel(repo: repo, tokenRepo: tokenRepo)

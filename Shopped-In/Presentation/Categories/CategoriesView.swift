@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CategoriesView: View {
-    @StateObject var viewModel = CategoriesViewModel(getProductsUseCase: GetProductsUseCase(repository: ProductRepositoryImpl(remote: ProductRemoteDataSourceImpl(service: APIService.shared))))
+    @StateObject var viewModel = CategoriesViewModel(getProductsUseCase: GetProductsUseCase(repository: ProductRepositoryImpl(remote: ProductRemoteDataSourceImpl(service: BuyAPIService.shared))))
     
     var body: some View {
         NavigationStack {
