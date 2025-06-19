@@ -236,6 +236,8 @@ class AuthRepositoryImpl: AuthRepository {
                                 self.tokenRepository.deleteToken()
                                 completion(false)
                             }
+                        } else {
+                            completion(false)
                         }
                         return
                     }
@@ -261,6 +263,8 @@ class AuthRepositoryImpl: AuthRepository {
                                                     self.tokenRepository.deleteToken()
                                                     completion(false)
                                                 }
+                                            } else {
+                                                completion(false)
                                             }
                                     }
                                 }
@@ -273,6 +277,8 @@ class AuthRepositoryImpl: AuthRepository {
                                         self.tokenRepository.deleteToken()
                                         completion(false)
                                     }
+                                } else {
+                                    completion(false)
                                 }
                         }
                     }
@@ -283,6 +289,8 @@ class AuthRepositoryImpl: AuthRepository {
                             self.tokenRepository.deleteToken()
                             completion(false)
                         }
+                    } else {
+                        completion(false)
                     }
             }
         }

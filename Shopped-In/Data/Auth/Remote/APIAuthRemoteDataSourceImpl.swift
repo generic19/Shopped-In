@@ -99,7 +99,7 @@ class APIAuthRemoteDataSourceImpl: APIAuthRemoteDataSource {
             if let error = error {
                 completion(.failure(error))
                 return
-            } else if let errors = result?.customerAccessTokenCreate?.customerUserErrors {
+            } else if let errors = result?.customerAccessTokenCreate?.customerUserErrors, !errors.isEmpty {
                 completion(.failure(AuthError.apiErrors(errors)))
             }
             
@@ -113,7 +113,9 @@ class APIAuthRemoteDataSourceImpl: APIAuthRemoteDataSource {
     
     func signOutCustomer(token: String,completion: @escaping () -> Void){
         let muation = Storefront.buildMutation {
-            $0.customerAccessTokenDelete(customerAccessToken: token) {_ in }
+            $0.customerAccessTokenDelete(customerAccessToken: token) {
+                $0.deletedAccessToken()
+            }
         }
         
         service.client.mutateGraphWith(muation) { (_,_) in

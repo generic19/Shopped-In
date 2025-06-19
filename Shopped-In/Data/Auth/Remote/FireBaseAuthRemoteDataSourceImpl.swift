@@ -88,7 +88,12 @@ class FireBaseAuthRemoteDataSourceImpl : FireBaseAuthRemoteDataSource {
     func getUserDTO(completion: @escaping (Result<UserDTO, Error>) -> Void) {
         let auth = Auth.auth()
         
-        auth.currentUser?.reload { error in
+        guard let currentUser = auth.currentUser else {
+            completion(.failure(AuthError.noData))
+            return
+        }
+        
+        currentUser.reload { error in
             if let error {
                 completion(.failure(error))
                 return
@@ -114,8 +119,6 @@ class FireBaseAuthRemoteDataSourceImpl : FireBaseAuthRemoteDataSource {
                 let userDTO = UserDTO(firebaseUser: user, randomToken: randomToken)
                 completion(.success(userDTO))
             }
-            
-            return
         }
     }
     
