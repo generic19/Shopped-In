@@ -50,10 +50,6 @@ class AuthViewModel: ObservableObject {
             .assign(to: &$shouldShowErrorAlert)
     }
     
-    func checkIsAuthenticated() {
-        self.isAuthenticated = self.getCurrentUserUseCase.execute()?.isAuthenticated ?? false
-    }
-    
     // MARK: - Sign Up
     
     func signUp() {

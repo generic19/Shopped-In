@@ -12,6 +12,7 @@ protocol FireBaseAuthRemoteDataSource {
     func rollbackSignUp(completion: @escaping () -> Void)
     func signOut()
     func signInWithGoogle(presentingViewController: UIViewController,completion: @escaping (Result<UserDTO, Error>) -> Void)
-    
+    func sendEmailVerification()
     func getCurrentUser() -> FirebaseAuth.User?
+    func getUserDTO(completion: @escaping (Result<UserDTO, Error>) -> Void)
 }

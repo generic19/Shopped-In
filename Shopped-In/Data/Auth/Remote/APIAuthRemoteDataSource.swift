@@ -13,6 +13,7 @@ protocol APIAuthRemoteDataSource{
     func createCustomer(user: User, password: String,completion: @escaping (Error?) -> Void)
     func signInCustomer(email: String, password: String,completion: @escaping (Result<CustomerAccessToken, Error>) -> Void)
     func signOutCustomer(token: String,completion: @escaping () -> Void)
+    func getCustomer(token: String, completion: @escaping (Result<User, Error>) -> Void)
 }
 
 enum AuthError: Error {

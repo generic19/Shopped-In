@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		D11246F22DF996C000C8EDE6 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D11246F12DF996C000C8EDE6 /* GoogleSignIn */; };
 		D11246F42DF996C000C8EDE6 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D11246F32DF996C000C8EDE6 /* GoogleSignInSwift */; };
-		FBA285A12E01D90A009DEC72 /* File in Resources */ = {isa = PBXBuildFile; fileRef = FBA285A02E01D90A009DEC72 /* File */; };
 		FBC47E732DE7BBA90008DEFF /* Buy in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E722DE7BBA90008DEFF /* Buy */; };
 		FBC47E762DE7BC100008DEFF /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E752DE7BC100008DEFF /* Swinject */; };
 		FBC47E792DE7BC310008DEFF /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = FBC47E782DE7BC310008DEFF /* Alamofire */; };
@@ -37,7 +36,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FBA285A02E01D90A009DEC72 /* File */ = {isa = PBXFileReference; lastKnownFileType = text; path = File; sourceTree = "<group>"; };
 		FBC47E452DE7BB580008DEFF /* Shopped-In.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shopped-In.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBC47E542DE7BB5A0008DEFF /* Shopped-InTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shopped-InTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBC47E5E2DE7BB5A0008DEFF /* Shopped-InUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shopped-InUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,7 +109,6 @@
 		FBC47E3C2DE7BB580008DEFF = {
 			isa = PBXGroup;
 			children = (
-				FBA285A02E01D90A009DEC72 /* File */,
 				FBC47E472DE7BB580008DEFF /* Shopped-In */,
 				FBC47E572DE7BB5A0008DEFF /* Shopped-InTests */,
 				FBC47E612DE7BB5A0008DEFF /* Shopped-InUITests */,
@@ -265,7 +262,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FBA285A12E01D90A009DEC72 /* File in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
