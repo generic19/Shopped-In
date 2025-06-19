@@ -85,6 +85,40 @@ class FireBaseAuthRemoteDataSourceImpl : FireBaseAuthRemoteDataSource {
         return Auth.auth().currentUser
     }
     
+    func getUserDTO(completion: @escaping (Result<UserDTO, Error>) -> Void) {
+        let auth = Auth.auth()
+        
+        auth.currentUser?.reload { error in
+            if let error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let user = auth.currentUser else {
+                completion(.failure(AuthError.noData))
+                return
+            }
+            
+            let firestore = Firestore.firestore()
+            firestore.collection("users").document(user.uid).getDocument { document, error in
+                if let error {
+                    completion(.failure(error))
+                    return
+                }
+                
+                guard let randomToken = document?.data()?["token"] as? String else {
+                    completion(.failure(AuthError.noData))
+                    return
+                }
+                
+                let userDTO = UserDTO(firebaseUser: user, randomToken: randomToken)
+                completion(.success(userDTO))
+            }
+            
+            return
+        }
+    }
+    
     func signIn(email: String, password: String, completion:@escaping (Result<UserDTO, Error>) -> Void){
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error: Error = error {
@@ -127,8 +161,6 @@ class FireBaseAuthRemoteDataSourceImpl : FireBaseAuthRemoteDataSource {
                 return
             }
             
-            firebaseUser.sendEmailVerification()
-            
             let db = Firestore.firestore()
             
             let data: [String: Any] = [
@@ -151,6 +183,10 @@ class FireBaseAuthRemoteDataSourceImpl : FireBaseAuthRemoteDataSource {
                 }
             }
         }
+    }
+    
+    func sendEmailVerification() {
+        Auth.auth().currentUser?.sendEmailVerification()
     }
     
     func rollbackSignUp(completion: @escaping () -> Void) {

@@ -2,13 +2,16 @@ import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
 import Foundation
+import Combine
 
 class AuthRepositoryImpl: AuthRepository {
-
     private let tokenRepository: TokenRepo
     private let apiSource: APIAuthRemoteDataSource
     private let firebaseSource: FireBaseAuthRemoteDataSource
-
+    
+    private let currentUserSubject = CurrentValueSubject<User?, Never>(nil)
+    var currentUser: AnyPublisher<User?, Never> { currentUserSubject.eraseToAnyPublisher() }
+    
     init(
         tokenRepository: TokenRepo,
         apiSource: APIAuthRemoteDataSource,
@@ -18,6 +21,7 @@ class AuthRepositoryImpl: AuthRepository {
         self.apiSource = apiSource
         self.firebaseSource = firebaseSource
     }
+    
     func signInWithGoogle(
         presentingViewController: UIViewController,
         completion: @escaping (Error?) -> Void
@@ -26,169 +30,261 @@ class AuthRepositoryImpl: AuthRepository {
             presentingViewController: presentingViewController
         ) { [weak self] result in
             switch result {
-            case .success(let userDTO):
-                print("sucess sign in with google")
-                guard let email = userDTO.firebaseUser.email else {
-                    completion(AuthError.noData)
-                    return
-                }
-
-                self?.apiSource.signInCustomer(
-                    email: email,
-                    password: userDTO.randomToken
-                ) { result in
-                    switch result {
-                    case .success(let accessToken):
-                        print("success sign in ")
-                        self?.tokenRepository.saveToken(accessToken)
-                        print(accessToken)
-
-                        print("acess token 2 \(self?.tokenRepository.loadToken())")
-                        completion(nil)
-
-                    case .failure:
-                        print("failure sign in")
-                        let name = userDTO.firebaseUser.displayName ?? ""
-                        let nameComponents = name.split(separator: " ")
-                        let firstName =
-                            nameComponents.first.map(String.init) ?? "User"
-                        let lastName = nameComponents.dropFirst().joined(
-                            separator: " "
-                        )
-
-                        let user = User(
-                            email: email,
-                            phone: nil,
-                            firstName: firstName,
-                            lastName: lastName,
-                            customerID: nil
-                        )
-
-                        self?.apiSource.createCustomer(
-                            user: user,
-                            password: userDTO.randomToken
-                        ) { error in
-                            if let error = error {
-                                self?.firebaseSource.signOut()
-                                completion(error)
-
-                                return
-                            }
-                            self?.apiSource.signInCustomer(
-                                email: user.email,
-                                password: userDTO.randomToken
-                            ) { result in
-                                switch result {
-                                case .success(let accessToken):
-                                    self?.tokenRepository.saveToken(accessToken)
-                                    completion(nil)
-
-                                case .failure(let error):
-                                    self?.firebaseSource.signOut()
-                                    completion(error)
-                                }
-                            }
-
-                        }
-
+                case .success(let userDTO):
+                    print("sucess sign in with google")
+                    guard let email = userDTO.firebaseUser.email else {
+                        completion(AuthError.noData)
+                        return
                     }
-                }
-
-            case .failure(let error):
-                completion(error)
+                    
+                    self?.apiSource.signInCustomer(
+                        email: email,
+                        password: userDTO.randomToken
+                    ) { result in
+                        switch result {
+                            case .success(let accessToken):
+                                print("success sign in ")
+                                self?.tokenRepository.saveToken(accessToken)
+                                print(accessToken)
+                                
+                                print("acess token 2 \(self?.tokenRepository.loadToken())")
+                                completion(nil)
+                                
+                            case .failure:
+                                print("failure sign in")
+                                let name = userDTO.firebaseUser.displayName ?? ""
+                                let nameComponents = name.split(separator: " ")
+                                let firstName =
+                                nameComponents.first.map(String.init) ?? "User"
+                                let lastName = nameComponents.dropFirst().joined(
+                                    separator: " "
+                                )
+                                
+                                let user = User(
+                                    email: email,
+                                    phone: nil,
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    customerID: nil
+                                )
+                                
+                                self?.apiSource.createCustomer(
+                                    user: user,
+                                    password: userDTO.randomToken
+                                ) { error in
+                                    if let error = error {
+                                        self?.firebaseSource.signOut()
+                                        completion(error)
+                                        
+                                        return
+                                    }
+                                    self?.apiSource.signInCustomer(
+                                        email: user.email,
+                                        password: userDTO.randomToken
+                                    ) { result in
+                                        switch result {
+                                            case .success(let accessToken):
+                                                self?.tokenRepository.saveToken(accessToken)
+                                                completion(nil)
+                                                
+                                            case .failure(let error):
+                                                self?.firebaseSource.signOut()
+                                                completion(error)
+                                        }
+                                    }
+                                    
+                                }
+                        }
+                    }
+                    
+                case .failure(let error):
+                    completion(error)
             }
         }
     }
-
+    
     func signIn(
         email: String,
         password: String,
         completion: @escaping (Error?) -> Void
     ) {
-        firebaseSource.signIn(email: email, password: password) {
-            [weak self] result in
+        firebaseSource.signIn(email: email, password: password) { [weak self] result in
+            guard let self else { return }
+            
             switch result {
-            case .success(let userDTO):
-                self?.apiSource.signInCustomer(
-                    email: email,
-                    password: userDTO.randomToken
-                ) { result in
-                    switch result {
-                    case .success(let accessToken):
-                        self?.tokenRepository.saveToken(accessToken)
-                        print("save token:\(self?.tokenRepository.loadToken())")
-                        completion(nil)
-
-                    case .failure(let error):
-                        self?.firebaseSource.signOut()
-                        completion(error)
+                case .success(let userDTO):
+                    self.apiSource.signInCustomer(
+                        email: email,
+                        password: userDTO.randomToken
+                    ) { result in
+                        switch result {
+                            case .success(let accessToken):
+                                self.apiSource.getCustomer(token: accessToken) { result in
+                                    switch result {
+                                        case .success(var user):
+                                            self.tokenRepository.saveToken(accessToken)
+                                            
+                                            user.isVerified = userDTO.firebaseUser.isEmailVerified
+                                            self.currentUserSubject.value = user
+                                            
+                                            completion(nil)
+                                            
+                                        case .failure(let error):
+                                            self.apiSource.signOutCustomer(token: accessToken) {
+                                                self.firebaseSource.signOut()
+                                                completion(error)
+                                            }
+                                    }
+                                }
+                                
+                            case .failure(let error):
+                                self.firebaseSource.signOut()
+                                completion(error)
+                        }
                     }
-                }
-
-            case .failure(let error):
-                completion(error)
+                    
+                case .failure(let error):
+                    completion(error)
             }
         }
     }
-
+    
     func signUp(
         user: User,
         password: String,
         completion: @escaping (Error?) -> Void
     ) {
-        firebaseSource.signUp(user: user, password: password) {
-            [weak self] result in
+        firebaseSource.signUp(user: user, password: password) { [weak self] result in
+            guard let self else { return }
+            
             switch result {
-            case .success(let userDTO):
-                self?.apiSource.createCustomer(
-                    user: user,
-                    password: userDTO.randomToken
-                ) { error in
-                    if let error = error {
-                        self?.firebaseSource.rollbackSignUp {
-                            completion(error)
-                        }
-                        return
-                    }
-
-                    self?.apiSource.signInCustomer(
-                        email: user.email,
+                case .success(let userDTO):
+                    self.apiSource.createCustomer(
+                        user: user,
                         password: userDTO.randomToken
-                    ) { result in
-                        switch result {
-                        case .success(let accessToken):
-                            self?.tokenRepository.saveToken(accessToken)
-                            completion(nil)
-
-                        case .failure(let error):
-                            self?.firebaseSource.signOut()
-                            completion(error)
+                    ) { error in
+                        if let error {
+                            self.firebaseSource.rollbackSignUp {
+                                completion(error)
+                            }
+                            return
+                        }
+                        
+                        self.apiSource.signInCustomer(
+                            email: user.email,
+                            password: userDTO.randomToken
+                        ) { result in
+                            switch result {
+                                case .success(let accessToken):
+                                    self.apiSource.getCustomer(token: accessToken) { result in
+                                        switch result {
+                                            case .success(var user):
+                                                self.tokenRepository.saveToken(accessToken)
+                                                
+                                                user.isVerified = userDTO.firebaseUser.isEmailVerified
+                                                
+                                                if !user.isVerified {
+                                                    self.firebaseSource.sendEmailVerification()
+                                                }
+                                                
+                                                self.currentUserSubject.value = user
+                                                
+                                                completion(nil)
+                                                
+                                            case .failure(let error):
+                                                self.apiSource.signOutCustomer(token: accessToken) {
+                                                    self.firebaseSource.signOut()
+                                                    completion(error)
+                                                }
+                                        }
+                                    }
+                                    
+                                case .failure(let error):
+                                    self.firebaseSource.signOut()
+                                    completion(error)
+                            }
                         }
                     }
-                }
-
-            case .failure(let error):
-                completion(error)
+                    
+                case .failure(let error):
+                    completion(error)
             }
         }
     }
-
+    
     func signOut(completion: @escaping () -> Void) {
         guard let token = tokenRepository.loadToken() else {
             firebaseSource.signOut()
             completion()
             return
         }
-
+        
         apiSource.signOutCustomer(token: token) {
             self.firebaseSource.signOut()
             self.tokenRepository.deleteToken()
             completion()
         }
     }
-
-    func getCurrentUser() -> User? {
-        guard let user = firebaseSource.getCurrentUser() else { return nil }
-        return User.from(firebaseUser: user, customer: nil)
+    
+    func automaticSignIn(completion: @escaping (Bool) -> Void) {
+        firebaseSource.getUserDTO { result in
+            switch result {
+                case .success(let dto):
+                    guard let email = dto.firebaseUser.email else {
+                        if let token = self.tokenRepository.loadToken() {
+                            self.apiSource.signOutCustomer(token: token) {
+                                self.tokenRepository.deleteToken()
+                                completion(false)
+                            }
+                        }
+                        return
+                    }
+                    
+                    self.apiSource.signInCustomer(email: email, password: dto.randomToken) { result in
+                        switch result {
+                            case .success(let accessToken):
+                                self.apiSource.getCustomer(token: accessToken) { result in
+                                    switch result {
+                                        case .success(var user):
+                                            self.tokenRepository.saveToken(accessToken)
+                                            
+                                            user.isVerified = dto.firebaseUser.isEmailVerified
+                                            self.currentUserSubject.value = user
+                                            
+                                            completion(true)
+                                            
+                                        case .failure(_):
+                                            if let token = self.tokenRepository.loadToken() {
+                                                self.firebaseSource.signOut()
+                                                
+                                                self.apiSource.signOutCustomer(token: token) {
+                                                    self.tokenRepository.deleteToken()
+                                                    completion(false)
+                                                }
+                                            }
+                                    }
+                                }
+                                
+                            case .failure(_):
+                                self.firebaseSource.signOut()
+                                
+                                if let token = self.tokenRepository.loadToken() {
+                                    self.apiSource.signOutCustomer(token: token) {
+                                        self.tokenRepository.deleteToken()
+                                        completion(false)
+                                    }
+                                }
+                        }
+                    }
+                    
+                case .failure(_):
+                    if let token = self.tokenRepository.loadToken() {
+                        self.apiSource.signOutCustomer(token: token) {
+                            self.tokenRepository.deleteToken()
+                            completion(false)
+                        }
+                    }
+            }
+        }
     }
 }

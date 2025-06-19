@@ -15,6 +15,39 @@ class APIAuthRemoteDataSourceImpl: APIAuthRemoteDataSource {
         self.service = service
     }
     
+    func getCustomer(token: String, completion: @escaping (Result<User, Error>) -> Void) {
+        let query = Storefront.buildQuery {
+            $0.customer(customerAccessToken: token) {
+                $0.email()
+                .phone()
+                .firstName()
+                .lastName()
+                .id()
+            }
+        }
+        
+        service.client.queryGraphWith(query) { query, error in
+            if let error {
+                completion(.failure(error))
+                return
+            }
+            guard
+                let email = query?.customer?.email,
+                let firstName = query?.customer?.firstName,
+                let lastName = query?.customer?.lastName,
+                let customerID = query?.customer?.id.rawValue
+            else {
+                completion(.failure(AuthError.noData))
+                return
+            }
+            
+            let phone = query?.customer?.phone
+            let user = User(email: email, phone: phone, firstName: firstName, lastName: lastName, customerID: customerID)
+            
+            completion(.success(user))
+        }.resume()
+    }
+    
     func createCustomer(user: User, password: String,completion: @escaping (Error?) -> Void) {
         let input = Storefront.CustomerCreateInput(
             email: user.email,
