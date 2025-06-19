@@ -26,10 +26,10 @@ extension Cart {
         self.init(
             id: storefrontCart.id.rawValue,
             items: items,
-            totalQuantity: Int(storefrontCart.totalQuantity),
             subtotal: Double(storefrontCart.cost.subtotalAmount.amount),
             total: Double(storefrontCart.cost.totalAmount.amount),
-            discount: discount
+            discount: discount,
+            totalQuantity: Int(storefrontCart.totalQuantity),
         )
     }
 }

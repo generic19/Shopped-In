@@ -8,8 +8,8 @@
 import Foundation
 import Buy
 
-final class APIService {
-    static let shared = APIService()
+final class BuyAPIService {
+    static let shared = BuyAPIService()
     
     static let standardRetry = Graph.RetryHandler<Storefront.QueryRoot>(
         endurance: .finite(3),

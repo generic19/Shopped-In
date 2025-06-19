@@ -9,6 +9,7 @@ struct CartItem: Equatable {
     let imageURL: URL?
     let variantId: String
     let totalQuantity: Int
+    
     var availableQuantity: Int {
         if totalQuantity <= 5 {
             return totalQuantity

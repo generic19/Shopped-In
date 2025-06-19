@@ -1,5 +1,5 @@
 
-class GetRecentOrdersUseCase {
+class GetAllOrdersUseCase {
     private let repository: OrderRepository
     
     init(repository: OrderRepository) {
@@ -7,6 +7,6 @@ class GetRecentOrdersUseCase {
     }
     
     func execute(customerID: String, completion: @escaping (GetOrdersResult) -> Void) {
-        repository.getRecentOrders(customerID: customerID, completion: completion)
+        repository.getAllOrders(customerID: customerID, completion: completion)
     }
 }

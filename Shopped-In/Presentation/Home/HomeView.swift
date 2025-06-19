@@ -7,7 +7,7 @@ enum HomeRoute: Route {
 
 struct HomeView: View {
     @State var showCopyMessage: Bool = false
-    @ObservedObject var brandsViewModel = BrandsViewModel(getBrandsUseCase: GetBrandsUseCase(repository: BrandRepositoryImpl(remote: BrandRemoteDataSourceImpl(service: APIService.shared))))
+    @ObservedObject var brandsViewModel = BrandsViewModel(getBrandsUseCase: GetBrandsUseCase(repository: BrandRepositoryImpl(remote: BrandRemoteDataSourceImpl(service: BuyAPIService.shared))))
     var body: some View {
         NavigationStack {
             ZStack {
@@ -43,6 +43,15 @@ struct HomeView: View {
                         .padding(.horizontal, 6)
                         .background(in: RoundedRectangle(cornerRadius: 3))
                         .backgroundStyle(.background)
+                }
+                
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink {
+                        CheckoutView()
+                    } label: {
+                        Image(systemName: "cart")
+                    }
+
                 }
             }
             .toolbarTitleDisplayMode(.inline)

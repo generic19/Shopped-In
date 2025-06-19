@@ -8,9 +8,9 @@ import Buy
 
 
 final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
-    let service: APIService
+    let service: BuyAPIService
     
-    init(service: APIService) {
+    init(service: BuyAPIService) {
         self.service = service
     }
     

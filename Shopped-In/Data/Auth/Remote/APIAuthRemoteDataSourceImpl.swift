@@ -9,9 +9,9 @@ import Buy
 import Foundation
 
 class APIAuthRemoteDataSourceImpl: APIAuthRemoteDataSource {
-    private let service: APIService
+    private let service: BuyAPIService
     
-    init(service: APIService) {
+    init(service: BuyAPIService) {
         self.service = service
     }
     

@@ -6,7 +6,7 @@
 //
 
 protocol AddressRemoteDataSource {
-    func fetchAddresses(customerAccessToken: String, completion: @escaping (Result<(addresses:[AddressDTO], defaultAddress: AddressDTO), Error>) -> Void)
+    func fetchAddresses(customerAccessToken: String, completion: @escaping (Result<(addresses:[AddressDTO], defaultAddress: AddressDTO?), Error>) -> Void)
 
     func createAddress(forCustomerWithAccessToken customerAccessToken: String, address: Address, completion: @escaping (AddressOperationResponse) -> Void)
     
