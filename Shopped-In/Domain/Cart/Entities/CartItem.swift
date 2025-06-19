@@ -1,11 +1,20 @@
 import Foundation
 
-struct CartItem {
+struct CartItem: Equatable {
     let id: String
     let title: String
+    let variantTitle: String
     let quantity: Int
     let price: Double
     let imageURL: URL?
     let variantId: String
-    let availableQuantity: Int
+    let totalQuantity: Int
+    
+    var availableQuantity: Int {
+        if totalQuantity <= 5 {
+            return totalQuantity
+        } else {
+            return totalQuantity / 3
+        }
+    }
 }

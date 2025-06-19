@@ -98,15 +98,7 @@ struct AddressesView: View {
 
             if showToast {
                 VStack {
-                    Spacer()
-                    Text(toastMessage)
-                        .padding()
-                        .background(Color.green.opacity(0.85))
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                        .padding(.bottom, 40)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                        .animation(.easeInOut(duration: 0.3), value: showToast)
+                    ToastView(message: toastMessage, backgroundColor: .green.opacity(85))
                 }
             }
         }

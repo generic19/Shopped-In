@@ -1,4 +1,4 @@
-
+//
 //  AddressFormViewModel.swift
 //  Shopped-In
 //
@@ -52,9 +52,7 @@ class AddressFormViewModel: ObservableObject {
         addAddressUseCase = AddAddressUseCase(repository: repo)
         updateAddressUseCase = UpdateAddressUseCase(repository: repo)
         self.tokenRepo = tokenRepo
-//            customerAccessToken = self.tokenRepo.loadToken()
-        // TODO - Remove static customer access token
-        customerAccessToken = "a83333ba147c99f3b004922d371d85df"
+        customerAccessToken = self.tokenRepo.loadToken()
 
         self.address = address
         if let address {
