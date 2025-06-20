@@ -46,6 +46,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Presentation/Product/Untitled.swift,
 			);
 			target = FBC47E442DE7BB580008DEFF /* Shopped-In */;
 		};
