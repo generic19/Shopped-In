@@ -3,7 +3,7 @@ import SwiftUI
 
 struct BrandProductsView: View {
     let brand: Brand
-    
+
     @ObservedObject var viewModel: BrandProductsViewModel = DIContainer.shared.resolve()
     
     var body: some View {
@@ -47,7 +47,6 @@ struct BrandProductsView: View {
         }
     }
 }
-
 
 #Preview {
     NavigationStack {

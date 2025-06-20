@@ -10,6 +10,10 @@ import SwiftUI
 struct CartView: View {
     @ObservedObject var viewModel: CartViewModel
 
+    private let currencyConverter: CurrencyConverter = CurrencyConverter(settingsRepo: SettingsRepositoryImpl(remote: CurrencyRemoteDataSource()))
+    @State private var currentExchangeRate: Double = 1
+    @State private var currentCurrency: String = "EGP"
+
     @State private var showSummarySheet = false
 
     var body: some View {
@@ -57,10 +61,10 @@ struct CartView: View {
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .disabled(cart.discount?.isApplicable ?? false)
                                         .foregroundColor((cart.discount?.isApplicable ?? false) ? .gray : .primary)
-                                    
-                                    if let clipboardText = UIPasteboard.general.string, !clipboardText.isEmpty, let isApplicable = viewModel.cart?.discount?.isApplicable,  !isApplicable{
+
+                                    if let clipboardText = UIPasteboard.general.string, !clipboardText.isEmpty, let isApplicable = viewModel.cart?.discount?.isApplicable, !isApplicable {
                                         Button(action: {
-                                                viewModel.discountCode = clipboardText
+                                            viewModel.discountCode = clipboardText
                                         }) {
                                             Image(systemName: "doc.on.clipboard")
                                                 .font(.title2)
@@ -120,14 +124,14 @@ struct CartView: View {
                 VStack(spacing: 12) {
                     Text("Summary")
                         .font(.title)
-                    Text("Subtotal: \(viewModel.cart?.subtotal ?? 0.0, specifier: "%.2f")")
+                    Text("Subtotal: \(((viewModel.cart?.subtotal ?? 0.0) * currentExchangeRate), specifier: "%.2f") \(currentCurrency)")
                     if let _ = viewModel.cart?.discount?.isApplicable,
                        let discountAmount = viewModel.cart?.discount?.actualDiscountAmount {
                         if discountAmount > 0 {
-                            Text("Discount: -\(discountAmount, specifier: "%.2f")")
+                            Text("Discount: -\((discountAmount * currentExchangeRate), specifier: "%.2f") \(currentCurrency)")
                         }
                     }
-                    Text("Total: \(viewModel.cart?.total ?? 0.0, specifier: "%.2f")")
+                    Text("Total: \(((viewModel.cart?.total ?? 0.0) * currentExchangeRate), specifier: "%.2f") \(currentCurrency)")
                         .font(.headline)
                     Button("Close") {
                         showSummarySheet = false
@@ -139,6 +143,10 @@ struct CartView: View {
             }
             .onAppear {
                 viewModel.loadCart()
+                if (currencyConverter.usdExchangeRate != nil) && currencyConverter.getCurrency() == "USD" {
+                    currentCurrency = "USD"
+                    currentExchangeRate = currencyConverter.usdExchangeRate!
+                }
             }
             .onChange(of: viewModel.toastMessage) { _, _ in
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -159,6 +167,10 @@ struct CartView: View {
 }
 
 struct CartItemRow: View {
+    private let currencyConverter: CurrencyConverter = CurrencyConverter(settingsRepo: SettingsRepositoryImpl(remote: CurrencyRemoteDataSource()))
+    @State private var currentExchangeRate: Double = 1
+    @State private var currentCurrency: String = "EGP"
+
     let item: CartItem
     let onAddQuantity: (CartItem) -> Void
     let onMinusQuantity: (CartItem) -> Void
@@ -206,8 +218,8 @@ struct CartItemRow: View {
                             .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
                     }
                 }
-                Text("Unit Price: \(item.price, specifier: "%.2f")")
-                Text("Total: \(item.price * Double(item.quantity), specifier: "%.2f")")
+                Text("Unit Price: \(item.price * currentExchangeRate, specifier: "%.2f") \(currentCurrency)")
+                Text("Total: \(item.price * currentExchangeRate * Double(item.quantity), specifier: "%.2f") \(currentCurrency)")
 
                 HStack {
                     Button(action: { onMinusQuantity(item) }) {
@@ -238,5 +250,11 @@ struct CartItemRow: View {
                 }
             }
         }.padding(.vertical, 8)
+            .onAppear {
+                if (currencyConverter.usdExchangeRate != nil) && currencyConverter.getCurrency() == "USD" {
+                    currentCurrency = "USD"
+                    currentExchangeRate = currencyConverter.usdExchangeRate!
+                }
+            }
     }
 }

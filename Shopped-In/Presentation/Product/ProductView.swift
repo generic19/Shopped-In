@@ -1,5 +1,8 @@
+
+
 import Buy
 import SwiftUI
+import FirebaseAuth
 
 // MARK: - Color Extension
 
@@ -20,10 +23,18 @@ extension Color {
 
 struct ProductDetailView: View {
     @StateObject private var viewModel: ProductDetailViewModel = DIContainer.shared.resolve()
+    @StateObject private var favoriteViewModel: FavoriteViewModel = DIContainer.shared.resolve()
     @StateObject private var cartViewModel: CartViewModel = DIContainer.shared.resolve()
+    @State private var currencyConverter: CurrencyConverter = DIContainer.shared.resolve()
+    
     let productID: String
     @State var toastMessage = ""
     @State var toastColor = Color.green
+
+    @State private var currentExchangeRate: Double = 1
+    @State private var currentCurrency: String = "EGP"
+
+    @State private var navigateToFavorites = false
 
     init(productID: String) {
         self.productID = productID
@@ -52,12 +63,41 @@ struct ProductDetailView: View {
                                 .frame(height: 300)
                                 .tabViewStyle(PageTabViewStyle())
 
+                                Button(action: {
+                                    Auth.auth().currentUser?.reload { error in
+                                        if let error = error {
+                                            print("Error reloading user: \(error)")
+                                        } else if Auth.auth().currentUser != nil {
+                                            viewModel.toggleFavorite()
+                                            navigateToFavorites = true
+                                        } else {
+                                            print("User not signed in")
+                                        }
+                                    }
+                                }) {
+                                    Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
+                                        .foregroundColor(.red)
+                                        .padding(12)
+                                        .background(Color.white.opacity(0.8))
+                                        .clipShape(Circle())
+                                        .shadow(radius: 3)
+                                }
+                                .padding(.trailing, 16)
+                                .padding(.top, 16)
+
                                 // Title and Price
                                 Text(product.title)
                                     .font(.title2).bold()
-                                Text("\(product.price) EGP")
-                                    .font(.title3)
-                                    .foregroundColor(.gray)
+
+                                if let priceValue = Double(product.price) {
+                                    Text("\(priceValue * currentExchangeRate, specifier: "%.2f") \(currentCurrency)")
+                                        .font(.title3)
+                                        .foregroundColor(.gray)
+                                } else {
+                                    Text("Invalid price")
+                                        .font(.title3)
+                                        .foregroundColor(.red)
+                                }
 
                                 // Rating
                                 HStack {
@@ -133,7 +173,7 @@ struct ProductDetailView: View {
                         VStack {
                             Divider()
                             if let selectedVariantId = viewModel.selectedVariantId, let cartItem = cartViewModel.cartItemFor(variantId: selectedVariantId) {
-                                HStack (spacing: 100){
+                                HStack(spacing: 100) {
                                     Button(action: {
                                         if cartItem.quantity == 1 {
                                             cartViewModel.removeItem(lineItemId: cartItem.id)
@@ -149,13 +189,7 @@ struct ProductDetailView: View {
                                             .foregroundColor(.white)
                                             .cornerRadius(10)
                                     }
-//                                    Button("-") {
-//                                        if cartItem.quantity == 1 {
-//                                            cartViewModel.removeItem(lineItemId: cartItem.id)
-//                                        } else {
-//                                            cartViewModel.onMinusQuantityTapped(lineItemId: cartItem.id)
-//                                        }
-//                                    }
+
                                     Text("\(cartItem.quantity)")
                                         .font(.title3)
                                         .frame(minWidth: 40)
@@ -173,10 +207,6 @@ struct ProductDetailView: View {
                                             .foregroundColor(.white)
                                             .cornerRadius(10)
                                     }
-
-//                                    Button("+") {
-//                                        cartViewModel.onAddQuantityTapped(lineItemId: cartItem.id)
-//                                    }
                                 }
                                 .padding(.horizontal)
                                 .padding(.bottom, 10)
@@ -216,9 +246,18 @@ struct ProductDetailView: View {
                         .foregroundColor(.red)
                 }
             }
+
+            NavigationLink(destination: FavoriteProductsView(viewModel: favoriteViewModel), isActive: $navigateToFavorites) {
+                EmptyView()
+            }
+
             .onAppear {
                 viewModel.fetchProduct(by: productID)
                 cartViewModel.loadCart()
+                if (currencyConverter.usdExchangeRate != nil) && currencyConverter.getCurrency() == "USD" {
+                    currentCurrency = "USD"
+                    currentExchangeRate = currencyConverter.usdExchangeRate!
+                }
             }
 
             if !toastMessage.isEmpty {
