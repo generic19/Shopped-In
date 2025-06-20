@@ -1,6 +1,7 @@
 
 import Combine
 import Foundation
+
 @MainActor
 class CartViewModel: ObservableObject {
     @Published var cart: Cart?
@@ -10,6 +11,7 @@ class CartViewModel: ObservableObject {
     @Published var lineItemQuantities: [String: Int] = [:]
     @Published var discountCode: String = ""
     @Published var discountFeedback: String = ""
+    @Published var showCheckout = false
 
     static let noProductsAddedErrorMsg = "No products added yet. Start shopping and add product items."
 
@@ -177,8 +179,7 @@ class CartViewModel: ObservableObject {
         }
     }
 
-    func placeOrder() {
-        // call use case to process the order
-        // show toastMessage or navigate to order confirmation
+    func proceedToCheckout() {
+        showCheckout = true
     }
 }

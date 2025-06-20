@@ -18,18 +18,21 @@ class CheckoutViewModel: ObservableObject {
     @Published var isCheckoutDisabled = true
     @Published var isCheckoutSuccessful: Bool?
     
-    private var user: User?
-    private var customerAccessToken: String?
+    @Published var user: User?
     
-    let getAddressesUseCase = GetAddressesUseCase(repository: AddressRepositoryImpl(remote: AddressRemoteDataSourceImpl(service: BuyAPIService.shared)))
+    private var customerAccessToken: String? { getCustomerAccessTokenUseCase.execute() }
+    private var cartID: String? { getCartIDUseCase.execute() }
     
-    let createOrderUseCase = CreateOrderUseCase(repository: OrderRepositoryImpl(remote: OrderRemoteDataSourceImpl(service: AlamofireAPIService.shared)))
-    let getAllOrdersUseCase = GetAllOrdersUseCase(repository: OrderRepositoryImpl(remote: OrderRemoteDataSourceImpl(service: AlamofireAPIService.shared)))
-    let getRecentOrdersUseCase = GetRecentOrdersUseCase(repository: OrderRepositoryImpl(remote: OrderRemoteDataSourceImpl(service: AlamofireAPIService.shared)))
-                                                  
-    //let getCustomerAccessTokenUseCase = GetCustomerAccessTokenUseCase(repository: TokenRepoImpl())
-    
+    private let getCartIDUseCase = GetCartIDUseCase()
+    private let getCartItemsUseCase = GetCartItemsUseCaseImpl(repository: CartRepositoryImpl(remote: CartRemoteDataSourceImpl(service: BuyAPIService.shared)))
+    private let getCustomerAccessTokenUseCase = GetCustomerAccessTokenUseCase(repository: TokenRepoImpl())
+    private let getCurrentUserUseCase = GetCurrentUserUseCase(authRepository: AuthRepositoryImpl(tokenRepository: TokenRepoImpl(), apiSource: APIAuthRemoteDataSourceImpl(service: BuyAPIService.shared), firebaseSource: FireBaseAuthRemoteDataSourceImpl()))
+    private let getAddressesUseCase = GetAddressesUseCase(repository: AddressRepositoryImpl(remote: AddressRemoteDataSourceImpl(service: BuyAPIService.shared)))
+    private let createOrderUseCase = CreateOrderUseCase(repository: OrderRepositoryImpl(remote: OrderRemoteDataSourceImpl(service: AlamofireAPIService.shared)))
+
     init() {
+        getCurrentUserUseCase.execute().assign(to: &$user)
+        
         $selectedAddress.combineLatest($selectedPaymentMethod) { selectedAddress, selectedPaymentMethod in
             return selectedAddress == nil || selectedPaymentMethod == nil
         }
@@ -37,49 +40,50 @@ class CheckoutViewModel: ObservableObject {
     }
     
     func load() {
-        // customerAccessToken = getCustomerAccessTokenUseCase.execute()
-        self.user = User(email: "basel.alasadi@gmail.com", phone: "+201069696603", firstName: "Basel", lastName: "Alasase", customerID: "gid://shopify/Customer/7379231866916")
-        self.customerAccessToken = "a83333ba147c99f3b004922d371d85df"
-        
-        if let customerAccessToken {
-            loadCartItems()
-            loadAddresses()
-        } else {
-            errorMessage = "Customer not signed in."
+        guard let customerAccessToken, let user else {
+            print(customerAccessToken)
+            print(user)
+            errorMessage = "You must be signed in to checkout an order."
+            return
         }
-    }
-    
-    func loadCartItems() {
-        guard let customerAccessToken else {
-            errorMessage = "User is not signed in."
+        if !user.isVerified {
+            errorMessage = "Email verification is required to proceed with checkout."
+            return
+        }
+        guard let cartID else {
+            errorMessage = "Your cart is empty."
             return
         }
         
+        loadCartItems(customerAccessToken: customerAccessToken, cartID: cartID)
+        loadAddresses(customerAccessToken: customerAccessToken)
+    }
+    
+    private func loadCartItems(customerAccessToken: String, cartID: String) {
+        cart = nil
         loadingMessage = "Loading cart for checkout..."
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-            if DEBUG_IS_HAPPY_SCENARIO {
-                self.loadingMessage = nil
-                let cartItems = [
-                    CartItem(id: "1", title: "Cart Item 1", variantTitle: "variant title", quantity: 5, price: 1100, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834030628", totalQuantity: 11),
-                    CartItem(id: "2", title: "Cart Item 2", variantTitle: "variant title", quantity: 4, price: 1200, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834161700", totalQuantity: 12),
-                    CartItem(id: "3", title: "Cart Item 3", variantTitle: "variant title", quantity: 3, price: 1300, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834194468", totalQuantity: 13),
-                    CartItem(id: "4", title: "Cart Item 4", variantTitle: "variant title", quantity: 2, price: 1400, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322834423844", totalQuantity: 14),
-                    CartItem(id: "5", title: "Cart Item 5", variantTitle: "variant title", quantity: 1, price: 1500, imageURL: nil, variantId: "gid://shopify/ProductVariant/42322835079204", totalQuantity: 15),
-                ]
-                self.cart = Cart(id: "", items: cartItems, subtotal: 2500, total: 2390, discount: Discount(code: "FREE10", isApplicable: true, percentage: nil, fixedAmount: 110, actualDiscountAmount: 110), totalQuantity: 15)
-            } else {
-                self.errorMessage = "Could not load cart items."
+        getCartItemsUseCase.execute(cartId: cartID) { result in
+            self.loadingMessage = nil
+            
+            switch result {
+                case .success(let cart):
+                    self.errorMessage = nil
+                    self.cart = cart
+                    
+                case .failure(_):
+                    self.errorMessage = "An error occured while loading your cart."
             }
         }
     }
     
     func loadAddresses() {
-        guard let customerAccessToken else {
-            errorMessage = "User is not signed in."
-            return
+        if let customerAccessToken {
+            loadAddresses(customerAccessToken: customerAccessToken)
         }
-        
+    }
+    
+    private func loadAddresses(customerAccessToken: String) {
         addressesLoadingMessage = "Loading saved addresses..."
 
         getAddressesUseCase.execute(customerAccessToken: customerAccessToken) { [weak self] response in
@@ -99,10 +103,12 @@ class CheckoutViewModel: ObservableObject {
     }
     
     func completeCheckout() {
-        guard let customerAccessToken, let user else {
-            errorMessage = "User is not signed in."
-            return
+        if let customerAccessToken, let user {
+            completeCheckout(customerAccessToken: customerAccessToken, user: user)
         }
+    }
+    
+    private func completeCheckout(customerAccessToken: String, user: User) {
         guard let cart else {
             errorMessage = "No cart to process."
             return
@@ -118,9 +124,9 @@ class CheckoutViewModel: ObservableObject {
             cart: cart,
             user: user,
             address: selectedAddress,
-            discountCode: nil,
-            fixedDiscount: nil,
-            fractionalDiscount: nil
+            discountCode: cart.discount?.code,
+            fixedDiscount: cart.discount?.fixedAmount,
+            fractionalDiscount: cart.discount?.percentage,
         ) { result in
             self.loadingMessage = nil
             
