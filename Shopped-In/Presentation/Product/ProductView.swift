@@ -54,7 +54,6 @@ struct ProductDetailView: View {
     }
     
     var body: some View {
-        
         VStack {
             if viewModel.isLoading {
                 ProgressView("Loading...")

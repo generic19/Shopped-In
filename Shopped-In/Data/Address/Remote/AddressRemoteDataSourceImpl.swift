@@ -2,13 +2,13 @@ import Buy
 import Combine
 
 class AddressRemoteDataSourceImpl: AddressRemoteDataSource {
-    private let service: APIService
+    private let service: BuyAPIService
 
-    init(service: APIService) {
+    init(service: BuyAPIService) {
         self.service = service
     }
 
-    func fetchAddresses(customerAccessToken: String, completion: @escaping (Result<(addresses:[AddressDTO], defaultAddress: AddressDTO), Error>) -> Void) {
+    func fetchAddresses(customerAccessToken: String, completion: @escaping (Result<(addresses:[AddressDTO], defaultAddress: AddressDTO?), Error>) -> Void) {
         let query = Storefront.buildQuery {
             $0.customer(customerAccessToken: customerAccessToken) {
                 $0.addresses(first: 100) {
@@ -35,8 +35,8 @@ class AddressRemoteDataSourceImpl: AddressRemoteDataSource {
         }
 
         service.client.queryGraphWith(query) { response, error in
-            if let addresses = response?.customer?.addresses.nodes,
-               let defaultAddress = response?.customer?.defaultAddress {
+            if let addresses = response?.customer?.addresses.nodes {
+                let defaultAddress = response?.customer?.defaultAddress
                 completion(.success((addresses, defaultAddress)))
             } else {
                 completion(.failure(error ?? .noData))

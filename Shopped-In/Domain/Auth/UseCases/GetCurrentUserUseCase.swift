@@ -1,4 +1,5 @@
-import FirebaseAuth
+import Combine
+
 class GetCurrentUserUseCase {
     private let authRepository: AuthRepository
 
@@ -6,7 +7,7 @@ class GetCurrentUserUseCase {
         self.authRepository = authRepository
     }
 
-    func execute() -> User? {
-        authRepository.getCurrentUser()
+    func execute() -> AnyPublisher<User?, Never> {
+        return authRepository.currentUser
     }
 }

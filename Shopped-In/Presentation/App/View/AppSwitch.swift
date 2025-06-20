@@ -14,7 +14,7 @@ enum SwitchRoute {
 }
 
 final class AppSwitch: ObservableObject {
-    @Published var selectedRoute: SwitchRoute = .authentication
+    @Published var selectedRoute: SwitchRoute = .splash
     
     func switchTo(_ route: SwitchRoute) {
         self.selectedRoute = route

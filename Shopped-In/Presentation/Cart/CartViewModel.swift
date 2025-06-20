@@ -1,7 +1,6 @@
 
 import Combine
 import Foundation
-
 @MainActor
 class CartViewModel: ObservableObject {
     @Published var cart: Cart?
@@ -9,6 +8,8 @@ class CartViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var toastMessage = ""
     @Published var lineItemQuantities: [String: Int] = [:]
+    @Published var discountCode: String = ""
+    @Published var discountFeedback: String = ""
 
     static let noProductsAddedErrorMsg = "No products added yet. Start shopping and add product items."
 
@@ -17,6 +18,7 @@ class CartViewModel: ObservableObject {
     private let addToCartUseCase: AddToCartUseCase
     private let removeFromCartUseCase: RemoveFromCartUseCase
     private let updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase
+    private let setDiscountCodeUseCase: SetDiscountCodeUseCase
 
     private var cancellable: Set<AnyCancellable> = []
 
@@ -28,6 +30,7 @@ class CartViewModel: ObservableObject {
         addToCartUseCase = AddToCartUseCaseImpl(repository: cartRepo)
         removeFromCartUseCase = RemoveFromCartUseCaseImpl(repository: cartRepo)
         updateCartItemQuantityUseCase = UpdateCartItemQuantityUseCaseImpl(repository: cartRepo)
+        setDiscountCodeUseCase = SetDiscountCodeUseCaseImpl(repository: cartRepo)
 
         $lineItemQuantities
             .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
@@ -49,12 +52,16 @@ class CartViewModel: ObservableObject {
             return
         }
 
+        print("cart ID: \(cartId)")
         isLoading = true
         getCartItemsUseCase.execute(cartId: cartId) { [weak self] result in
             self?.isLoading = false
             switch result {
             case let .success(cart):
                 self?.cart = cart
+                if cart.discount?.isApplicable == true {
+                    self?.discountCode = cart.discount?.code ?? ""
+                }
             case .failure:
                 CartSessionRepo.clear()
                 self?.cart = nil
@@ -136,12 +143,41 @@ class CartViewModel: ObservableObject {
     }
 
     func applyDiscountCode(_ code: String) {
+        guard let cartId = CartSessionRepo.cartId else { return }
+
+        setDiscountCodeUseCase.execute(cartId: cartId, code: code) { [weak self] response in
+            let tempDiscountCode = self?.discountCode
+            switch response {
+            case .success:
+                self?.discountFeedback = ""
+                self?.loadCart()
+            case let .errorMessage(err):
+                self?.removeDiscountCode {
+                    self?.discountFeedback = err
+                    self?.discountCode = tempDiscountCode ?? ""
+                }
+            default:
+                self?.handleResponse(response)
+            }
+        }
     }
 
-    func removeDiscountCode() {
+    func removeDiscountCode(completion: (() -> Void)? = nil) {
+        guard let cartId = CartSessionRepo.cartId else { return }
+        setDiscountCodeUseCase.execute(cartId: cartId, code: "") { [weak self] response in
+            switch response {
+            case .errorMessage:
+                self?.discountFeedback = ""
+                self?.discountCode = ""
+                self?.loadCart()
+            default:
+                self?.handleResponse(response)
+            }
+            completion?()
+        }
     }
 
-    func placeOrder(addressId: String, discountCode: String?) {
+    func placeOrder() {
         // call use case to process the order
         // show toastMessage or navigate to order confirmation
     }

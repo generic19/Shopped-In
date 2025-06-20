@@ -13,8 +13,8 @@ final class AddressRepositoryImpl: AddressRepository {
             switch result {
             case let .success(value):
                 let addresses = value.addresses.compactMap({ $0.toDomain() })
-                let defaultAddress = value.defaultAddress.toDomain()
-                completion(.success((addresses, defaultAddress)))
+                let defaultAddress = value.defaultAddress?.toDomain()
+                    completion(.success(addresses: addresses, defaultAddress: defaultAddress))
             case let .failure(error):
                 let message = (error as? Graph.QueryError).message(object: "addresses")
                 completion(.error(message))

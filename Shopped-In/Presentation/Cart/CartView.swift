@@ -10,10 +10,7 @@ import SwiftUI
 struct CartView: View {
     @ObservedObject var viewModel: CartViewModel
 
-    @State private var discountCode: String = ""
     @State private var showSummarySheet = false
-    @State private var discountFeedback: String = ""
-    @State private var discountFeedbackColor: Color = .red
 
     var body: some View {
         NavigationStack {
@@ -56,34 +53,45 @@ struct CartView: View {
                             // Discount code entry and feedback
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
-                                    TextField("Enter Discount Code", text: $discountCode)
+                                    TextField("Enter Discount Code", text: $viewModel.discountCode)
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .disabled(cart.discount?.isApplicable ?? false)
-                                    Button("Apply") {
-                                        viewModel.applyDiscountCode(discountCode)
+                                        .foregroundColor((cart.discount?.isApplicable ?? false) ? .gray : .primary)
+                                    
+                                    if let clipboardText = UIPasteboard.general.string, !clipboardText.isEmpty, let isApplicable = viewModel.cart?.discount?.isApplicable,  !isApplicable{
+                                        Button(action: {
+                                                viewModel.discountCode = clipboardText
+                                        }) {
+                                            Image(systemName: "doc.on.clipboard")
+                                                .font(.title2)
+                                                .foregroundStyle(.black)
+                                        }
+                                        .buttonStyle(BorderlessButtonStyle())
+                                        .help("Paste from clipboard")
                                     }
-                                    .disabled(cart.discount?.isApplicable ?? false || discountCode.isEmpty)
+                                    Button("Apply") {
+                                        viewModel.applyDiscountCode(viewModel.discountCode)
+                                    }
+                                    .disabled(cart.discount?.isApplicable ?? false || viewModel.discountCode.isEmpty)
                                 }
-                                if !discountFeedback.isEmpty {
-                                    Text(discountFeedback)
+                                if !viewModel.discountFeedback.isEmpty {
+                                    Text(viewModel.discountFeedback)
                                         .font(.caption)
-                                        .foregroundColor(discountFeedbackColor)
+                                        .foregroundColor(.red)
                                 }
                                 if cart.discount?.isApplicable ?? false {
                                     HStack {
                                         if let fixedAmount = cart.discount?.fixedAmount {
-                                            Text("Applied: \(fixedAmount) EGP discount")
+                                            Text("Applied: \(Int(fixedAmount)) EGP discount")
                                                 .foregroundColor(.green)
 
                                         } else if let percentage = cart.discount?.percentage {
-                                            Text("Applied: \(percentage * 100)% off")
+                                            Text("Applied: \(Int(percentage))% off")
                                                 .foregroundColor(.green)
                                         }
                                         Spacer()
                                         Button("Remove") {
                                             viewModel.removeDiscountCode()
-                                            discountCode = ""
-                                            discountFeedback = ""
                                         }
                                     }
                                 }
@@ -95,10 +103,7 @@ struct CartView: View {
                             .padding(.top, 6)
 
                             Button("Place Order") {
-                                //                        viewModel.placeOrder(
-                                //                            addressId: selectedAddressId,
-                                //                            discountCode: isDiscountApplied ? discountCode : nil
-                                //                        )
+                                viewModel.placeOrder()
                             }
                             .padding(.vertical)
                             .frame(maxWidth: .infinity)
@@ -118,7 +123,9 @@ struct CartView: View {
                     Text("Subtotal: \(viewModel.cart?.subtotal ?? 0.0, specifier: "%.2f")")
                     if let _ = viewModel.cart?.discount?.isApplicable,
                        let discountAmount = viewModel.cart?.discount?.actualDiscountAmount {
-                        Text("Discount: -\(discountAmount, specifier: "%.2f")")
+                        if discountAmount > 0 {
+                            Text("Discount: -\(discountAmount, specifier: "%.2f")")
+                        }
                     }
                     Text("Total: \(viewModel.cart?.total ?? 0.0, specifier: "%.2f")")
                         .font(.headline)
@@ -128,6 +135,7 @@ struct CartView: View {
                     .padding(.top)
                 }
                 .padding()
+                .presentationDetents([.height(250)])
             }
             .onAppear {
                 viewModel.loadCart()
@@ -229,6 +237,3 @@ struct CartItemRow: View {
         }.padding(.vertical, 8)
     }
 }
-
-
-

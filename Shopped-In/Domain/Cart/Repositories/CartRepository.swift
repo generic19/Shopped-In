@@ -11,4 +11,6 @@ protocol CartRepository {
     func updateItemQuantity(cartId: String, lineItemId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void)
 
     func removeItem(cartId: String, lineItemId: String, completion: @escaping (CartOperationResponse) -> Void)
+
+    func addDiscountCode(cartId: String, code: String, completion: @escaping (CartOperationResponse) -> Void)
 }

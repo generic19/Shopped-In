@@ -10,6 +10,16 @@ enum Currency: String {
 struct Amount {
     let value: Double
     let currency: Currency
+    
+    static func +(lhs: Amount, rhs: Amount) -> Amount? {
+        guard lhs.currency == rhs.currency else { return nil }
+        return Amount(value: lhs.value + rhs.value, currency: lhs.currency)
+    }
+    
+    static func -(lhs: Amount, rhs: Amount) -> Amount? {
+        guard lhs.currency == rhs.currency else { return nil }
+        return Amount(value: lhs.value - rhs.value, currency: lhs.currency)
+    }
 }
 
 struct ProductListItem {
@@ -22,17 +32,18 @@ struct SelectedOption {
     let name: String
     let value: String
 }
+
 struct ColorOption {
     let name: String
     let hexCode: String
 }
-
 
 struct Variant {
     let id: String
     let selectedOptions: [String: String]
     let price: String
 }
+
 struct Product {
     let id: String  
     let title: String
