@@ -4,8 +4,9 @@ import SwiftUI
 struct BrandProductsView: View {
     let brand: Brand
     
+
     @ObservedObject var viewModel = BrandProductsViewModel(getProductsByBrandUseCase: GetProductsByBrandUseCase(repository: ProductRepositoryImpl(remote: ProductRemoteDataSourceImpl(service: BuyAPIService.shared))))
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -47,7 +48,6 @@ struct BrandProductsView: View {
         }
     }
 }
-
 
 #Preview {
     NavigationStack {

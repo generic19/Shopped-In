@@ -1,9 +1,13 @@
 
 import SwiftUI
 import AVKit
+import Combine
 
 struct SplashView: View {
     @EnvironmentObject private var appSwitch: AppSwitch
+    @State private var cancellables = Set<AnyCancellable>()
+    
+    private let viewModel = SplashViewModel(automaticSignInUseCase: AutomaticSignInUseCase(authRepo: AuthRepositoryImpl(tokenRepository: TokenRepoImpl(), apiSource: APIAuthRemoteDataSourceImpl(service: BuyAPIService.shared), firebaseSource: FireBaseAuthRemoteDataSourceImpl())))
     
     private let player: AVPlayer = {
         let url = Bundle.main.url(forResource: "splash", withExtension: "mp4")!
@@ -19,6 +23,13 @@ struct SplashView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .onAppear {
+                        viewModel.$destination.sink { destination in
+                            if let destination {
+                                appSwitch.switchTo(destination)
+                            }
+                        }.store(in: &cancellables)
+                        
+                        viewModel.splashStarted()
                         addVideoObserver()
                         player.play()
                     }
@@ -39,7 +50,7 @@ struct SplashView: View {
     
     private func addVideoObserver() {
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
-            appSwitch.switchTo(.onboarding)
+            viewModel.splashEnded()
         }
     }
     

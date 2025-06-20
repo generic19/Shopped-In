@@ -22,14 +22,6 @@ class OrderRemoteDataSourceImpl: OrderRemoteDataSource {
             completion(.failure(.missingValue(parameter: "user", field: "customerID")))
             return
         }
-        guard let firstName = user.firstName else {
-            completion(.failure(.missingValue(parameter: "user", field: "firstName")))
-            return
-        }
-        guard let lastName = user.lastName else {
-            completion(.failure(.missingValue(parameter: "user", field: "lastName")))
-            return
-        }
         
         let discount: OrderCreateRequest.Discount? = if let discountCode {
             if let fixedDiscount {
@@ -60,8 +52,8 @@ class OrderRemoteDataSourceImpl: OrderRemoteDataSource {
                     address1: address.address1,
                     address2: address.address2 ?? "",
                     city: address.city,
-                    firstName: firstName,
-                    lastName: lastName,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
                     phone: address.phone
                 )
             )

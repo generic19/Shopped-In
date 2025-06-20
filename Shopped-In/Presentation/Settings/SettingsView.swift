@@ -10,26 +10,50 @@ struct SettingsView: View {
     var body: some View {
         List {
             NavigationLink(destination: AddressesView(viewModel: AddressViewModel(repository: AddressRepositoryImpl(remote: AddressRemoteDataSourceImpl(service: BuyAPIService.shared)), tokenRepo: TokenRepoImpl()))) {
-                Text("Address")
+                HStack {
+                    Image(systemName: "house")
+                        .foregroundStyle(.blue)
+                    Text("Address")
+                        .font(.title2)
+                        .foregroundStyle(.blue)
+                }
             }
+            .padding(.vertical)
 
-            Button("Currency") {
+            Button {
                 showCurrencyActionSheet = true
+            } label: {
+                HStack {
+                    Image(systemName: "dollarsign.circle")
+                    Text("Currency")
+                        .font(.title2)
+                }
+                .padding(.vertical)
             }
+            .padding(.vertical)
             .confirmationDialog("Choose Currency", isPresented: $showCurrencyActionSheet, titleVisibility: .visible) {
                 Button("USD") {
                     selectedCurrency = "USD"
-                    // Perform USD-specific actions here
+                    CurrencyPreference.save(selectedCurrency ?? "USD")
                 }
+                
                 Button("EGP") {
                     selectedCurrency = "EGP"
-                    // Perform EGP-specific actions here
+                    CurrencyPreference.save(selectedCurrency ?? "EGP")
                 }
             }
 
-            Button("Contact Us") {
+            Button {
                 showContactSheet = true
+            } label: {
+                HStack {
+                    Image(systemName: "envelope")
+                    Text("Contact Us")
+                        .font(.title2)
+                }
+                .padding(.vertical)
             }
+            .padding(.vertical)
             .sheet(isPresented: $showContactSheet) {
                 VStack {
                     Text("Contact Us")
@@ -45,9 +69,17 @@ struct SettingsView: View {
                 .padding()
             }
 
-            Button("About Us") {
+            Button {
                 showAboutSheet = true
+            } label: {
+                HStack {
+                    Image(systemName: "info.circle")
+                    Text("About Us")
+                        .font(.title2)
+                }
+                .padding(.vertical)
             }
+            .padding(.vertical)
             .sheet(isPresented: $showAboutSheet) {
                 VStack {
                     Text("About Us")
@@ -64,5 +96,6 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+        
     }
 }

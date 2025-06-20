@@ -25,6 +25,10 @@ struct ProductDetailView: View {
     @State var toastMessage = ""
     @State var toastColor = Color.green
 
+    private var currencyConverter: CurrencyConverter
+    @State private var currentExchangeRate: Double = 1
+    @State private var currentCurrency: String = "EGP"
+
     init(productID: String) {
         let apiService = BuyAPIService.shared
         let remote = ProductRemoteDataSourceImpl(service: apiService)
@@ -35,6 +39,8 @@ struct ProductDetailView: View {
         let cartRepo = CartRepositoryImpl(remote: cartRemote)
         _cartViewModel = StateObject(wrappedValue: CartViewModel(cartRepo: cartRepo))
         self.productID = productID
+        let settingsRepo = SettingsRepositoryImpl(remote: CurrencyRemoteDataSource())
+        currencyConverter = CurrencyConverter(settingsRepo: settingsRepo)
     }
 
     var body: some View {
@@ -63,9 +69,15 @@ struct ProductDetailView: View {
                                 // Title and Price
                                 Text(product.title)
                                     .font(.title2).bold()
-                                Text("\(product.price) EGP")
-                                    .font(.title3)
-                                    .foregroundColor(.gray)
+                                if let priceValue = Double(product.price) {
+                                    Text("\(priceValue * currentExchangeRate, specifier: "%.2f") \(currentCurrency)")
+                                        .font(.title3)
+                                        .foregroundColor(.gray)
+                                } else {
+                                    Text("Invalid price")
+                                        .font(.title3)
+                                        .foregroundColor(.red)
+                                }
 
                                 // Rating
                                 HStack {
@@ -141,7 +153,7 @@ struct ProductDetailView: View {
                         VStack {
                             Divider()
                             if let selectedVariantId = viewModel.selectedVariantId, let cartItem = cartViewModel.cartItemFor(variantId: selectedVariantId) {
-                                HStack (spacing: 100){
+                                HStack(spacing: 100) {
                                     Button(action: {
                                         if cartItem.quantity == 1 {
                                             cartViewModel.removeItem(lineItemId: cartItem.id)
@@ -157,13 +169,7 @@ struct ProductDetailView: View {
                                             .foregroundColor(.white)
                                             .cornerRadius(10)
                                     }
-//                                    Button("-") {
-//                                        if cartItem.quantity == 1 {
-//                                            cartViewModel.removeItem(lineItemId: cartItem.id)
-//                                        } else {
-//                                            cartViewModel.onMinusQuantityTapped(lineItemId: cartItem.id)
-//                                        }
-//                                    }
+
                                     Text("\(cartItem.quantity)")
                                         .font(.title3)
                                         .frame(minWidth: 40)
@@ -181,10 +187,6 @@ struct ProductDetailView: View {
                                             .foregroundColor(.white)
                                             .cornerRadius(10)
                                     }
-
-//                                    Button("+") {
-//                                        cartViewModel.onAddQuantityTapped(lineItemId: cartItem.id)
-//                                    }
                                 }
                                 .padding(.horizontal)
                                 .padding(.bottom, 10)
@@ -227,6 +229,10 @@ struct ProductDetailView: View {
             .onAppear {
                 viewModel.fetchProduct(by: productID)
                 cartViewModel.loadCart()
+                if (currencyConverter.usdExchangeRate != nil) && currencyConverter.getCurrency() == "USD" {
+                    currentCurrency = "USD"
+                    currentExchangeRate = currencyConverter.usdExchangeRate!
+                }
             }
 
             if !toastMessage.isEmpty {
