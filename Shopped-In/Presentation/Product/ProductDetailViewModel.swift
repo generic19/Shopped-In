@@ -7,7 +7,6 @@ class ProductDetailViewModel: ObservableObject {
     @Published var selectedColor: String?
     @Published var selectedVariantId: String?
     
-    
     private let fetchProductUseCase: FetchProductUseCase
     
     init(fetchProductUseCase: FetchProductUseCase) {
@@ -23,6 +22,7 @@ class ProductDetailViewModel: ObservableObject {
             }
         }
     }
+    
     func updateSelectedVariant() {
         guard let product = product,
               let size = selectedSize,

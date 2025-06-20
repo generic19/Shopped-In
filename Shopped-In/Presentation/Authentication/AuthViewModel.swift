@@ -36,14 +36,15 @@ class AuthViewModel: ObservableObject {
         signUpUseCase: SignUpUseCase,
         signInUseCase: SignInUseCase,
         getCurrentUserUseCase: GetCurrentUserUseCase,
-        signOutUseCase: SignOutUseCase
-        , signInwithGoogleUseCase: SignInWithGoogleUseCase
+        signOutUseCase: SignOutUseCase,
+        signInwithGoogleUseCase: SignInWithGoogleUseCase
     ) {
         self.signUpUseCase = signUpUseCase
         self.signInUseCase = signInUseCase
         self.getCurrentUserUseCase = getCurrentUserUseCase
         self.signOutUseCase = signOutUseCase
         self.signInwithGoogleUseCase=signInwithGoogleUseCase
+        
         $errorMessage
             .map { $0 != nil }
             .removeDuplicates()

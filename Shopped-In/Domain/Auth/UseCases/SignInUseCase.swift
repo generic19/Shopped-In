@@ -1,4 +1,8 @@
-class SignInUseCase {
+protocol SignInUseCase {
+    func execute(email: String, password: String, completion: @escaping (Error?) -> Void)
+}
+
+class SignInUseCaseImpl: SignInUseCase {
     private let authRepository: AuthRepository
 
     init(authRepository: AuthRepository) {

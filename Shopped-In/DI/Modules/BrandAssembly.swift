@@ -20,5 +20,15 @@ class BrandAssembly: Assembly {
                 remote: r.resolve(BrandRemoteDataSource.self)!
             )
         }.inObjectScope(.container)
+        
+        container.register(GetBrandsUseCase.self) { r in
+            GetBrandsUseCaseImpl(repository: r.resolve(BrandRepository.self)!)
+        }.inObjectScope(.graph)
+        
+        container.register(BrandsViewModel.self) { r in
+            BrandsViewModel(
+                getBrandsUseCase: r.resolve(GetBrandsUseCase.self)!
+            )
+        }.inObjectScope(.transient)
     }
 }

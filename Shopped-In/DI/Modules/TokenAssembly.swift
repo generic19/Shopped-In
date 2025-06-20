@@ -16,5 +16,9 @@ class TokenAssembly: Assembly {
         container.register(TokenRepo.self) { r in
             TokenRepoImpl()
         }.inObjectScope(.container)
+        
+        container.register(GetCustomerAccessTokenUseCase.self) { r in
+            GetCustomerAccessTokenUseCaseImpl(repository: r.resolve(TokenRepo.self)!)
+        }.inObjectScope(.graph)
     }
 }

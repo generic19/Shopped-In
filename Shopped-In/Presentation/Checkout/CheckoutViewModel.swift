@@ -1,8 +1,6 @@
 import Combine
 import Foundation
 
-fileprivate let DEBUG_IS_HAPPY_SCENARIO = true
-
 class CheckoutViewModel: ObservableObject {
     @Published var loadingMessage: String?
     @Published var errorMessage: String?
@@ -21,16 +19,20 @@ class CheckoutViewModel: ObservableObject {
     @Published var user: User?
     
     private var customerAccessToken: String? { getCustomerAccessTokenUseCase.execute() }
-    private var cartID: String? { getCartIDUseCase.execute() }
     
-    private let getCartIDUseCase = GetCartIDUseCase()
-    private let getCartItemsUseCase = GetCartItemsUseCaseImpl(repository: CartRepositoryImpl(remote: CartRemoteDataSourceImpl(service: BuyAPIService.shared)))
-    private let getCustomerAccessTokenUseCase = GetCustomerAccessTokenUseCase(repository: TokenRepoImpl())
-    private let getCurrentUserUseCase = GetCurrentUserUseCase(authRepository: AuthRepositoryImpl(tokenRepository: TokenRepoImpl(), apiSource: APIAuthRemoteDataSourceImpl(service: BuyAPIService.shared), firebaseSource: FireBaseAuthRemoteDataSourceImpl()))
-    private let getAddressesUseCase = GetAddressesUseCase(repository: AddressRepositoryImpl(remote: AddressRemoteDataSourceImpl(service: BuyAPIService.shared)))
-    private let createOrderUseCase = CreateOrderUseCase(repository: OrderRepositoryImpl(remote: OrderRemoteDataSourceImpl(service: AlamofireAPIService.shared)))
+    private let getCartItemsUseCase: GetCartItemsUseCase
+    private let getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase
+    private let getCurrentUserUseCase: GetCurrentUserUseCase
+    private let getAddressesUseCase: GetAddressesUseCase
+    private let createOrderUseCase: CreateOrderUseCase
 
-    init() {
+    init(getCartItemsUseCase: GetCartItemsUseCase, getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase, getCurrentUserUseCase: GetCurrentUserUseCase, getAddressesUseCase: GetAddressesUseCase, createOrderUseCase: CreateOrderUseCase) {
+        self.getCartItemsUseCase = getCartItemsUseCase
+        self.getCustomerAccessTokenUseCase = getCustomerAccessTokenUseCase
+        self.getCurrentUserUseCase = getCurrentUserUseCase
+        self.getAddressesUseCase = getAddressesUseCase
+        self.createOrderUseCase = createOrderUseCase
+        
         getCurrentUserUseCase.execute().assign(to: &$user)
         
         $selectedAddress.combineLatest($selectedPaymentMethod) { selectedAddress, selectedPaymentMethod in
@@ -41,8 +43,6 @@ class CheckoutViewModel: ObservableObject {
     
     func load() {
         guard let customerAccessToken, let user else {
-            print(customerAccessToken)
-            print(user)
             errorMessage = "You must be signed in to checkout an order."
             return
         }
@@ -50,20 +50,16 @@ class CheckoutViewModel: ObservableObject {
             errorMessage = "Email verification is required to proceed with checkout."
             return
         }
-        guard let cartID else {
-            errorMessage = "Your cart is empty."
-            return
-        }
         
-        loadCartItems(customerAccessToken: customerAccessToken, cartID: cartID)
+        loadCartItems(customerAccessToken: customerAccessToken)
         loadAddresses(customerAccessToken: customerAccessToken)
     }
     
-    private func loadCartItems(customerAccessToken: String, cartID: String) {
+    private func loadCartItems(customerAccessToken: String) {
         cart = nil
         loadingMessage = "Loading cart for checkout..."
         
-        getCartItemsUseCase.execute(cartId: cartID) { result in
+        getCartItemsUseCase.execute() { result in
             self.loadingMessage = nil
             
             switch result {

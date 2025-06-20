@@ -3,11 +3,11 @@ import Foundation
 import SwiftData
 
 class AddressViewModel: ObservableObject {
-    let addressRepository: AddressRepository
     private let getAddressUseCase: GetAddressesUseCase
     private let deleteAddressUseCase: DeleteAddressUseCase
     private let setDefaultAddressUseCase: SetDefaultAddressUseCase
-    let tokenRepo: TokenRepo
+    private let getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase
+    
     let customerAccessToken: String?
 
     @Published var addresses: [Address] = []
@@ -15,19 +15,20 @@ class AddressViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var successMessage: String?
     @Published var isLoading: Bool = true
-    
-    init(repository: AddressRepository ,tokenRepo: TokenRepo){
-        self.addressRepository = repository
-        self.getAddressUseCase = GetAddressesUseCase(repository: repository)
-        self.deleteAddressUseCase = DeleteAddressUseCase(repository: repository)
-        self.setDefaultAddressUseCase = SetDefaultAddressUseCase(repository: repository)
-        self.tokenRepo = tokenRepo
-        self.customerAccessToken = self.tokenRepo.loadToken()
-        print(customerAccessToken ?? "no access token saved")
+
+    init(getAddressUseCase: GetAddressesUseCase, deleteAddressUseCase: DeleteAddressUseCase, setDefaultAddressUseCase: SetDefaultAddressUseCase, getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase) {
+        self.getAddressUseCase = getAddressUseCase
+        self.deleteAddressUseCase = deleteAddressUseCase
+        self.setDefaultAddressUseCase = setDefaultAddressUseCase
+        self.getCustomerAccessTokenUseCase = getCustomerAccessTokenUseCase
+        
+        customerAccessToken = getCustomerAccessTokenUseCase.execute()
+        
         guard customerAccessToken != nil else {
             self.isLoading = false
             self.errorMessage = "No customer access token found"
-            return }
+            return
+        }
     }
 
     func getAddresses() {
@@ -36,9 +37,9 @@ class AddressViewModel: ObservableObject {
         getAddressUseCase.execute(customerAccessToken: customerAccessToken) { [weak self] addressResponse in
             self?.isLoading = false
             switch addressResponse {
-            case let .success(myAddresses):
-                self?.defaultAddress = myAddresses.defaultAddress
-                self?.addresses = myAddresses.addresses
+            case let .success(addresses, defaultAddress):
+                self?.defaultAddress = defaultAddress
+                self?.addresses = addresses
             case let .error(error):
                 self?.errorMessage = error
             }
