@@ -19,21 +19,13 @@ extension Color {
 // MARK: - ProductDetailView
 
 struct ProductDetailView: View {
-    @StateObject private var viewModel: ProductDetailViewModel
-    @StateObject private var cartViewModel: CartViewModel
+    @StateObject private var viewModel: ProductDetailViewModel = DIContainer.shared.resolve()
+    @StateObject private var cartViewModel: CartViewModel = DIContainer.shared.resolve()
     let productID: String
     @State var toastMessage = ""
     @State var toastColor = Color.green
 
     init(productID: String) {
-        let apiService = BuyAPIService.shared
-        let remote = ProductRemoteDataSourceImpl(service: apiService)
-        let repo = ProductRepositoryImpl(remote: remote)
-        let useCase = FetchProductUseCase(repository: repo)
-        _viewModel = StateObject(wrappedValue: ProductDetailViewModel(fetchProductUseCase: useCase))
-        let cartRemote = CartRemoteDataSourceImpl(service: apiService)
-        let cartRepo = CartRepositoryImpl(remote: cartRemote)
-        _cartViewModel = StateObject(wrappedValue: CartViewModel(cartRepo: cartRepo))
         self.productID = productID
     }
 

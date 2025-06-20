@@ -51,6 +51,14 @@ class AuthAssembly: Assembly {
             SignUpUseCaseImpl(authRepository: r.resolve(AuthRepository.self)!)
         }.inObjectScope(.graph)
         
+        container.register(ResendVerificationEmailUseCase.self) { r in
+            ResendVerificationEmailUseCaseImpl(repo: r.resolve(AuthRepository.self)!)
+        }.inObjectScope(.graph)
+        
+        container.register(ReloadUserUseCase.self) { r in
+            ReloadUserUseCaseImpl(repo: r.resolve(AuthRepository.self)!)
+        }.inObjectScope(.graph)
+        
         container.register(AuthViewModel.self) { r in
             AuthViewModel(
                   signUpUseCase: r.resolve(SignUpUseCase.self)!, 
@@ -60,5 +68,9 @@ class AuthAssembly: Assembly {
                   signInwithGoogleUseCase: r.resolve(SignInWithGoogleUseCase.self)!
             )
         }.inObjectScope(.transient)
+        
+        container.register(SplashViewModel.self) { r in
+            SplashViewModel(automaticSignInUseCase: r.resolve(AutomaticSignInUseCase.self)!)
+        }
     }
 }

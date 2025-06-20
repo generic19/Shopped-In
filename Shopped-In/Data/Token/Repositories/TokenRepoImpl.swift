@@ -6,10 +6,15 @@
 //
 
 final class TokenRepoImpl : TokenRepo{
+    private let keychain: KeychainHelper
+    
     private let service = "com.shoppedin.auth"
     private let account = "customerAccessToken"
-    private let keychain = KeychainHelper.shared
 
+    init(keychain: KeychainHelper) {
+        self.keychain = keychain
+    }
+    
     func saveToken(_ token: String) {
         keychain.save(token, service: service, account: account)
     }

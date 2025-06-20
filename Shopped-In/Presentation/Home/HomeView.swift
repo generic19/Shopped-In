@@ -7,7 +7,8 @@ enum HomeRoute: Route {
 
 struct HomeView: View {
     @State var showCopyMessage: Bool = false
-    @ObservedObject var brandsViewModel = BrandsViewModel(getBrandsUseCase: GetBrandsUseCase(repository: BrandRepositoryImpl(remote: BrandRemoteDataSourceImpl(service: BuyAPIService.shared))))
+    @ObservedObject var brandsViewModel: BrandsViewModel = DIContainer.shared.resolve()
+    
     var body: some View {
         NavigationStack {
             ZStack {

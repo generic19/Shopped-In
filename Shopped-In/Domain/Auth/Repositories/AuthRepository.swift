@@ -10,4 +10,6 @@ protocol AuthRepository {
     func signOut(completion: @escaping () -> Void)
     func signInWithGoogle(presentingViewController: UIViewController, completion: @escaping (Error?) -> Void)
     func automaticSignIn(completion: @escaping (Bool) -> Void)
+    func resendVerificationEmail()
+    func reloadUser()
 }

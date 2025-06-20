@@ -15,4 +15,5 @@ protocol FireBaseAuthRemoteDataSource {
     func sendEmailVerification()
     func getCurrentUser() -> FirebaseAuth.User?
     func getUserDTO(completion: @escaping (Result<UserDTO, Error>) -> Void)
+    func reloadUser(completion: @escaping (UserDTO?) -> Void)
 }

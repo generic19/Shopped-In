@@ -14,7 +14,7 @@ class TokenAssembly: Assembly {
         }.inObjectScope(.container)
         
         container.register(TokenRepo.self) { r in
-            TokenRepoImpl()
+            TokenRepoImpl(keychain: r.resolve(KeychainHelper.self)!)
         }.inObjectScope(.container)
         
         container.register(GetCustomerAccessTokenUseCase.self) { r in

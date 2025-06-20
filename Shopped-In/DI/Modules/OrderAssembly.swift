@@ -40,7 +40,9 @@ class OrderAssembly: Assembly {
                 getCustomerAccessTokenUseCase: r.resolve(GetCustomerAccessTokenUseCase.self)!,
                 getCurrentUserUseCase: r.resolve(GetCurrentUserUseCase.self)!,
                 getAddressesUseCase: r.resolve(GetAddressesUseCase.self)!,
-                createOrderUseCase: r.resolve(CreateOrderUseCase.self)!
+                createOrderUseCase: r.resolve(CreateOrderUseCase.self)!,
+                resendVerificationEmailUseCase: r.resolve(ResendVerificationEmailUseCase.self)!,
+                reloadUserUseCase: r.resolve(ReloadUserUseCase.self)!,
             )
         }.inObjectScope(.transient)
     }

@@ -2,8 +2,14 @@ import Combine
 import Foundation
 
 class CheckoutViewModel: ObservableObject {
+    struct ErrorAction {
+        let title: String
+        let action: () -> Void
+    }
+    
     @Published var loadingMessage: String?
     @Published var errorMessage: String?
+    @Published var errorActions: [ErrorAction]?
     
     @Published var cart: Cart?
     
@@ -17,7 +23,7 @@ class CheckoutViewModel: ObservableObject {
     @Published var isCheckoutSuccessful: Bool?
     
     @Published var user: User?
-    
+    private var cancellables = Set<AnyCancellable>()
     private var customerAccessToken: String? { getCustomerAccessTokenUseCase.execute() }
     
     private let getCartItemsUseCase: GetCartItemsUseCase
@@ -25,15 +31,22 @@ class CheckoutViewModel: ObservableObject {
     private let getCurrentUserUseCase: GetCurrentUserUseCase
     private let getAddressesUseCase: GetAddressesUseCase
     private let createOrderUseCase: CreateOrderUseCase
-
-    init(getCartItemsUseCase: GetCartItemsUseCase, getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase, getCurrentUserUseCase: GetCurrentUserUseCase, getAddressesUseCase: GetAddressesUseCase, createOrderUseCase: CreateOrderUseCase) {
+    private let resendVerificationEmailUseCase: ResendVerificationEmailUseCase
+    private let reloadUserUseCase: ReloadUserUseCase
+    
+    init(getCartItemsUseCase: GetCartItemsUseCase, getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase, getCurrentUserUseCase: GetCurrentUserUseCase, getAddressesUseCase: GetAddressesUseCase, createOrderUseCase: CreateOrderUseCase, resendVerificationEmailUseCase: ResendVerificationEmailUseCase, reloadUserUseCase: ReloadUserUseCase) {
         self.getCartItemsUseCase = getCartItemsUseCase
         self.getCustomerAccessTokenUseCase = getCustomerAccessTokenUseCase
         self.getCurrentUserUseCase = getCurrentUserUseCase
         self.getAddressesUseCase = getAddressesUseCase
         self.createOrderUseCase = createOrderUseCase
+        self.resendVerificationEmailUseCase = resendVerificationEmailUseCase
+        self.reloadUserUseCase = reloadUserUseCase
         
         getCurrentUserUseCase.execute().assign(to: &$user)
+        $user.sink { _ in
+            self.load()
+        }.store(in: &cancellables)
         
         $selectedAddress.combineLatest($selectedPaymentMethod) { selectedAddress, selectedPaymentMethod in
             return selectedAddress == nil || selectedPaymentMethod == nil
@@ -48,6 +61,14 @@ class CheckoutViewModel: ObservableObject {
         }
         if !user.isVerified {
             errorMessage = "Email verification is required to proceed with checkout."
+            errorActions = [
+                ErrorAction(title: "Re-send Email", action: { [weak self] in
+                    self?.resendVerificationEmailUseCase.execute()
+                }),
+                ErrorAction(title: "Check Again", action: { [weak self] in
+                    self?.reloadUserUseCase.execute()
+                }),
+            ]
             return
         }
         
@@ -116,13 +137,17 @@ class CheckoutViewModel: ObservableObject {
         
         loadingMessage = "Processing checkout request..."
         
+        let fractionalDiscount: Double? = if let percentage = cart.discount?.percentage {
+            percentage / 100
+        } else { nil }
+        
         createOrderUseCase.execute(
             cart: cart,
             user: user,
             address: selectedAddress,
             discountCode: cart.discount?.code,
             fixedDiscount: cart.discount?.fixedAmount,
-            fractionalDiscount: cart.discount?.percentage,
+            fractionalDiscount: fractionalDiscount,
         ) { result in
             self.loadingMessage = nil
             

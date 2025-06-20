@@ -85,6 +85,25 @@ class FireBaseAuthRemoteDataSourceImpl : FireBaseAuthRemoteDataSource {
         return Auth.auth().currentUser
     }
     
+    func reloadUser(completion: @escaping (UserDTO?) -> Void) {
+        Auth.auth().currentUser?.reload { error in
+            if let error {
+                completion(nil)
+                return
+            }
+            
+            self.getUserDTO { result in
+                switch result {
+                    case .success(let userDTO):
+                        completion(userDTO)
+                        
+                    case .failure(let failure):
+                        completion(nil)
+                }
+            }
+        }
+    }
+    
     func getUserDTO(completion: @escaping (Result<UserDTO, Error>) -> Void) {
         let auth = Auth.auth()
         

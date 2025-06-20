@@ -18,6 +18,6 @@ class RemoveFromCartUseCaseImpl: RemoveFromCartUseCase {
     }
 
     func execute(lineItemId: String, completion: @escaping (CartOperationResponse) -> Void) {
-        repository.removeItem(cartId: cartId, lineItemId: lineItemId, completion: completion)
+        repository.removeItem(lineItemId: lineItemId, completion: completion)
     }
 }

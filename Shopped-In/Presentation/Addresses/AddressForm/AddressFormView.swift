@@ -125,11 +125,3 @@ private func convertTapToCoordinate(_ tap: CGPoint, in mapSize: CGSize, region: 
 
     return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
 }
-
-#Preview {
-    let remote = AddressRemoteDataSourceImpl(service: BuyAPIService.shared)
-    let repo = AddressRepositoryImpl(remote: remote)
-    let tokenRepo = TokenRepoImpl()
-    let viewModel = AddressFormViewModel(repo: repo, tokenRepo: tokenRepo)
-    AddressFormView(viewModel: viewModel)
-}

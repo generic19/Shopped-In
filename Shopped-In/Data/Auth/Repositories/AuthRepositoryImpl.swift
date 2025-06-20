@@ -113,37 +113,43 @@ class AuthRepositoryImpl: AuthRepository {
             
             switch result {
                 case .success(let userDTO):
-                    self.apiSource.signInCustomer(
-                        email: email,
-                        password: userDTO.randomToken
-                    ) { result in
+                    signInCustomer(userDTO: userDTO, completion: completion)
+                    
+                case .failure(let error):
+                    completion(error)
+            }
+        }
+    }
+    
+    private func signInCustomer(userDTO: UserDTO, completion: @escaping (Error?) -> Void) {
+        self.apiSource.signInCustomer(
+            email: userDTO.firebaseUser.email!,
+            password: userDTO.randomToken
+        ) { result in
+            switch result {
+                case .success(let accessToken):
+                    self.apiSource.getCustomer(token: accessToken) { result in
                         switch result {
-                            case .success(let accessToken):
-                                self.apiSource.getCustomer(token: accessToken) { result in
-                                    switch result {
-                                        case .success(var user):
-                                            self.tokenRepository.saveToken(accessToken)
-                                            
-                                            user.isVerified = userDTO.firebaseUser.isEmailVerified
-                                            self.currentUserSubject.value = user
-                                            
-                                            completion(nil)
-                                            
-                                        case .failure(let error):
-                                            self.apiSource.signOutCustomer(token: accessToken) {
-                                                self.firebaseSource.signOut()
-                                                completion(error)
-                                            }
-                                    }
-                                }
+                            case .success(var user):
+                                self.tokenRepository.saveToken(accessToken)
+                                
+                                user.isVerified = userDTO.firebaseUser.isEmailVerified
+                                self.currentUserSubject.value = user
+                                
+                                completion(nil)
                                 
                             case .failure(let error):
-                                self.firebaseSource.signOut()
-                                completion(error)
+                                self.apiSource.signOutCustomer(token: accessToken) {
+                                    self.firebaseSource.signOut()
+                                    self.currentUserSubject.value = nil
+                                    completion(error)
+                                }
                         }
                     }
                     
                 case .failure(let error):
+                    self.firebaseSource.signOut()
+                    self.currentUserSubject.value = nil
                     completion(error)
             }
         }
@@ -188,12 +194,12 @@ class AuthRepositoryImpl: AuthRepository {
                                                 }
                                                 
                                                 self.currentUserSubject.value = user
-                                                
                                                 completion(nil)
                                                 
                                             case .failure(let error):
                                                 self.apiSource.signOutCustomer(token: accessToken) {
                                                     self.firebaseSource.signOut()
+                                                    self.currentUserSubject.value = nil
                                                     completion(error)
                                                 }
                                         }
@@ -201,12 +207,14 @@ class AuthRepositoryImpl: AuthRepository {
                                     
                                 case .failure(let error):
                                     self.firebaseSource.signOut()
+                                    self.currentUserSubject.value = nil
                                     completion(error)
                             }
                         }
                     }
                     
                 case .failure(let error):
+                    self.currentUserSubject.value = nil
                     completion(error)
             }
         }
@@ -215,6 +223,7 @@ class AuthRepositoryImpl: AuthRepository {
     func signOut(completion: @escaping () -> Void) {
         guard let token = tokenRepository.loadToken() else {
             firebaseSource.signOut()
+            self.currentUserSubject.value = nil
             completion()
             return
         }
@@ -222,6 +231,7 @@ class AuthRepositoryImpl: AuthRepository {
         apiSource.signOutCustomer(token: token) {
             self.firebaseSource.signOut()
             self.tokenRepository.deleteToken()
+            self.currentUserSubject.value = nil
             completion()
         }
     }
@@ -292,6 +302,26 @@ class AuthRepositoryImpl: AuthRepository {
                     } else {
                         completion(false)
                     }
+            }
+        }
+    }
+    
+    func resendVerificationEmail() {
+        firebaseSource.sendEmailVerification()
+    }
+    
+    func reloadUser() {
+        let oldUser = self.currentUserSubject.value
+        
+        firebaseSource.reloadUser { dto in
+            if oldUser?.email != dto?.firebaseUser.email ||
+                oldUser?.isVerified != dto?.firebaseUser.isEmailVerified
+            {
+                if let dto {
+                    self.signInCustomer(userDTO: dto) { _ in }
+                } else {
+                    self.currentUserSubject.value = nil
+                }
             }
         }
     }
