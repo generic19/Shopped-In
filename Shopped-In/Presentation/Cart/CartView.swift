@@ -103,7 +103,7 @@ struct CartView: View {
                             .padding(.top, 6)
 
                             Button("Place Order") {
-                                viewModel.placeOrder()
+                                viewModel.proceedToCheckout()
                             }
                             .padding(.vertical)
                             .frame(maxWidth: .infinity)
@@ -144,6 +144,9 @@ struct CartView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     viewModel.toastMessage = ""
                 }
+            }
+            .navigationDestination(isPresented: $viewModel.showCheckout) {
+                CheckoutView()
             }
 
             if !viewModel.toastMessage.isEmpty {
