@@ -1,5 +1,8 @@
+
+
 import Buy
 import SwiftUI
+import FirebaseAuth
 
 // MARK: - Color Extension
 
@@ -20,6 +23,7 @@ extension Color {
 
 struct ProductDetailView: View {
     @StateObject private var viewModel: ProductDetailViewModel
+    @StateObject private var favoriteViewModel: FavoriteViewModel
     @StateObject private var cartViewModel: CartViewModel
     let productID: String
     @State var toastMessage = ""
@@ -29,16 +33,36 @@ struct ProductDetailView: View {
     @State private var currentExchangeRate: Double = 1
     @State private var currentCurrency: String = "EGP"
 
+    @State private var navigateToFavorites = false
+
     init(productID: String) {
+        self.productID = productID
+
         let apiService = BuyAPIService.shared
         let remote = ProductRemoteDataSourceImpl(service: apiService)
-        let repo = ProductRepositoryImpl(remote: remote)
-        let useCase = FetchProductUseCase(repository: repo)
-        _viewModel = StateObject(wrappedValue: ProductDetailViewModel(fetchProductUseCase: useCase))
+        let productRepo = ProductRepositoryImpl(remote: remote)
+        let favoriteRepo = FavoriteRepositoryImpl()
+        let fetchUseCase = FetchProductUseCase(repository: productRepo)
+        let addFavoriteUseCase = AddFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
+        let removeFavoriteUseCase = RemoveFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
+        let checkFavoriteUseCase = CheckFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
+
+        _viewModel = StateObject(
+            wrappedValue: ProductDetailViewModel(
+                fetchProductUseCase: fetchUseCase,
+                addFavoriteUseCase: addFavoriteUseCase,
+                removeFavoriteUseCase: removeFavoriteUseCase,
+                checkFavoriteUseCase: checkFavoriteUseCase
+            )
+        )
+
+        _favoriteViewModel = StateObject(
+            wrappedValue: FavoriteViewModel(addFavoriteUseCase: addFavoriteUseCase, removeFavoriteUseCase: removeFavoriteUseCase, checkFavoriteUseCase: checkFavoriteUseCase)
+        )
+
         let cartRemote = CartRemoteDataSourceImpl(service: apiService)
         let cartRepo = CartRepositoryImpl(remote: cartRemote)
         _cartViewModel = StateObject(wrappedValue: CartViewModel(cartRepo: cartRepo))
-        self.productID = productID
         let settingsRepo = SettingsRepositoryImpl(remote: CurrencyRemoteDataSource())
         currencyConverter = CurrencyConverter(settingsRepo: settingsRepo)
     }
@@ -66,9 +90,32 @@ struct ProductDetailView: View {
                                 .frame(height: 300)
                                 .tabViewStyle(PageTabViewStyle())
 
+                                Button(action: {
+                                    Auth.auth().currentUser?.reload { error in
+                                        if let error = error {
+                                            print("Error reloading user: \(error)")
+                                        } else if Auth.auth().currentUser != nil {
+                                            viewModel.toggleFavorite()
+                                            navigateToFavorites = true
+                                        } else {
+                                            print("User not signed in")
+                                        }
+                                    }
+                                }) {
+                                    Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
+                                        .foregroundColor(.red)
+                                        .padding(12)
+                                        .background(Color.white.opacity(0.8))
+                                        .clipShape(Circle())
+                                        .shadow(radius: 3)
+                                }
+                                .padding(.trailing, 16)
+                                .padding(.top, 16)
+
                                 // Title and Price
                                 Text(product.title)
                                     .font(.title2).bold()
+
                                 if let priceValue = Double(product.price) {
                                     Text("\(priceValue * currentExchangeRate, specifier: "%.2f") \(currentCurrency)")
                                         .font(.title3)
@@ -226,6 +273,11 @@ struct ProductDetailView: View {
                         .foregroundColor(.red)
                 }
             }
+
+            NavigationLink(destination: FavoriteProductsView(viewModel: favoriteViewModel), isActive: $navigateToFavorites) {
+                EmptyView()
+            }
+
             .onAppear {
                 viewModel.fetchProduct(by: productID)
                 cartViewModel.loadCart()
