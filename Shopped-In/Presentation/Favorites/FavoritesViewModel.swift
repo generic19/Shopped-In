@@ -44,6 +44,7 @@ class FavoriteViewModel: ObservableObject {
                                  let price = data["price"] as? String,
                                  let images = data["images"] as? [String],
                                  let description = data["description"] as?String {
+                                  print("product id : \(id)")
 
                                   return Product(
                                       id: id,

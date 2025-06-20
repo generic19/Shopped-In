@@ -26,7 +26,7 @@ struct ProductDetailView: View {
     
     init(productID: String) {
         self.productID = productID
-        
+        print ("productID5: \(productID)")
         let apiService = APIService.shared
         let remote = ProductRemoteDataSourceImpl(service: apiService)
         let productRepo = ProductRepositoryImpl(remote: remote)
@@ -35,7 +35,6 @@ struct ProductDetailView: View {
         let addFavoriteUseCase = AddFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
         let removeFavoriteUseCase = RemoveFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
         let checkFavoriteUseCase = CheckFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
-        
         _viewModel = StateObject(
             wrappedValue: ProductDetailViewModel(
                 fetchProductUseCase: fetchUseCase,
@@ -44,6 +43,7 @@ struct ProductDetailView: View {
                 checkFavoriteUseCase: checkFavoriteUseCase
             )
         )
+
         
         _favoriteViewModel = StateObject(
             wrappedValue: FavoriteViewModel(addFavoriteUseCase:addFavoriteUseCase, removeFavoriteUseCase: removeFavoriteUseCase, checkFavoriteUseCase: checkFavoriteUseCase)
@@ -54,6 +54,7 @@ struct ProductDetailView: View {
     }
     
     var body: some View {
+        
         VStack {
             if viewModel.isLoading {
                 ProgressView("Loading...")
@@ -64,6 +65,7 @@ struct ProductDetailView: View {
                         VStack(alignment: .leading, spacing: 16) {
                             
                             TabView {
+                                
                                 ForEach(product.images, id: \.self) { image in
                                     AsyncImage(url: URL(string: image)) { img in
                                         img.resizable()
@@ -86,6 +88,7 @@ struct ProductDetailView: View {
                                         if Auth.auth().currentUser != nil {
                                             viewModel.toggleFavorite()
                                             navigateToFavorites = true
+                                            
                                         } else {
                                             print("User not signed in")
                                         }
@@ -216,12 +219,16 @@ struct ProductDetailView: View {
                 .background(Color.white.shadow(radius: 5))
             
         } else {
-            Text("Product not found.")
+            Text("Product not found. \(productID)")
                 .foregroundColor(.red)
+            
+
         }
     }
         .onAppear {
+        
             viewModel.fetchProduct(by: productID)
+            print ("product id on ly oneis: \(productID)")
             
             cartViewModel.loadCart()
         }

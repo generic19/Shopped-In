@@ -1,5 +1,6 @@
 import SwiftUI
 
+
 struct FavoriteProductsView: View {
     @StateObject var viewModel: FavoriteViewModel
     @State private var selectedProductID: String?
@@ -19,6 +20,7 @@ struct FavoriteProductsView: View {
                 ForEach(viewModel.favoriteProducts, id: \.title) { product in
                     Button {
                         selectedProductID = product.id
+                        print("selected pro: \(product.id)")
                         navigateToDetails = true
                     } label: {
                         HStack {
@@ -59,7 +61,13 @@ struct FavoriteProductsView: View {
         }
         .background(
             NavigationLink(
-                destination:ProductDetailView(productID: selectedProductID ?? ""),
+                destination: Group {
+                    if let productID = selectedProductID, !productID.isEmpty {
+                        ProductDetailView(productID: productID)
+                    } else {
+                        EmptyView()
+                    }
+                },
                 isActive: $navigateToDetails,
                 label: { EmptyView() }
             )
@@ -71,4 +79,5 @@ struct FavoriteProductsView: View {
         }
     }
 }
+
 
