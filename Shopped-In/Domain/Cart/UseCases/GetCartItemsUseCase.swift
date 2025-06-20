@@ -1,6 +1,6 @@
 
 protocol GetCartItemsUseCase {
-    func execute(cartId: String, completion: @escaping (Result<Cart, Error>) -> Void)
+    func execute(completion: @escaping (Result<Cart, Error>) -> Void)
 }
 
 class GetCartItemsUseCaseImpl: GetCartItemsUseCase {
@@ -10,7 +10,7 @@ class GetCartItemsUseCaseImpl: GetCartItemsUseCase {
         self.repository = repository
     }
 
-    func execute(cartId: String, completion: @escaping (Result<Cart, Error>) -> Void) {
-        repository.fetchCart(by: cartId, completion: completion)
+    func execute(completion: @escaping (Result<Cart, Error>) -> Void) {
+        repository.fetchCart(completion: completion)
     }
 }

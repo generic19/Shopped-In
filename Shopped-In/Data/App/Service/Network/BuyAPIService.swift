@@ -9,8 +9,6 @@ import Foundation
 import Buy
 
 final class BuyAPIService {
-    static let shared = BuyAPIService()
-    
     static let standardRetry = Graph.RetryHandler<Storefront.QueryRoot>(
         endurance: .finite(3),
         interval: 2,
@@ -19,7 +17,7 @@ final class BuyAPIService {
     
     let client: Graph.Client
     
-    private init() {
+    init() {
         self.client = Graph.Client(shopDomain: SHOPIFY_SHOP_DOMAIN, apiKey: STOREFRONT_API_ACCESS_TOKEN)
     }
 }

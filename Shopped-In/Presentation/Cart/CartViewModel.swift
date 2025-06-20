@@ -10,18 +10,19 @@ class CartViewModel: ObservableObject {
     @Published var lineItemQuantities: [String: Int] = [:]
     @Published var discountCode: String = ""
     @Published var discountFeedback: String = ""
-
+    
     static let noProductsAddedErrorMsg = "No products added yet. Start shopping and add product items."
-
+    
     private let getCartItemsUseCase: GetCartItemsUseCase
     private let createCartUseCase: CreateCartUseCase
     private let addToCartUseCase: AddToCartUseCase
     private let removeFromCartUseCase: RemoveFromCartUseCase
     private let updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase
     private let setDiscountCodeUseCase: SetDiscountCodeUseCase
-
+    private let deleteCartUseCase: DeleteCartUseCase
+    
     private var cancellable: Set<AnyCancellable> = []
-
+    
     init(
         cartRepo: CartRepository,
     ) {
@@ -31,7 +32,8 @@ class CartViewModel: ObservableObject {
         removeFromCartUseCase = RemoveFromCartUseCaseImpl(repository: cartRepo)
         updateCartItemQuantityUseCase = UpdateCartItemQuantityUseCaseImpl(repository: cartRepo)
         setDiscountCodeUseCase = SetDiscountCodeUseCaseImpl(repository: cartRepo)
-
+        deleteCartUseCase = DeleteCartUseCase(repo: cartRepo)
+        
         $lineItemQuantities
             .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
             .sink { [weak self] updatedQuantities in
@@ -44,53 +46,42 @@ class CartViewModel: ObservableObject {
             }
             .store(in: &cancellable)
     }
-
+    
     func loadCart() {
-        guard let cartId = CartSessionRepo.cartId else {
-            cart = nil
-            errorMessage = CartViewModel.noProductsAddedErrorMsg
-            return
-        }
-
-        print("cart ID: \(cartId)")
         isLoading = true
-        getCartItemsUseCase.execute(cartId: cartId) { [weak self] result in
+        
+        getCartItemsUseCase.execute() { [weak self] result in
             self?.isLoading = false
+            
             switch result {
-            case let .success(cart):
-                self?.cart = cart
-                if cart.discount?.isApplicable == true {
-                    self?.discountCode = cart.discount?.code ?? ""
-                }
-            case .failure:
-                CartSessionRepo.clear()
-                self?.cart = nil
-                self?.errorMessage = CartViewModel.noProductsAddedErrorMsg
+                case let .success(cart):
+                    self?.cart = cart
+                    if cart.discount?.isApplicable == true {
+                        self?.discountCode = cart.discount?.code ?? ""
+                    }
+                case .failure(let error):
+                    self?.cart = nil
+                    self?.deleteCartUseCase.execute()
+                    
+                    if (error as? CartError == CartError.noCartFound) {
+                        self?.errorMessage = CartViewModel.noProductsAddedErrorMsg
+                    } else {
+                        self?.errorMessage = error.localizedDescription
+                    }
             }
         }
     }
-
+    
     func addToCart(variantId: String, quantity: Int) {
-        print("from view Model variant is: \(variantId), and quantity is : \(quantity)")
-        if let cartId = CartSessionRepo.cartId {
-            print("cartId is : \(cartId)")
-            addToCartUseCase.execute(cartId: cartId, variantId: variantId, quantity: quantity) { [weak self] response in
-                if case .failure = response {
-                    print("add to cart failure")
-
-                    CartSessionRepo.clear()
-                    self?.createCart(variantId: variantId, quantity: quantity)
-                } else {
-                    print("add to cart success or error message")
-                    self?.handleResponse(response)
-                }
+        addToCartUseCase.execute(variantId: variantId, quantity: quantity) { [weak self] response in
+            if case .failure = response {
+                self?.deleteCartUseCase.execute()
+            } else {
+                self?.handleResponse(response)
             }
-        } else {
-            print("add to cart no cart id then create cart")
-            createCart(variantId: variantId, quantity: quantity)
         }
     }
-
+    
     private func createCart(variantId: String, quantity: Int) {
         createCartUseCase.execute(variantId: variantId, quantity: quantity) { [weak self] response in
             if case .success = response {
@@ -100,32 +91,30 @@ class CartViewModel: ObservableObject {
             }
         }
     }
-
+    
     private func updateQuantity(lineItemId: String, quantity: Int) {
-        guard let cartId = CartSessionRepo.cartId else { return }
-        updateCartItemQuantityUseCase.execute(cartId: cartId, lineItemId: lineItemId, quantity: quantity) { [weak self] response in
+        updateCartItemQuantityUseCase.execute(lineItemId: lineItemId, quantity: quantity) { [weak self] response in
             self?.handleResponse(response)
         }
     }
-
+    
     func removeItem(lineItemId: String) {
-        guard let cartId = CartSessionRepo.cartId else { return }
-        removeFromCartUseCase.execute(cartId: cartId, lineItemId: lineItemId) { [weak self] response in
+        removeFromCartUseCase.execute(lineItemId: lineItemId) { [weak self] response in
             self?.handleResponse(response)
         }
     }
-
+    
     private func handleResponse(_ response: CartOperationResponse) {
         switch response {
-        case .success:
-            loadCart()
-        case let .failure(error):
-            errorMessage = error.localizedDescription
-        case let .errorMessage(msg):
-            errorMessage = msg
+            case .success:
+                loadCart()
+            case let .failure(error):
+                errorMessage = error.localizedDescription
+            case let .errorMessage(msg):
+                errorMessage = msg
         }
     }
-
+    
     func onAddQuantityTapped(lineItemId: String) {
         guard let item = cart?.items.first(where: { $0.id == lineItemId }) else { return }
         let current = lineItemQuantities[lineItemId] ?? item.quantity
@@ -133,7 +122,7 @@ class CartViewModel: ObservableObject {
             lineItemQuantities[lineItemId] = current + 1
         }
     }
-
+    
     func onMinusQuantityTapped(lineItemId: String) {
         guard let item = cart?.items.first(where: { $0.id == lineItemId }) else { return }
         let current = lineItemQuantities[lineItemId] ?? item.quantity
@@ -141,42 +130,39 @@ class CartViewModel: ObservableObject {
             lineItemQuantities[lineItemId] = current - 1
         }
     }
-
+    
     func applyDiscountCode(_ code: String) {
-        guard let cartId = CartSessionRepo.cartId else { return }
-
-        setDiscountCodeUseCase.execute(cartId: cartId, code: code) { [weak self] response in
+        setDiscountCodeUseCase.execute(code: code) { [weak self] response in
             let tempDiscountCode = self?.discountCode
             switch response {
-            case .success:
-                self?.discountFeedback = ""
-                self?.loadCart()
-            case let .errorMessage(err):
-                self?.removeDiscountCode {
-                    self?.discountFeedback = err
-                    self?.discountCode = tempDiscountCode ?? ""
-                }
-            default:
-                self?.handleResponse(response)
+                case .success:
+                    self?.discountFeedback = ""
+                    self?.loadCart()
+                case let .errorMessage(err):
+                    self?.removeDiscountCode {
+                        self?.discountFeedback = err
+                        self?.discountCode = tempDiscountCode ?? ""
+                    }
+                default:
+                    self?.handleResponse(response)
             }
         }
     }
-
+    
     func removeDiscountCode(completion: (() -> Void)? = nil) {
-        guard let cartId = CartSessionRepo.cartId else { return }
-        setDiscountCodeUseCase.execute(cartId: cartId, code: "") { [weak self] response in
+        setDiscountCodeUseCase.execute(code: "") { [weak self] response in
             switch response {
-            case .errorMessage:
-                self?.discountFeedback = ""
-                self?.discountCode = ""
-                self?.loadCart()
-            default:
-                self?.handleResponse(response)
+                case .errorMessage:
+                    self?.discountFeedback = ""
+                    self?.discountCode = ""
+                    self?.loadCart()
+                default:
+                    self?.handleResponse(response)
             }
             completion?()
         }
     }
-
+    
     func placeOrder() {
         // call use case to process the order
         // show toastMessage or navigate to order confirmation

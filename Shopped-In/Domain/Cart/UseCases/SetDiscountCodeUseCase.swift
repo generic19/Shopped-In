@@ -6,7 +6,7 @@
 //
 
 protocol SetDiscountCodeUseCase {
-    func execute(cartId: String, code: String, completion: @escaping (CartOperationResponse) -> Void)
+    func execute(code: String, completion: @escaping (CartOperationResponse) -> Void)
 }
 
 class SetDiscountCodeUseCaseImpl: SetDiscountCodeUseCase {
@@ -16,7 +16,7 @@ class SetDiscountCodeUseCaseImpl: SetDiscountCodeUseCase {
         self.repository = repository
     }
 
-    func execute(cartId: String, code: String, completion: @escaping (CartOperationResponse) -> Void) {
-        repository.addDiscountCode(cartId: cartId, code: code, completion: completion)
+    func execute(code: String, completion: @escaping (CartOperationResponse) -> Void) {
+        repository.addDiscountCode(code: code, completion: completion)
     }
 }

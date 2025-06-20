@@ -1,0 +1,24 @@
+//
+//  BrandAssembly.swift
+//  Shopped-In
+//
+//  Created by Basel Alasadi on 20/06/2025.
+//
+
+import Swinject
+
+class BrandAssembly: Assembly {
+    func assemble(container: Container) {
+        container.register(BrandRemoteDataSource.self) { r in
+            BrandRemoteDataSourceImpl(
+                service: r.resolve(BuyAPIService.self)!
+            )
+        }.inObjectScope(.container)
+        
+        container.register(BrandRepository.self) { r in
+            BrandRepositoryImpl(
+                remote: r.resolve(BrandRemoteDataSource.self)!
+            )
+        }.inObjectScope(.container)
+    }
+}

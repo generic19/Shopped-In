@@ -1,6 +1,6 @@
 
 protocol UpdateCartItemQuantityUseCase {
-    func execute(cartId: String, lineItemId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void)
+    func execute(lineItemId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void)
 }
 
 class UpdateCartItemQuantityUseCaseImpl: UpdateCartItemQuantityUseCase {
@@ -10,7 +10,7 @@ class UpdateCartItemQuantityUseCaseImpl: UpdateCartItemQuantityUseCase {
         self.repository = repository
     }
 
-    func execute(cartId: String, lineItemId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
-        repository.updateItemQuantity(cartId: cartId, lineItemId: lineItemId, quantity: quantity, completion: completion)
+    func execute(lineItemId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
+        repository.updateItemQuantity(lineItemId: lineItemId, quantity: quantity, completion: completion)
     }
 }
