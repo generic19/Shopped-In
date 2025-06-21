@@ -1,5 +1,5 @@
 
-class SettingsRepositoryImpl : SettingsRepository  {
+ class SettingsRepositoryImpl : SettingsRepository  {
     let currencyRemoteDataSource: CurrencyRemoteDataSource
 
     init(remote: CurrencyRemoteDataSource) {
@@ -21,5 +21,4 @@ class SettingsRepositoryImpl : SettingsRepository  {
     func clearCurrentCurrency() {
         CurrencyPreference.clear()
     }
-    
 }

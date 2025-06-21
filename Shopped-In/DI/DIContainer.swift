@@ -11,7 +11,10 @@ class DIContainer {
     }
     
     func resolve<Resolved>() -> Resolved {
-        return container.resolve(Resolved.self)!
+        guard let resolved = container.resolve(Resolved.self) else {
+            fatalError("Could not resolve dependency of type \(Resolved.self).")
+        }
+        return resolved
     }
     
     private func registerAssemblies() {
@@ -24,6 +27,7 @@ class DIContainer {
             OrderAssembly(),
             ProductAssembly(),
             TokenAssembly(),
+            SettingsAssembly(),
         ]
         
         assemblies.forEach { $0.assemble(container: container) }

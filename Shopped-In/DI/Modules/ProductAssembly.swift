@@ -21,6 +21,10 @@ class ProductAssembly: Assembly {
             )
         }.inObjectScope(.container)
         
+        container.register(FavoriteRepository.self) { r in
+            FavoriteRepositoryImpl()
+        }.inObjectScope(.container)
+        
         container.register(FetchProductUseCase.self) { r in
             FetchProductUseCaseImpl(repository: r.resolve(ProductRepository.self)!)
         }.inObjectScope(.graph)
@@ -33,18 +37,41 @@ class ProductAssembly: Assembly {
             GetProductsUseCaseImpl(repository: r.resolve(ProductRepository.self)!)
         }.inObjectScope(.graph)
         
+        container.register(AddFavoriteProductUseCase.self) { r in
+            AddFavoriteProductUseCaseImpl(favoriteProductRepository: r.resolve(FavoriteRepository.self)!)
+        }.inObjectScope(.graph)
+        
+        container.register(RemoveFavoriteProductUseCase.self) { r in
+            RemoveFavoriteProductUseCaseImpl(favoriteProductRepository: r.resolve(FavoriteRepository.self)!)
+        }.inObjectScope(.graph)
+        
+        container.register(CheckFavoriteProductUseCase.self) { r in
+            CheckFavoriteProductUseCaseImpl(favoriteProductRepository: r.resolve(FavoriteRepository.self)!)
+        }.inObjectScope(.graph)
+        
         container.register(BrandProductsViewModel.self) { r in
             BrandProductsViewModel(getProductsByBrandUseCase: r.resolve(GetProductsByBrandUseCase.self)!)
         }.inObjectScope(.transient)
         
         container.register(ProductDetailViewModel.self) { r in
             ProductDetailViewModel(
-                fetchProductUseCase: r.resolve(FetchProductUseCase.self)!
+                fetchProductUseCase: r.resolve(FetchProductUseCase.self)!,
+                addFavoriteUseCase: r.resolve(AddFavoriteProductUseCase.self)!,
+                removeFavoriteUseCase: r.resolve(RemoveFavoriteProductUseCase.self)!,
+                checkFavoriteUseCase: r.resolve(CheckFavoriteProductUseCase.self)!,
             )
         }.inObjectScope(.transient)
         
         container.register(CategoriesViewModel.self) { r in
             CategoriesViewModel(getProductsUseCase: r.resolve(GetProductsUseCase.self)!)
+        }.inObjectScope(.transient)
+        
+        container.register(FavoriteViewModel.self) { r in
+            FavoriteViewModel(
+                addFavoriteUseCase: r.resolve(AddFavoriteProductUseCase.self)!,
+                removeFavoriteUseCase: r.resolve(RemoveFavoriteProductUseCase.self)!,
+                checkFavoriteUseCase: r.resolve(CheckFavoriteProductUseCase.self)!
+            )
         }.inObjectScope(.transient)
     }
 }

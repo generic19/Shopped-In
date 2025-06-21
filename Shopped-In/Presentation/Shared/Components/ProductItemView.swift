@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ProductItemView: View {
     let product: ProductListItem
-    let currencyConverter = CurrencyConverter(settingsRepo: SettingsRepositoryImpl(remote: CurrencyRemoteDataSource()))
+    let currencyConverter: CurrencyConverter = DIContainer.shared.resolve()
     
     @State var isFavorite: Bool = false
     @State private var currentExchangeRate: Double = 1
