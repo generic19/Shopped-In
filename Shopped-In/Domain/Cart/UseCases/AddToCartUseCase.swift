@@ -1,7 +1,7 @@
 
 
 protocol AddToCartUseCase {
-    func execute(cartId: String, variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void)
+    func execute(variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void)
 }
 
 class AddToCartUseCaseImpl: AddToCartUseCase {
@@ -11,7 +11,7 @@ class AddToCartUseCaseImpl: AddToCartUseCase {
         self.repository = repository
     }
 
-    func execute(cartId: String, variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
-        repository.addItem(to: cartId, variantId: variantId, quantity: quantity, completion: completion)
+    func execute(variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
+        repository.addItem(variantId: variantId, quantity: quantity, completion: completion)
     }
 }

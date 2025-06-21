@@ -9,10 +9,6 @@ import Foundation
 import Security
 
 final class KeychainHelper {
-    static let shared = KeychainHelper()
-    private init() {}
-    
-    
     private func createQuery(service: String, account: String, data: Data? = nil) ->
     (asOriginalDic:[CFString : Any], asCFDic: CFDictionary) {
         var query = [

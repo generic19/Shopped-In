@@ -5,16 +5,18 @@
 //  Created by Omar Abdelaziz on 20/06/2025.
 //
 
+protocol GetCurrencyUseCase {
+    func execute() -> String
+}
 
-
-class GetCurrencyUseCase {
+class GetCurrencyUseCaseImpl: GetCurrencyUseCase {
     let settingsRepo: SettingsRepository
 
     init(settingsRepo: SettingsRepository) {
         self.settingsRepo = settingsRepo
     }
 
-    func execute() -> String{
+    func execute() -> String {
         return settingsRepo.getCurrentCurrency()
     }
 }

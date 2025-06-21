@@ -14,10 +14,10 @@ final class AlamofireAPIService {
     }
     
     private static let GRAPHQL_URL = "https://mad45-ios3-sv.myshopify.com/admin/api/2025-04/graphql.json"
-    static let shared = AlamofireAPIService()
+
     private let session: Session
     
-    private init() {
+    init() {
         let config = URLSessionConfiguration.default
         
         config.headers = ["X-Shopify-Access-Token": ADMIN_API_ACCESS_TOKEN]

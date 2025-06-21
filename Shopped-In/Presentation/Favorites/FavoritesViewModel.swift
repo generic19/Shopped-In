@@ -71,7 +71,7 @@ class FavoriteViewModel: ObservableObject {
     }
 
     func removeFavorite(_ product: Product) {
-        removeFavoriteUseCase.removeFavorite(productID: product.title) { [weak self] error in
+        removeFavoriteUseCase.execute(productID: product.title) { [weak self] error in
             DispatchQueue.main.async {
                 if error == nil {
                     self?.favoriteProducts.removeAll { $0.title == product.title }
@@ -83,7 +83,7 @@ class FavoriteViewModel: ObservableObject {
     }
 
     func addFavorite(_ product: Product) {
-        addFavoriteUseCase.addFavorite(product: product) { [weak self] error in
+        addFavoriteUseCase.execute(product: product) { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
                     self?.errorMessage = error.localizedDescription
@@ -95,7 +95,7 @@ class FavoriteViewModel: ObservableObject {
     }
 
     func isProductFavorite(productID: String, completion: @escaping (Bool) -> Void) {
-        checkFavoriteUseCase.checkFavorite(productID: productID, completion: completion)
+        checkFavoriteUseCase.execute(productID: productID, completion: completion)
     }
 }
 

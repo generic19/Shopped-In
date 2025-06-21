@@ -12,10 +12,11 @@ class CurrencyConverter {
     private var getCurrencyUseCase: GetCurrencyUseCase
     private var setCurrencyUseCase: SetCurrencyUseCase
 
-    init(settingsRepo: SettingsRepository) {
-        getCurrencyUseCase = GetCurrencyUseCase(settingsRepo: settingsRepo)
-        getCurrencyExchangeRateUseCase = GetCurrencyExchangeRateUseCase(settingsRepo: settingsRepo)
-        setCurrencyUseCase = SetCurrencyUseCase(settingsRepo: settingsRepo)
+    init(getCurrencyExchangeRateUseCase: GetCurrencyExchangeRateUseCase, getCurrencyUseCase: GetCurrencyUseCase, setCurrencyUseCase: SetCurrencyUseCase) {
+        self.getCurrencyExchangeRateUseCase = getCurrencyExchangeRateUseCase
+        self.getCurrencyUseCase = getCurrencyUseCase
+        self.setCurrencyUseCase = setCurrencyUseCase
+        
         getUSDExchangeRate()
     }
 

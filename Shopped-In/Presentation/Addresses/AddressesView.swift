@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 struct AddressesView: View {
@@ -57,12 +56,12 @@ struct AddressesView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 }
             }
-            .toolbar {
+            .toolbar(content: {
                 ToolbarItem(placement: .principal) {
                     Text("My Addresses")
                         .font(.headline)
                 }
-
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         showAddressForm = true
@@ -70,7 +69,7 @@ struct AddressesView: View {
                         Image(systemName: "plus")
                     }
                 }
-            }
+            })
             .onAppear {
                 viewModel.getAddresses()
             }
@@ -84,13 +83,13 @@ struct AddressesView: View {
                     viewModel.successMessage = nil
                 }
             }
-
             .sheet(isPresented: $showAddressForm) {
-                let repo = viewModel.addressRepository
-                let token = viewModel.tokenRepo
-                let selected = selectedAddress
-                let addressFormViewModel = AddressFormViewModel(repo: repo, tokenRepo: token, address: selected)
-                AddressFormView(viewModel: addressFormViewModel).onDisappear {
+                AddressFormView(viewModel: {
+                    let formViewModel: AddressFormViewModel = DIContainer.shared.resolve()
+                    formViewModel.setInitialAddress(selectedAddress)
+                    return formViewModel
+                }())
+                .onDisappear {
                     viewModel.getAddresses()
                     selectedAddress = nil
                 }
@@ -130,13 +129,4 @@ struct AddressCell: View {
         }
         .padding(.vertical, 4)
     }
-}
-
-#Preview {
-    let apiService = BuyAPIService.shared
-    let remote = AddressRemoteDataSourceImpl(service: apiService)
-    let repo = AddressRepositoryImpl(remote: remote)
-    let tokenRepo: TokenRepo = TokenRepoImpl()
-    let addressesViewModel = AddressViewModel(repository: repo, tokenRepo: tokenRepo)
-    AddressesView(viewModel: addressesViewModel)
 }

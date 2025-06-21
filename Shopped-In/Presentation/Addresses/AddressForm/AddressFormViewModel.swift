@@ -35,26 +35,26 @@ class AddressFormViewModel: ObservableObject {
         let coordinate: CLLocationCoordinate2D
     }
     
+    private let addAddressUseCase: AddAddressUseCase
+    private let updateAddressUseCase: UpdateAddressUseCase
+    private let getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase
     
-    
-    
-    
-    let addAddressUseCase: AddAddressUseCase
-    let updateAddressUseCase: UpdateAddressUseCase
-
-    let tokenRepo: TokenRepo
     let customerAccessToken: String?
 
     private var locationDelegate = LocationManagerDelegate()
     private var locationManager: CLLocationManager?
 
-    init(repo: AddressRepository, tokenRepo: TokenRepo, address: Address? = nil) {
-        addAddressUseCase = AddAddressUseCase(repository: repo)
-        updateAddressUseCase = UpdateAddressUseCase(repository: repo)
-        self.tokenRepo = tokenRepo
-        customerAccessToken = self.tokenRepo.loadToken()
-
+    init(addAddressUseCase: AddAddressUseCase, updateAddressUseCase: UpdateAddressUseCase, getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase) {
+        self.addAddressUseCase = addAddressUseCase
+        self.updateAddressUseCase = updateAddressUseCase
+        self.getCustomerAccessTokenUseCase = getCustomerAccessTokenUseCase
+        
+        customerAccessToken = getCustomerAccessTokenUseCase.execute()
+    }
+    
+    func setInitialAddress(_ address: Address?) {
         self.address = address
+        
         if let address {
             name = address.name
             address1 = address.address1

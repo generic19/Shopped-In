@@ -1,5 +1,9 @@
 
-class GetCurrencyExchangeRateUseCase {
+protocol GetCurrencyExchangeRateUseCase {
+    func execute(completion: @escaping (Result<Double, Error>) -> Void)
+}
+
+class GetCurrencyExchangeRateUseCaseImpl: GetCurrencyExchangeRateUseCase {
     let settingsRepo: SettingsRepository
 
     init(settingsRepo: SettingsRepository) {

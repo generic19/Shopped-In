@@ -7,7 +7,7 @@ struct SplashView: View {
     @EnvironmentObject private var appSwitch: AppSwitch
     @State private var cancellables = Set<AnyCancellable>()
     
-    private let viewModel = SplashViewModel(automaticSignInUseCase: AutomaticSignInUseCase(authRepo: AuthRepositoryImpl(tokenRepository: TokenRepoImpl(), apiSource: APIAuthRemoteDataSourceImpl(service: BuyAPIService.shared), firebaseSource: FireBaseAuthRemoteDataSourceImpl())))
+    private let viewModel: SplashViewModel = DIContainer.shared.resolve()
     
     private let player: AVPlayer = {
         let url = Bundle.main.url(forResource: "splash", withExtension: "mp4")!

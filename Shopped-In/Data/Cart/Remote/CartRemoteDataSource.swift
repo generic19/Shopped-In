@@ -1,7 +1,7 @@
 
 import Buy
 protocol CartRemoteDataSource {
-    func createCart(variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void)
+    func createCart(variantId: String, quantity: Int, completion: @escaping (CartCreationResponse) -> Void)
 
     func fetchCart(by id: String, completion: @escaping (Result<Storefront.Cart, Error>) -> Void)
 
@@ -16,6 +16,12 @@ protocol CartRemoteDataSource {
 
 enum CartOperationResponse {
     case success
+    case failure(Error)
+    case errorMessage(String)
+}
+
+enum CartCreationResponse {
+    case success(cartId: String)
     case failure(Error)
     case errorMessage(String)
 }

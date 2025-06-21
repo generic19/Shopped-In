@@ -9,7 +9,7 @@ struct SettingsView: View {
 
     var body: some View {
         List {
-            NavigationLink(destination: AddressesView(viewModel: AddressViewModel(repository: AddressRepositoryImpl(remote: AddressRemoteDataSourceImpl(service: BuyAPIService.shared)), tokenRepo: TokenRepoImpl()))) {
+            NavigationLink(destination: AddressesView(viewModel: DIContainer.shared.resolve())) {
                 HStack {
                     Image(systemName: "house")
                         .foregroundStyle(.blue)

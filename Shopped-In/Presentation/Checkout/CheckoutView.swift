@@ -2,7 +2,7 @@
 import SwiftUI
 
 struct CheckoutView: View {
-    @StateObject var viewModel = CheckoutViewModel()
+    @StateObject var viewModel: CheckoutViewModel = DIContainer.shared.resolve()
     @State var isAddAddressPresented = false
     
     var body: some View {
@@ -12,8 +12,36 @@ struct CheckoutView: View {
                     Text(loadingMessage)
                 }
             } else if let errorMessage: String = viewModel.errorMessage {
-                Text(errorMessage)
-                    .foregroundStyle(.red)
+                VStack {
+                    Spacer()
+                    
+                    Text(errorMessage)
+                        .foregroundStyle(.red)
+                    
+                    Spacer()
+                    
+                    if let errorActions = viewModel.errorActions, !errorActions.isEmpty {
+                        HStack(spacing: 8) {
+                            Button(action: errorActions[0].action) {
+                                Text(errorActions[0].title)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.large)
+                            
+                            ForEach(errorActions[1..<errorActions.count], id: \.title) { errorAction in
+                                Button(action: errorAction.action) {
+                                    Text(errorAction.title)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.large)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
             } else if let cart: Cart = viewModel.cart {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
@@ -108,8 +136,8 @@ struct CheckoutView: View {
                                         HStack(alignment: .top) {
                                             Image(
                                                 systemName: address.id == viewModel.selectedAddress?.id
-                                                    ? "checkmark.circle.fill"
-                                                    : "circle"
+                                                ? "checkmark.circle.fill"
+                                                : "circle"
                                             )
                                             .padding()
                                             
@@ -160,8 +188,8 @@ struct CheckoutView: View {
                                     HStack(alignment: .center) {
                                         Image(
                                             systemName: paymentMethod == viewModel.selectedPaymentMethod
-                                                ? "checkmark.circle.fill"
-                                                : "circle"
+                                            ? "checkmark.circle.fill"
+                                            : "circle"
                                         )
                                         .padding(4)
                                         .scaledToFit()
@@ -253,7 +281,7 @@ struct CheckoutView: View {
         .navigationTitle("Checkout")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $isAddAddressPresented, content: {
-            AddressFormView(viewModel: AddressFormViewModel(repo: AddressRepositoryImpl(remote: AddressRemoteDataSourceImpl(service: BuyAPIService.shared)), tokenRepo: TokenRepoImpl(), address: nil))
+            AddressFormView(viewModel: DIContainer.shared.resolve())
                 .onDisappear {
                     viewModel.loadAddresses()
                 }

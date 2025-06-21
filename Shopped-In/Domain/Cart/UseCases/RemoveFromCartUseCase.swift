@@ -7,7 +7,7 @@
 
 
 protocol RemoveFromCartUseCase {
-    func execute(cartId: String, lineItemId: String, completion: @escaping (CartOperationResponse) -> Void)
+    func execute(lineItemId: String, completion: @escaping (CartOperationResponse) -> Void)
 }
 
 class RemoveFromCartUseCaseImpl: RemoveFromCartUseCase {
@@ -17,7 +17,7 @@ class RemoveFromCartUseCaseImpl: RemoveFromCartUseCase {
         self.repository = repository
     }
 
-    func execute(cartId: String, lineItemId: String, completion: @escaping (CartOperationResponse) -> Void) {
-        repository.removeItem(cartId: cartId, lineItemId: lineItemId, completion: completion)
+    func execute(lineItemId: String, completion: @escaping (CartOperationResponse) -> Void) {
+        repository.removeItem(lineItemId: lineItemId, completion: completion)
     }
 }

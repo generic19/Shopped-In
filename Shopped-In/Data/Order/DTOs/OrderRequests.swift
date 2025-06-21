@@ -125,6 +125,10 @@ struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
                         totalDiscounts
                         totalPrice
                     }
+                    userErrors {
+                        field
+                        message
+                    }
                 }
             }
         """

@@ -7,7 +7,11 @@
 
 import UIKit
 
-class SignInWithGoogleUseCase {
+protocol SignInWithGoogleUseCase {
+    func execute(presentingViewController: UIViewController, completion: @escaping (Error?) -> Void)
+}
+
+class SignInWithGoogleUseCaseImpl: SignInWithGoogleUseCase {
     private let authRepository: AuthRepository
 
     init(authRepository: AuthRepository) {

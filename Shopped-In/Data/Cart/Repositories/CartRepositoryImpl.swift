@@ -11,16 +11,32 @@ import Foundation
 
 class CartRepositoryImpl: CartRepository {
     private let remote: CartRemoteDataSource
+    private var local: CartSessionLocalDataSource
 
-    init(remote: CartRemoteDataSource) {
+    init(remote: CartRemoteDataSource, local: CartSessionLocalDataSource) {
         self.remote = remote
+        self.local = local
     }
 
     func createCart(variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
-        remote.createCart(variantId: variantId, quantity: quantity, completion: completion)
+        remote.createCart(variantId: variantId, quantity: quantity) { response in
+            switch response {
+                case .success(let cartId):
+                    self.local.cartId = cartId
+                case .failure(let error):
+                    completion(.failure(error))
+                case .errorMessage(let message):
+                    completion(.errorMessage(message))
+            }
+        }
     }
 
-    func fetchCart(by id: String, completion: @escaping (Result<Cart, Error>) -> Void) {
+    func fetchCart(completion: @escaping (Result<Cart, Error>) -> Void) {
+        guard let id = local.cartId else {
+            completion(.failure(CartError.noCartFound))
+            return
+        }
+        
         remote.fetchCart(by: id) { result in
             switch result {
             case let .success(storeFrontCart):
@@ -38,23 +54,65 @@ class CartRepositoryImpl: CartRepository {
         }
     }
 
-    func addItem(to cartId: String, variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
-        remote.addItem(to: cartId, variantId: variantId, quantity: quantity, completion: completion)
+    func addItem(variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
+        if let cartId = local.cartId {
+            remote.addItem(to: cartId, variantId: variantId, quantity: quantity, completion: completion)
+        } else {
+            remote.createCart(variantId: variantId, quantity: quantity) { response in
+                switch response {
+                    case .success(let cartId):
+                        self.local.cartId = cartId
+                        completion(.success)
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                        
+                    case .errorMessage(let string):
+                        completion(.errorMessage(string))
+                }
+            }
+        }
     }
 
-    func updateItemQuantity(cartId: String, lineItemId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
+    func updateItemQuantity(lineItemId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
+        guard let cartId = local.cartId else {
+            completion(.failure(CartError.noCartFound))
+            return
+        }
+        
         remote.updateItemQuantity(cartId: cartId, lineItemId: lineItemId, quantity: quantity, completion: completion)
     }
 
-    func removeItem(cartId: String, lineItemId: String, completion: @escaping (CartOperationResponse) -> Void) {
+    func removeItem(lineItemId: String, completion: @escaping (CartOperationResponse) -> Void) {
+        guard let cartId = local.cartId else {
+            completion(.failure(CartError.noCartFound))
+            return
+        }
+        
         remote.removeItem(cartId: cartId, lineItemId: lineItemId, completion: completion)
     }
 
-    func addDiscountCode(cartId: String, code: String, completion: @escaping (CartOperationResponse) -> Void) {
+    func addDiscountCode(code: String, completion: @escaping (CartOperationResponse) -> Void) {
+        guard let cartId = local.cartId else {
+            completion(.failure(CartError.noCartFound))
+            return
+        }
+        
         remote.addDiscountCode(cartId: cartId, code: code, completion: completion)
+    }
+    
+    func deleteCart() {
+        local.clear()
     }
 }
 
-enum CartError: Error {
+enum CartError: LocalizedError {
     case noCartFound
+    
+    var errorDescription: String? {
+        return switch self {
+            case .noCartFound:
+                "Cart must be created before it is used."
+        }
+    }
 }

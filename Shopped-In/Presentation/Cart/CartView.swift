@@ -10,7 +10,7 @@ import SwiftUI
 struct CartView: View {
     @ObservedObject var viewModel: CartViewModel
 
-    private let currencyConverter: CurrencyConverter = CurrencyConverter(settingsRepo: SettingsRepositoryImpl(remote: CurrencyRemoteDataSource()))
+    private let currencyConverter: CurrencyConverter = DIContainer.shared.resolve()
     @State private var currentExchangeRate: Double = 1
     @State private var currentCurrency: String = "EGP"
 
@@ -107,7 +107,7 @@ struct CartView: View {
                             .padding(.top, 6)
 
                             Button("Place Order") {
-                                viewModel.placeOrder()
+                                viewModel.proceedToCheckout()
                             }
                             .padding(.vertical)
                             .frame(maxWidth: .infinity)
@@ -153,6 +153,9 @@ struct CartView: View {
                     viewModel.toastMessage = ""
                 }
             }
+            .navigationDestination(isPresented: $viewModel.showCheckout) {
+                CheckoutView()
+            }
 
             if !viewModel.toastMessage.isEmpty {
                 VStack {
@@ -164,7 +167,7 @@ struct CartView: View {
 }
 
 struct CartItemRow: View {
-    private let currencyConverter: CurrencyConverter = CurrencyConverter(settingsRepo: SettingsRepositoryImpl(remote: CurrencyRemoteDataSource()))
+    private let currencyConverter: CurrencyConverter = DIContainer.shared.resolve()
     @State private var currentExchangeRate: Double = 1
     @State private var currentCurrency: String = "EGP"
 

@@ -3,10 +3,9 @@ import SwiftUI
 
 struct BrandProductsView: View {
     let brand: Brand
+
+    @ObservedObject var viewModel: BrandProductsViewModel = DIContainer.shared.resolve()
     
-
-    @ObservedObject var viewModel = BrandProductsViewModel(getProductsByBrandUseCase: GetProductsByBrandUseCase(repository: ProductRepositoryImpl(remote: ProductRemoteDataSourceImpl(service: BuyAPIService.shared))))
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {

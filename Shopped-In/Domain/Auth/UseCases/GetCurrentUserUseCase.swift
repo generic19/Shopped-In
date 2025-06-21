@@ -1,6 +1,10 @@
 import Combine
 
-class GetCurrentUserUseCase {
+protocol GetCurrentUserUseCase {
+    func execute() -> AnyPublisher<User?, Never>
+}
+
+class GetCurrentUserUseCaseImpl: GetCurrentUserUseCase {
     private let authRepository: AuthRepository
 
     init(authRepository: AuthRepository) {

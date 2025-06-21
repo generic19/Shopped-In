@@ -14,7 +14,7 @@ class CartRemoteDataSourceImpl: CartRemoteDataSource {
         self.service = service
     }
 
-    func createCart(variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
+    func createCart(variantId: String, quantity: Int, completion: @escaping (CartCreationResponse) -> Void) {
         let lineItem = Storefront.CartLineInput.create(
             merchandiseId: .init(rawValue: variantId),
             quantity: .value(Int32(quantity))
@@ -38,8 +38,7 @@ class CartRemoteDataSourceImpl: CartRemoteDataSource {
             } else if let error = error {
                 completion(.failure(error))
             } else if let cartId = response?.cartCreate?.cart?.id {
-                CartSessionRepo.cartId = cartId.rawValue
-                completion(.success)
+                completion(.success(cartId: cartId.rawValue))
             }
         }.resume()
     }

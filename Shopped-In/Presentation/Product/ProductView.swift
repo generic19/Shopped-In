@@ -22,14 +22,15 @@ extension Color {
 // MARK: - ProductDetailView
 
 struct ProductDetailView: View {
-    @StateObject private var viewModel: ProductDetailViewModel
-    @StateObject private var favoriteViewModel: FavoriteViewModel
-    @StateObject private var cartViewModel: CartViewModel
+    @StateObject private var viewModel: ProductDetailViewModel = DIContainer.shared.resolve()
+    @StateObject private var favoriteViewModel: FavoriteViewModel = DIContainer.shared.resolve()
+    @StateObject private var cartViewModel: CartViewModel = DIContainer.shared.resolve()
+    @State private var currencyConverter: CurrencyConverter = DIContainer.shared.resolve()
+    
     let productID: String
     @State var toastMessage = ""
     @State var toastColor = Color.green
 
-    private var currencyConverter: CurrencyConverter
     @State private var currentExchangeRate: Double = 1
     @State private var currentCurrency: String = "EGP"
 
@@ -37,34 +38,6 @@ struct ProductDetailView: View {
 
     init(productID: String) {
         self.productID = productID
-
-        let apiService = BuyAPIService.shared
-        let remote = ProductRemoteDataSourceImpl(service: apiService)
-        let productRepo = ProductRepositoryImpl(remote: remote)
-        let favoriteRepo = FavoriteRepositoryImpl()
-        let fetchUseCase = FetchProductUseCase(repository: productRepo)
-        let addFavoriteUseCase = AddFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
-        let removeFavoriteUseCase = RemoveFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
-        let checkFavoriteUseCase = CheckFavoriteProductUseCase(favoriteProductRepository: favoriteRepo)
-
-        _viewModel = StateObject(
-            wrappedValue: ProductDetailViewModel(
-                fetchProductUseCase: fetchUseCase,
-                addFavoriteUseCase: addFavoriteUseCase,
-                removeFavoriteUseCase: removeFavoriteUseCase,
-                checkFavoriteUseCase: checkFavoriteUseCase
-            )
-        )
-
-        _favoriteViewModel = StateObject(
-            wrappedValue: FavoriteViewModel(addFavoriteUseCase: addFavoriteUseCase, removeFavoriteUseCase: removeFavoriteUseCase, checkFavoriteUseCase: checkFavoriteUseCase)
-        )
-
-        let cartRemote = CartRemoteDataSourceImpl(service: apiService)
-        let cartRepo = CartRepositoryImpl(remote: cartRemote)
-        _cartViewModel = StateObject(wrappedValue: CartViewModel(cartRepo: cartRepo))
-        let settingsRepo = SettingsRepositoryImpl(remote: CurrencyRemoteDataSource())
-        currencyConverter = CurrencyConverter(settingsRepo: settingsRepo)
     }
 
     var body: some View {

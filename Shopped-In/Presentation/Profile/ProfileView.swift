@@ -11,7 +11,7 @@ struct ProfileView: View {
                     .bold()
                     .padding(.top)
                 // CartButton
-                NavigationLink(destination: CartView(viewModel: CartViewModel(cartRepo: CartRepositoryImpl(remote: CartRemoteDataSourceImpl(service: BuyAPIService.shared))))) {
+                NavigationLink(destination: CartView(viewModel: DIContainer.shared.resolve())) {
                     HStack {
                         Image(systemName: "cart")
                             .resizable()

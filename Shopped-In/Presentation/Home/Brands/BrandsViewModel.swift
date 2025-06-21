@@ -37,7 +37,7 @@ final class BrandsViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        getBrandsUseCase.execute(sort: sort) { response in
+        getBrandsUseCase.execute(sort: sort, forceNetwork: false) { response in
             self.isLoading = false
             
             switch response {

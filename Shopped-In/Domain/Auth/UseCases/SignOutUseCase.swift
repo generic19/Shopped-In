@@ -7,14 +7,18 @@
 
 import Foundation
 
-class SignOutUseCase {
+protocol SignOutUseCase {
+    func execute(completion: @escaping () -> Void)
+}
+
+class SignOutUseCaseImpl: SignOutUseCase {
     private let authRepository: AuthRepository
 
     init(authRepository: AuthRepository) {
         self.authRepository = authRepository
     }
 
-    func execute( completion: @escaping () -> Void) {
-        authRepository.signOut( completion: completion)
+    func execute(completion: @escaping () -> Void) {
+        authRepository.signOut(completion: completion)
     }
 }

@@ -43,7 +43,7 @@ class ProductDetailViewModel: ObservableObject {
                     return
                 }
 
-                self.checkFavoriteUseCase.checkFavorite(productID: productID) { isFav in
+                self.checkFavoriteUseCase.execute(productID: productID) { isFav in
                     DispatchQueue.main.async {
                         self.isFavorite = isFav
                     }
@@ -57,7 +57,7 @@ class ProductDetailViewModel: ObservableObject {
         let productID = product.title
 
         if isFavorite {
-            removeFavoriteUseCase.removeFavorite(productID: productID) { [weak self] error in
+            removeFavoriteUseCase.execute(productID: productID) { [weak self] error in
                 DispatchQueue.main.async {
                     if error == nil {
                         self?.isFavorite = false
@@ -65,7 +65,7 @@ class ProductDetailViewModel: ObservableObject {
                 }
             }
         } else {
-            addFavoriteUseCase.addFavorite(product: product) { [weak self] error in
+            addFavoriteUseCase.execute(product: product) { [weak self] error in
                 DispatchQueue.main.async {
                     if error == nil {
                         self?.isFavorite = true
@@ -74,6 +74,7 @@ class ProductDetailViewModel: ObservableObject {
             }
         }
     }
+    
     func updateSelectedVariant() {
         guard let product = product,
               let size = selectedSize,

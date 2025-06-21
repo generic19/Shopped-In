@@ -10,32 +10,7 @@ import Combine
 import SwiftUI
 
 struct AuthenticationWelcomeScreen: View {
-    @StateObject var viewModel: AuthViewModel = {
-        let tokenRepository: TokenRepo = TokenRepoImpl()
-        let apiService: BuyAPIService = BuyAPIService.shared
-        let apiSource: APIAuthRemoteDataSource = APIAuthRemoteDataSourceImpl(service: apiService)
-        let firebaseSource: FireBaseAuthRemoteDataSource = FireBaseAuthRemoteDataSourceImpl()
-
-        let authRepository = AuthRepositoryImpl(
-            tokenRepository: tokenRepository,
-            apiSource: apiSource,
-            firebaseSource: firebaseSource,
-        )
-
-        let signUpUseCase = SignUpUseCase(authRepository: authRepository)
-        let signInUseCase = SignInUseCase(authRepository: authRepository)
-        let getCurrentUserUseCase = GetCurrentUserUseCase(authRepository: authRepository)
-        let signOutUseCase = SignOutUseCase(authRepository: authRepository)
-        let signInWithGoogleUseCase = SignInWithGoogleUseCase(authRepository: authRepository)
-
-        return AuthViewModel(
-            signUpUseCase: signUpUseCase,
-            signInUseCase: signInUseCase,
-            getCurrentUserUseCase: getCurrentUserUseCase,
-            signOutUseCase: signOutUseCase,
-            signInwithGoogleUseCase: signInWithGoogleUseCase
-        )
-    }()
+    @StateObject var viewModel: AuthViewModel = DIContainer.shared.resolve()
 
     @EnvironmentObject var appSwitch: AppSwitch
 
