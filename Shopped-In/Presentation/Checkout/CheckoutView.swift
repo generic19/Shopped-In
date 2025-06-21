@@ -2,8 +2,11 @@
 import SwiftUI
 
 struct CheckoutView: View {
-    @StateObject var viewModel: CheckoutViewModel = DIContainer.shared.resolve()
+    let onComplete: () -> Void
+    
+    @StateObject var viewModel: CheckoutViewModel = DIContainer.resolve()
     @State var isAddAddressPresented = false
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         ZStack {
@@ -286,6 +289,15 @@ struct CheckoutView: View {
                     viewModel.loadAddresses()
                 }
         })
+        .alert("Order Placed", isPresented: $viewModel.showCheckoutSuccess) {
+            Button("Okay") {
+                viewModel.clearCart()
+                dismiss()
+                onComplete()
+            }
+        } message: {
+            Text("Thank you for shopping with us!")
+        }
         .onAppear {
             viewModel.load()
         }
@@ -293,5 +305,5 @@ struct CheckoutView: View {
 }
 
 #Preview {
-    CheckoutView()
+    CheckoutView() {}
 }

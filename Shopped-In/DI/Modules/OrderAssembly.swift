@@ -43,6 +43,7 @@ class OrderAssembly: Assembly {
                 createOrderUseCase: r.resolve(CreateOrderUseCase.self)!,
                 resendVerificationEmailUseCase: r.resolve(ResendVerificationEmailUseCase.self)!,
                 reloadUserUseCase: r.resolve(ReloadUserUseCase.self)!,
+                deleteCartUseCase: r.resolve(DeleteCartUseCase.self)!,
             )
         }.inObjectScope(.transient)
         

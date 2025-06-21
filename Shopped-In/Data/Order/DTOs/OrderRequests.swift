@@ -66,6 +66,10 @@ struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
             """
         }.joined(separator: ", ")
         
+        let address2Fragment = if let address2 = order.shippingAddress.address2, !address2.isEmpty {
+            "address2: \"\(address2)\""
+        } else { "" }
+        
         return """
             mutation OrderCreate {
                 orderCreate(
@@ -74,7 +78,7 @@ struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
                         \(discountFragment)
                         shippingAddress: {
                             address1: "\(order.shippingAddress.address1)"
-                            address2: "\(order.shippingAddress.address2)"
+                            \(address2Fragment)
                             city: "\(order.shippingAddress.city)"
                             countryCode: EG
                             firstName: "\(order.shippingAddress.firstName)"

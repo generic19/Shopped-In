@@ -12,16 +12,16 @@ extension Order {
     func toDisplayModel() -> OrderListItem {
         let firstTitle = items.first?.productTitle ?? "No Items!"
         
-        let trimmedFirstTitle = if firstTitle.count > 50 {
-            firstTitle.prefix(50).trimmingCharacters(in: .whitespacesAndNewlines) + "..."
+        let trimmedFirstTitle = if firstTitle.count > 30 {
+            firstTitle.prefix(30).trimmingCharacters(in: .whitespacesAndNewlines) + "..."
         } else {
             firstTitle
         }
         
         let title = if items.count > 1 {
-            "\(firstTitle), and \(items.count - 1) more."
+            "\(trimmedFirstTitle), and \(items.count - 1) more."
         } else {
-            firstTitle
+            trimmedFirstTitle
         }
         
         return OrderListItem(

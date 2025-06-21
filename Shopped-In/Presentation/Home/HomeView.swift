@@ -48,7 +48,7 @@ struct HomeView: View {
                 
                 ToolbarItem(placement: .primaryAction) {
                     NavigationLink {
-                        CartView(viewModel: DIContainer.shared.resolve())
+                        CartView()
                     } label: {
                         Image(systemName: "cart")
                     }
