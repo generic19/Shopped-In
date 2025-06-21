@@ -17,6 +17,10 @@ class DIContainer {
         return resolved
     }
     
+    static func resolve<Resolved>() -> Resolved {
+        return shared.resolve()
+    }
+    
     private func registerAssemblies() {
         let assemblies: [Assembly] = [
             ServicesAssembly(),

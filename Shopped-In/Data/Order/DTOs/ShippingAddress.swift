@@ -8,7 +8,7 @@
 
 struct ShippingAddress: Decodable {
     let address1: String
-    let address2: String
+    let address2: String?
     let city: String
     let firstName: String
     let lastName: String

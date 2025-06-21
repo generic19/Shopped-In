@@ -10,5 +10,11 @@ struct OrderCreateResponse: Decodable {
 }
 
 struct OrdersResponse: Decodable {
-    let nodes: [OrderDTO]
+    struct Data: Decodable {
+        struct Orders: Decodable {
+            let nodes: [OrderDTO]
+        }
+        let orders: Orders
+    }
+    let data: Data
 }

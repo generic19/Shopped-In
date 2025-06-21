@@ -43,7 +43,16 @@ class OrderAssembly: Assembly {
                 createOrderUseCase: r.resolve(CreateOrderUseCase.self)!,
                 resendVerificationEmailUseCase: r.resolve(ResendVerificationEmailUseCase.self)!,
                 reloadUserUseCase: r.resolve(ReloadUserUseCase.self)!,
+                deleteCartUseCase: r.resolve(DeleteCartUseCase.self)!,
             )
         }.inObjectScope(.transient)
+        
+        container.register(OrdersViewModel.self) { r in
+            OrdersViewModel(
+                getAllOrdersUseCase: r.resolve(GetAllOrdersUseCase.self)!,
+                getRecentOrdersUseCase: r.resolve(GetRecentOrdersUseCase.self)!,
+                getCurrentUserUseCase: r.resolve(GetCurrentUserUseCase.self)!,
+            )
+        }
     }
 }

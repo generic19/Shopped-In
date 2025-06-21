@@ -20,7 +20,7 @@ class CheckoutViewModel: ObservableObject {
     @Published var selectedPaymentMethod: PaymentMethod?
     
     @Published var isCheckoutDisabled = true
-    @Published var isCheckoutSuccessful: Bool?
+    @Published var showCheckoutSuccess = false
     
     @Published var user: User?
     private var cancellables = Set<AnyCancellable>()
@@ -33,8 +33,9 @@ class CheckoutViewModel: ObservableObject {
     private let createOrderUseCase: CreateOrderUseCase
     private let resendVerificationEmailUseCase: ResendVerificationEmailUseCase
     private let reloadUserUseCase: ReloadUserUseCase
+    private let deleteCartUseCase: DeleteCartUseCase
     
-    init(getCartItemsUseCase: GetCartItemsUseCase, getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase, getCurrentUserUseCase: GetCurrentUserUseCase, getAddressesUseCase: GetAddressesUseCase, createOrderUseCase: CreateOrderUseCase, resendVerificationEmailUseCase: ResendVerificationEmailUseCase, reloadUserUseCase: ReloadUserUseCase) {
+    init(getCartItemsUseCase: GetCartItemsUseCase, getCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase, getCurrentUserUseCase: GetCurrentUserUseCase, getAddressesUseCase: GetAddressesUseCase, createOrderUseCase: CreateOrderUseCase, resendVerificationEmailUseCase: ResendVerificationEmailUseCase, reloadUserUseCase: ReloadUserUseCase, deleteCartUseCase: DeleteCartUseCase) {
         self.getCartItemsUseCase = getCartItemsUseCase
         self.getCustomerAccessTokenUseCase = getCustomerAccessTokenUseCase
         self.getCurrentUserUseCase = getCurrentUserUseCase
@@ -42,6 +43,7 @@ class CheckoutViewModel: ObservableObject {
         self.createOrderUseCase = createOrderUseCase
         self.resendVerificationEmailUseCase = resendVerificationEmailUseCase
         self.reloadUserUseCase = reloadUserUseCase
+        self.deleteCartUseCase = deleteCartUseCase
         
         getCurrentUserUseCase.execute().assign(to: &$user)
         $user.sink { _ in
@@ -125,6 +127,10 @@ class CheckoutViewModel: ObservableObject {
         }
     }
     
+    func clearCart() {
+        self.deleteCartUseCase.execute()
+    }
+    
     private func completeCheckout(customerAccessToken: String, user: User) {
         guard let cart else {
             errorMessage = "No cart to process."
@@ -152,9 +158,9 @@ class CheckoutViewModel: ObservableObject {
             self.loadingMessage = nil
             
             switch result {
-                case .success(let order):
+                case .success(_):
                     self.errorMessage = nil
-                    print("order success: \(order)")
+                    self.showCheckoutSuccess = true
                     
                 case .error(let message):
                     self.errorMessage = message
