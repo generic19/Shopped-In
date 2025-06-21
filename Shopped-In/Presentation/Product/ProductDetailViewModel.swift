@@ -9,6 +9,7 @@ class ProductDetailViewModel: ObservableObject {
     @Published var selectedSize: String?
     @Published var selectedColor: String?
     @Published var selectedVariantId: String?
+    @Published var selectedVariantQuantity: Int?
     
     private let fetchProductUseCase: FetchProductUseCase
     private let addFavoriteUseCase: AddFavoriteProductUseCase
@@ -80,6 +81,7 @@ class ProductDetailViewModel: ObservableObject {
               let size = selectedSize,
               let color = selectedColor else {
             selectedVariantId = nil
+            selectedVariantQuantity = nil
             return
         }
 
@@ -95,6 +97,7 @@ class ProductDetailViewModel: ObservableObject {
                 if variantSize.lowercased() == size.lowercased(),
                    variantColor.lowercased() == color.lowercased() {
                     selectedVariantId = variant.id
+                    selectedVariantQuantity = variant.availableQuantity
                     print("Selected Variant ID: \(variant.id)")
                     return
                 } else {

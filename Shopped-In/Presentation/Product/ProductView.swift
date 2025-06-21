@@ -1,8 +1,8 @@
 
 
 import Buy
-import SwiftUI
 import FirebaseAuth
+import SwiftUI
 
 // MARK: - Color Extension
 
@@ -212,12 +212,22 @@ struct ProductDetailView: View {
                                 .padding(.bottom, 10)
                             } else {
                                 Button(action: {
-                                    if let variantId = viewModel.selectedVariantId {
-                                        cartViewModel.addToCart(variantId: variantId, quantity: 1)
-                                        toastMessage = "Added to cart successfully!"
-                                        toastColor = Color.green
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                            toastMessage = ""
+                                    if let variantId = viewModel.selectedVariantId,
+                                        let variantQuantity = viewModel.selectedVariantQuantity {
+                                        if variantQuantity > 0 {
+                                            cartViewModel.addToCart(variantId: variantId, quantity: 1)
+                                            toastMessage = "Added to cart successfully!"
+                                            toastColor = Color.green
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                                toastMessage = ""
+                                            }
+                                        } else {
+                                            toastMessage = "sorry, selected variant is not available at the moment, it will be available soon"
+                                            toastColor = Color.red
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                                toastMessage = ""
+                                            }
+
                                         }
                                     } else {
                                         toastMessage = "Failed to add to cart,\nplease choose Color and Size!"

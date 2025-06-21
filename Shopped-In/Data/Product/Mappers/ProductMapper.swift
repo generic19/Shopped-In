@@ -121,8 +121,8 @@ struct ProductMapper {
             let optionsDict = node.selectedOptions.reduce(into: [String: String]()) {
                 $0[$1.name.lowercased()] = $1.value
             }
-
-            return Variant(id: id, selectedOptions: optionsDict, price: price)
+            let availableQuantities = Int(node.quantityAvailable ?? 0)
+            return Variant(id: id, selectedOptions: optionsDict, price: price, availableQuantity: availableQuantities)
         }
 
         let review = Review(name: "Ayatullah", comment: "Good product", avatar: UIImage(systemName: "person.fill")!)

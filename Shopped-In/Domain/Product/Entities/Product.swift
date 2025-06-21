@@ -42,6 +42,7 @@ struct Variant {
     let id: String
     let selectedOptions: [String: String]
     let price: String
+    let availableQuantity: Int
 }
 
 struct Product {
