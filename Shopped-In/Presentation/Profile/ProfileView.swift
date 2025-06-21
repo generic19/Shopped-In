@@ -30,21 +30,8 @@ struct ProfileView: View {
                 }
 
                 // Orders Section
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text("Your Orders")
-                            .font(.title2)
-                            .bold()
-                        Spacer()
-                        Button("See more") {
-                            // Action to see more orders
-                        }
-                    }
-                    ForEach(0 ..< 2) { index in
-                        OrderRowView(orderIndex: index)
-                    }
-                }
-
+                RecentOrdersView(viewModel: DIContainer.shared.resolve())
+                
                 // Favorites Section
                 VStack(alignment: .leading) {
                     HStack {
@@ -78,16 +65,6 @@ struct ProfileView: View {
                 SettingsView()
             }
         }
-    }
-}
-
-struct OrderRowView: View {
-    let orderIndex: Int
-    var body: some View {
-        Text("Order \(orderIndex + 1)")
-            .padding()
-            .background(Color.gray.opacity(0.2))
-            .cornerRadius(8)
     }
 }
 

@@ -45,5 +45,13 @@ class OrderAssembly: Assembly {
                 reloadUserUseCase: r.resolve(ReloadUserUseCase.self)!,
             )
         }.inObjectScope(.transient)
+        
+        container.register(OrdersViewModel.self) { r in
+            OrdersViewModel(
+                getAllOrdersUseCase: r.resolve(GetAllOrdersUseCase.self)!,
+                getRecentOrdersUseCase: r.resolve(GetRecentOrdersUseCase.self)!,
+                getCurrentUserUseCase: r.resolve(GetCurrentUserUseCase.self)!,
+            )
+        }
     }
 }

@@ -4,6 +4,7 @@
 //
 //  Created by Basel Alasadi on 17/06/2025.
 //
+import Foundation
 
 struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
     typealias ResponseType = OrderCreateResponse
@@ -141,9 +142,15 @@ struct OrdersRequest: AlamofireAPIService.GraphQLRequest {
     let customerID: String
     let limit: Int
     
+    private var customerUUID: String {
+        if let url = URL(string: customerID) {
+            return url.lastPathComponent
+        } else {
+            return customerID
+        }
+    }
+    
     var body: String {
-        let customerUUID = customerID[(customerID.lastIndex(of: "/") ?? customerID.startIndex) ... customerID.endIndex]
-        
         return """
             query Order {
                 orders(first: \(limit), query: "customer_id:\(customerUUID)") {
