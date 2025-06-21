@@ -85,7 +85,7 @@ class OrderRemoteDataSourceImpl: OrderRemoteDataSource {
         service.request(graphQL: request) { result in
             switch result {
                 case .success(let response):
-                    let orders = response.nodes.map({ $0.toDomain() })
+                    let orders = response.data.orders.nodes.map({ $0.toDomain() })
                     completion(.success(orders))
                     
                 case .failure(let error):

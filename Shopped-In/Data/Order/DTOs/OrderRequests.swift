@@ -4,6 +4,7 @@
 //
 //  Created by Basel Alasadi on 17/06/2025.
 //
+import Foundation
 
 struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
     typealias ResponseType = OrderCreateResponse
@@ -65,6 +66,10 @@ struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
             """
         }.joined(separator: ", ")
         
+        let address2Fragment = if let address2 = order.shippingAddress.address2, !address2.isEmpty {
+            "address2: \"\(address2)\""
+        } else { "" }
+        
         return """
             mutation OrderCreate {
                 orderCreate(
@@ -73,7 +78,7 @@ struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
                         \(discountFragment)
                         shippingAddress: {
                             address1: "\(order.shippingAddress.address1)"
-                            address2: "\(order.shippingAddress.address2)"
+                            \(address2Fragment)
                             city: "\(order.shippingAddress.city)"
                             countryCode: EG
                             firstName: "\(order.shippingAddress.firstName)"
@@ -141,9 +146,15 @@ struct OrdersRequest: AlamofireAPIService.GraphQLRequest {
     let customerID: String
     let limit: Int
     
+    private var customerUUID: String {
+        if let url = URL(string: customerID) {
+            return url.lastPathComponent
+        } else {
+            return customerID
+        }
+    }
+    
     var body: String {
-        let customerUUID = customerID[(customerID.lastIndex(of: "/") ?? customerID.startIndex) ... customerID.endIndex]
-        
         return """
             query Order {
                 orders(first: \(limit), query: "customer_id:\(customerUUID)") {
