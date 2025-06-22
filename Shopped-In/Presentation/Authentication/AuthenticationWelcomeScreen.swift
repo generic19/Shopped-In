@@ -64,7 +64,6 @@ struct AuthenticationWelcomeScreen: View {
                             .foregroundColor(.white)
                             .underline()
                             .onTapGesture {
-                                viewModel.continueAsGuest()
                                 appSwitch.switchTo(.mainTabs)
                             }
                             .padding(.top, 10)
