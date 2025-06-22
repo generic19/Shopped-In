@@ -37,20 +37,11 @@ struct ProfileView: View {
                     RecentOrdersView(viewModel: DIContainer.shared.resolve())
                     
                     // Favorites Section
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text("Favorites")
-                                .font(.title2)
-                                .bold()
-                            Spacer()
-                            Button("See more") {
-                                // Action to see more favorites
-                            }
-                        }
-                        ForEach(0 ..< 2) { index in
-                            FavoriteItemView(itemIndex: index)
-                        }
-                    }
+                    FavoriteSectionView(viewModel: FavoriteViewModel(
+                        addFavoriteUseCase: DIContainer.shared.resolve(),
+                        removeFavoriteUseCase: DIContainer.shared.resolve(),
+                        checkFavoriteUseCase: DIContainer.shared.resolve()
+                    ))
                 }
                 .padding()
             }
