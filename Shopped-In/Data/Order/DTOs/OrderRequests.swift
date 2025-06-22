@@ -157,7 +157,7 @@ struct OrdersRequest: AlamofireAPIService.GraphQLRequest {
     var body: String {
         return """
             query Order {
-                orders(first: \(limit), query: "customer_id:\(customerUUID)") {
+                orders(first: \(limit), query: "customer_id:\(customerUUID)", reverse: true) {
                     nodes {
                         currencyCode
                         discountCodes

@@ -248,33 +248,62 @@ struct CheckoutView: View {
                                 .fill(Color(.secondarySystemFill))
                         }
                         
-                        Button {
-                            viewModel.completeCheckout()
-                        } label: {
-                            Text({
-                                switch viewModel.selectedPaymentMethod {
-                                    case .applePay: "Pay with Pay"
-                                    default: "Complete Order"
+                        switch viewModel.selectedPaymentMethod {
+                            case .applePay:
+                                Button {
+                                    viewModel.checkoutWithApplePay()
+                                } label: {
+                                    Text("Pay with Pay")
+                                        .font(.title3)
+                                        .frame(maxWidth: .infinity)
                                 }
-                            }())
-                            .font({
-                                switch viewModel.selectedPaymentMethod {
-                                    case .applePay: .title3
-                                    default: .body
+                                .tint(Color.primary)
+                                .disabled(viewModel.isCheckoutDisabled)
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.large)
+                                .padding(.vertical)
+                                
+                            default:
+                                Button {
+                                    viewModel.checkoutWithApplePay()
+                                } label: {
+                                    Text("Complete Order")
+                                        .font(.body)
+                                        .frame(maxWidth: .infinity)
                                 }
-                            }())
-                            .frame(maxWidth: .infinity)
+                                .disabled(viewModel.isCheckoutDisabled)
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.large)
+                                .padding(.vertical)
                         }
-                        .disabled(viewModel.isCheckoutDisabled)
-                        .buttonStyle(.borderedProminent)
-                        .tint({
-                            switch viewModel.selectedPaymentMethod {
-                                case .applePay: return Color.primary
-                                default: return Color.blue
-                            }
-                        }())
-                        .controlSize(.large)
-                        .padding(.vertical)
+                        
+//                        Button {
+//                            viewModel.completeCheckout()
+//                        } label: {
+//                            Text({
+//                                switch viewModel.selectedPaymentMethod {
+//                                    case .applePay: "Pay with Pay"
+//                                    default: "Complete Order"
+//                                }
+//                            }())
+//                            .font({
+//                                switch viewModel.selectedPaymentMethod {
+//                                    case .applePay: .title3
+//                                    default: .body
+//                                }
+//                            }())
+//                            .frame(maxWidth: .infinity)
+//                        }
+//                        .disabled(viewModel.isCheckoutDisabled)
+//                        .buttonStyle(.borderedProminent)
+//                        .tint({
+//                            switch viewModel.selectedPaymentMethod {
+//                                case .applePay: return Color.primary
+//                                default: return Color.blue
+//                            }
+//                        }())
+//                        .controlSize(.large)
+//                        .padding(.vertical)
                     }
                 }
                 .padding(.horizontal)
@@ -302,8 +331,4 @@ struct CheckoutView: View {
             viewModel.load()
         }
     }
-}
-
-#Preview {
-    CheckoutView() {}
 }

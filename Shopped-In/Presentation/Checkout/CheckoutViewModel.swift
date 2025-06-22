@@ -1,7 +1,7 @@
 import Combine
-import Foundation
+import PassKit
 
-class CheckoutViewModel: ObservableObject {
+class CheckoutViewModel: NSObject, ObservableObject {
     struct ErrorAction {
         let title: String
         let action: () -> Void
@@ -45,6 +45,8 @@ class CheckoutViewModel: ObservableObject {
         self.reloadUserUseCase = reloadUserUseCase
         self.deleteCartUseCase = deleteCartUseCase
         
+        super.init()
+        
         getCurrentUserUseCase.execute().assign(to: &$user)
         $user.sink { _ in
             self.load()
@@ -77,7 +79,10 @@ class CheckoutViewModel: ObservableObject {
         loadCartItems(customerAccessToken: customerAccessToken)
         loadAddresses(customerAccessToken: customerAccessToken)
     }
-    
+}
+
+// Cart Operations
+extension CheckoutViewModel {
     private func loadCartItems(customerAccessToken: String) {
         cart = nil
         loadingMessage = "Loading cart for checkout..."
@@ -96,6 +101,13 @@ class CheckoutViewModel: ObservableObject {
         }
     }
     
+    func clearCart() {
+        self.deleteCartUseCase.execute()
+    }
+}
+
+// Addresses Operations
+extension CheckoutViewModel {
     func loadAddresses() {
         if let customerAccessToken {
             loadAddresses(customerAccessToken: customerAccessToken)
@@ -120,18 +132,64 @@ class CheckoutViewModel: ObservableObject {
             }
         }
     }
+}
+
+// Apple Pay
+extension CheckoutViewModel: PKPaymentAuthorizationControllerDelegate {
+    func checkoutWithApplePay() {
+        guard let cart, let customerAccessToken, let user else {
+            return
+        }
+        
+        let request = PKPaymentRequest()
+        request.merchantIdentifier = "iti.mad45-sv.ios-team3.Shopped-In"
+        request.countryCode = "EG"
+        request.currencyCode = "EGP"
+        request.supportedNetworks = [.visa, .masterCard, .meeza]
+        request.merchantCapabilities = [.credit, .debit, .threeDSecure]
+        
+        var items = cart.items.map { item in
+            var label = item.quantity != 1 ? "\(item.quantity)x" : ""
+            label.append("\(item.title) (\(item.variantTitle))")
+            
+            let itemTotal = item.price * Double(item.quantity)
+            
+            return PKPaymentSummaryItem(label: label, amount: NSDecimalNumber(value: itemTotal), type: .final)
+        }
+        
+        items.append(PKPaymentSummaryItem(label: "Total", amount: NSDecimalNumber(value: cart.total), type: .final))
+        request.paymentSummaryItems = items
+        
+        let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+        paymentController.delegate = self
+        paymentController.present(completion: nil)
+    }
     
+    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
+        
+        guard let customerAccessToken, let user else {
+            completion(PKPaymentAuthorizationResult(status: .failure, errors: nil))
+            return
+        }
+        
+        completeCheckout(customerAccessToken: customerAccessToken, user: user) { isSuccess in
+            completion(PKPaymentAuthorizationResult(status: isSuccess ? .success : .failure, errors: nil))
+        }
+    }
+    func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
+        controller.dismiss(completion: nil)
+    }
+}
+
+// Checkout Operations
+extension CheckoutViewModel {
     func completeCheckout() {
         if let customerAccessToken, let user {
             completeCheckout(customerAccessToken: customerAccessToken, user: user)
         }
     }
     
-    func clearCart() {
-        self.deleteCartUseCase.execute()
-    }
-    
-    private func completeCheckout(customerAccessToken: String, user: User) {
+    private func completeCheckout(customerAccessToken: String, user: User, onResultStatus: ((Bool) -> Void)? = nil) {
         guard let cart else {
             errorMessage = "No cart to process."
             return
@@ -155,16 +213,20 @@ class CheckoutViewModel: ObservableObject {
             fixedDiscount: cart.discount?.fixedAmount,
             fractionalDiscount: fractionalDiscount,
         ) { result in
-            self.loadingMessage = nil
-            
             switch result {
                 case .success(_):
+                    onResultStatus?(true)
+                    
                     self.errorMessage = nil
                     self.showCheckoutSuccess = true
                     
                 case .error(let message):
+                    onResultStatus?(false)
+                    
                     self.errorMessage = message
             }
+            
+            self.loadingMessage = nil
         }
     }
 }
