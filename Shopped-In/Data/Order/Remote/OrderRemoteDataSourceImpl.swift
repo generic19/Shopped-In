@@ -55,7 +55,8 @@ class OrderRemoteDataSourceImpl: OrderRemoteDataSource {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     phone: address.phone
-                )
+                ),
+                paymentAmount: cart.total.asAmount(.EGP)
             )
         )
         

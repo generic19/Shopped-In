@@ -1,6 +1,8 @@
 import Combine
 import PassKit
 
+private let COD_MAXIMUM = 10000.0
+
 class CheckoutViewModel: NSObject, ObservableObject {
     struct ErrorAction {
         let title: String
@@ -186,6 +188,8 @@ extension CheckoutViewModel {
     func completeCheckout() {
         if let customerAccessToken, let user {
             completeCheckout(customerAccessToken: customerAccessToken, user: user)
+        } else {
+            errorMessage = "You must be signed in to checkout an order."
         }
     }
     
@@ -196,6 +200,21 @@ extension CheckoutViewModel {
         }
         guard let selectedAddress else {
             errorMessage = "No selected shipping address."
+            return
+        }
+        
+        if selectedPaymentMethod == .cashOnDelivery && cart.total > COD_MAXIMUM {
+            onResultStatus?(false)
+            
+            errorMessage = String(format: "Cannot pay using cash on delivery for orders over EGP %.2f.", COD_MAXIMUM)
+            errorActions = [
+                ErrorAction(title: "Choose Payment Method", action: {
+                    self.errorMessage = nil
+                    self.errorActions = nil
+                    self.selectedPaymentMethod = nil
+                })
+            ]
+            
             return
         }
         

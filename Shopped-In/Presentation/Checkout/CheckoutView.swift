@@ -265,7 +265,7 @@ struct CheckoutView: View {
                                 
                             default:
                                 Button {
-                                    viewModel.checkoutWithApplePay()
+                                    viewModel.completeCheckout()
                                 } label: {
                                     Text("Complete Order")
                                         .font(.body)
@@ -276,34 +276,6 @@ struct CheckoutView: View {
                                 .controlSize(.large)
                                 .padding(.vertical)
                         }
-                        
-//                        Button {
-//                            viewModel.completeCheckout()
-//                        } label: {
-//                            Text({
-//                                switch viewModel.selectedPaymentMethod {
-//                                    case .applePay: "Pay with Pay"
-//                                    default: "Complete Order"
-//                                }
-//                            }())
-//                            .font({
-//                                switch viewModel.selectedPaymentMethod {
-//                                    case .applePay: .title3
-//                                    default: .body
-//                                }
-//                            }())
-//                            .frame(maxWidth: .infinity)
-//                        }
-//                        .disabled(viewModel.isCheckoutDisabled)
-//                        .buttonStyle(.borderedProminent)
-//                        .tint({
-//                            switch viewModel.selectedPaymentMethod {
-//                                case .applePay: return Color.primary
-//                                default: return Color.blue
-//                            }
-//                        }())
-//                        .controlSize(.large)
-//                        .padding(.vertical)
                     }
                 }
                 .padding(.horizontal)
