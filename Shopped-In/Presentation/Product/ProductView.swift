@@ -212,6 +212,14 @@ struct ProductDetailView: View {
                                 .padding(.bottom, 10)
                             } else {
                                 Button(action: {
+                                    if TokenRepoImpl(keychain: KeychainHelper()).loadToken() == nil {
+                                        toastMessage = "You must login to add items to cart!"
+                                        toastColor = Color.red
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            toastMessage = ""
+                                        }
+                                        return
+                                    }
                                     if let variantId = viewModel.selectedVariantId,
                                         let variantQuantity = viewModel.selectedVariantQuantity {
                                         if variantQuantity > 0 {
