@@ -37,11 +37,7 @@ struct ProfileView: View {
                     RecentOrdersView(viewModel: DIContainer.shared.resolve())
                     
                     // Favorites Section
-                    FavoriteSectionView(viewModel: FavoriteViewModel(
-                        addFavoriteUseCase: DIContainer.shared.resolve(),
-                        removeFavoriteUseCase: DIContainer.shared.resolve(),
-                        checkFavoriteUseCase: DIContainer.shared.resolve()
-                    ))
+                    FavoriteSectionView()
                 }
                 .padding()
             }

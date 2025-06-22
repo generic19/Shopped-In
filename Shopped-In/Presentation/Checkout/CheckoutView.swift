@@ -130,7 +130,7 @@ struct CheckoutView: View {
                         }
                         .padding(.bottom, 8)
                         
-                        if let addresses: [Address] = viewModel.addresses {
+                        if let addresses: [Address] = viewModel.addresses, !addresses.isEmpty {
                             LazyVStack(alignment: .leading) {
                                 ForEach(addresses, id: \.id) { (address: Address) in
                                     Button {
