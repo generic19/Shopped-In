@@ -1,13 +1,16 @@
 import SwiftUI
+import Combine
 
 struct ProfileView: View {
+    @StateObject private var viewModel: ProfileViewModel = ProfileViewModel()
     @State private var navigateToSettings = false
+    @EnvironmentObject private var appSwitch: AppSwitch
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Welcome Name")
+                    Text("Welcome \(viewModel.user?.firstName ?? "Guest")")
                         .font(.title)
                         .bold()
                         .padding(.top)
@@ -60,11 +63,22 @@ struct ProfileView: View {
                         Image(systemName: "gear")
                     }
                 }
+                
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: {
+                        viewModel.signOutUser {
+                            appSwitch.switchTo(.authentication)
+                        }
+                    }) {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                    }
+                }
             }
             .navigationDestination(isPresented: $navigateToSettings) {
                 SettingsView()
             }
         }
+        
     }
 }
 

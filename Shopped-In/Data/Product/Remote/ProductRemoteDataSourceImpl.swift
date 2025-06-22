@@ -54,11 +54,12 @@ final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
                     .title()
                     .description()
                     .options { $0.name().values() }
-                    .images(first: 5) { $0.edges { $0.node { $0.url() } } }
-                    .variants(first: 10) { $0.edges { $0.node {
+                    .images(first: 10) { $0.edges { $0.node { $0.url() } } }
+                    .variants(first: 100) { $0.edges { $0.node {
                         $0.id()
                         $0.price { $0.amount() }
                         $0.selectedOptions { $0.name().value() }
+                        $0.quantityAvailable()
                     }}}
                 }
             }
