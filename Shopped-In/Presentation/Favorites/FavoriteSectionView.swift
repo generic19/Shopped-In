@@ -1,28 +1,49 @@
+//
+//  FavoriteSectionView.swift
+//  Shopped-In
+//
+//  Created by Ayatullah Salah on 22/06/2025.
+//
+
 import SwiftUI
 
-
-import SwiftUI
-
-struct FavoriteProductsView: View {
+struct FavoriteSectionView: View {
     @StateObject var viewModel: FavoriteViewModel
-    @State private var selectedProductID: String?
     @State private var showAlert = false
     @State private var productToDelete: Product?
 
     var body: some View {
-        List {
+        VStack(alignment: .leading) {
+            HStack {
+                Text("Your Favorites")
+                    .font(.title2)
+                    .bold()
+                
+                Spacer()
+                
+                NavigationLink {
+                    FavoriteProductsView(viewModel: viewModel)
+                } label: {
+                    Text("See more")
+                }
+            }
+            
             if viewModel.isLoading {
-                ProgressView()
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+                .padding(.vertical, 16)
             } else if viewModel.favoriteProducts.isEmpty {
-                Text("No favorite products yet.")
+                Text("No favorites yet")
                     .foregroundColor(.gray)
+                    .padding(.vertical, 16)
             } else {
-                ForEach(viewModel.favoriteProducts, id: \.id) { product in
-                    NavigationLink(
-                        destination: ProductDetailView(productID: product.id),
-                        tag: product.id,
-                        selection: $selectedProductID
-                    ) {
+                ForEach(viewModel.favoriteProducts.prefix(2), id: \.id) { product in
+                    NavigationLink {
+                        ProductDetailView(productID: product.id)
+                    } label: {
                         HStack {
                             AsyncImage(url: URL(string: product.images.first ?? "")) { image in
                                 image
@@ -33,7 +54,7 @@ struct FavoriteProductsView: View {
                                 Color.gray.opacity(0.3)
                                     .frame(width: 50, height: 50)
                             }
-
+                            
                             VStack(alignment: .leading) {
                                 Text(product.title).bold()
                                 Text("\(product.price) EGP")
@@ -58,12 +79,11 @@ struct FavoriteProductsView: View {
                     viewModel.removeFavorite(product)
                 }
             }
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) { }
         }
-        .navigationTitle("Favorites")
+        .padding(.vertical, 16)
         .onAppear {
             viewModel.fetchFavorites()
         }
     }
 }
-

@@ -257,10 +257,7 @@ struct ProductDetailView: View {
                 }
             }
 
-            NavigationLink(destination: FavoriteProductsView(viewModel: favoriteViewModel), isActive: $navigateToFavorites) {
-                EmptyView()
-            }
-
+           
             .onAppear {
                 viewModel.fetchProduct(by: productID)
                 cartViewModel.loadCart()
