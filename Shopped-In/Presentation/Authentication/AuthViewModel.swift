@@ -136,7 +136,7 @@ class AuthViewModel: ObservableObject {
     
     func continueAsGuest() {
         isGuest = true
-        isAuthenticated = false
+        isAuthenticated = true
     }
     
     // MARK: - Sign Out
