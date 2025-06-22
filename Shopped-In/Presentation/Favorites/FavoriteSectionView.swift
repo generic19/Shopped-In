@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FavoriteSectionView: View {
     @StateObject var viewModel: FavoriteViewModel = DIContainer.resolve()
-    
+
     @State private var showAlert = false
     @State private var productToDelete: Product?
 
@@ -19,16 +19,16 @@ struct FavoriteSectionView: View {
                 Text("Your Favorites")
                     .font(.title2)
                     .bold()
-                
+
                 Spacer()
-                
+
                 NavigationLink {
                     FavoriteProductsView(viewModel: viewModel)
                 } label: {
                     Text("See more")
                 }
             }
-            
+
             if viewModel.isLoading {
                 HStack {
                     Spacer()
@@ -61,12 +61,8 @@ struct FavoriteSectionView: View {
                                 Color.gray.opacity(0.3)
                                     .frame(width: 50, height: 50)
                             }
-                            
-                            VStack(alignment: .leading) {
-                                Text(product.title).bold()
-                                Text("\(product.price) EGP")
-                                    .foregroundColor(.gray)
-                            }
+
+                            Text(product.title).bold()
                         }
                     }
                     .swipeActions {

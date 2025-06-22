@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 import SwiftUI
 
 struct FavoriteProductsView: View {
@@ -8,6 +7,11 @@ struct FavoriteProductsView: View {
     @State private var selectedProductID: String?
     @State private var showAlert = false
     @State private var productToDelete: Product?
+
+    @State private var currencyConverter: CurrencyConverter = DIContainer.shared.resolve()
+
+    @State private var currentExchangeRate: Double = 1
+    @State private var currentCurrency: String = "EGP"
 
     var body: some View {
         List {
@@ -36,8 +40,13 @@ struct FavoriteProductsView: View {
 
                             VStack(alignment: .leading) {
                                 Text(product.title).bold()
-                                Text("\(product.price) EGP")
-                                    .foregroundColor(.gray)
+                                if let priceValue = Double(product.price) {
+                                    Text("\(priceValue * currentExchangeRate, specifier: "%.2f") \(currentCurrency)")
+                                        .foregroundColor(.gray)
+                                } else {
+                                    Text("Invalid price")
+                                        .foregroundColor(.red)
+                                }
                             }
                         }
                     }
@@ -63,7 +72,10 @@ struct FavoriteProductsView: View {
         .navigationTitle("Favorites")
         .onAppear {
             viewModel.fetchFavorites()
+            if (currencyConverter.usdExchangeRate != nil) && currencyConverter.getCurrency() == "USD" {
+                currentCurrency = "USD"
+                currentExchangeRate = currencyConverter.usdExchangeRate!
+            }
         }
     }
 }
-
