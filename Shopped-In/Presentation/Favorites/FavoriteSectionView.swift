@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct FavoriteSectionView: View {
-    @StateObject var viewModel: FavoriteViewModel
+    @StateObject var viewModel: FavoriteViewModel = DIContainer.resolve()
+    
     @State private var showAlert = false
     @State private var productToDelete: Product?
 
@@ -36,9 +37,15 @@ struct FavoriteSectionView: View {
                 }
                 .padding(.vertical, 16)
             } else if viewModel.favoriteProducts.isEmpty {
-                Text("No favorites yet")
-                    .foregroundColor(.gray)
-                    .padding(.vertical, 16)
+                Text("No favorite products yet.")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 12)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(.secondarySystemFill))
+                    )
             } else {
                 ForEach(viewModel.favoriteProducts.prefix(2), id: \.id) { product in
                     NavigationLink {

@@ -28,8 +28,8 @@ struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
         let currencyCode: String
         let lineItems: [LineItem]
         let shippingAddress: ShippingAddress
+        let paymentAmount: Amount
     }
-
     
     let sendReceipt: Bool = false
     let customerID: String
@@ -90,6 +90,14 @@ struct OrderCreateRequest: AlamofireAPIService.GraphQLRequest {
                         lineItems: [
                             \(itemsFragment)
                         ]
+                        transactions: {
+                            amountSet: {
+                                shopMoney: {
+                                    amount: "\(String(format: "%.2f", order.paymentAmount.value))"
+                                    currencyCode: \(order.paymentAmount.currency)
+                                }
+                            }
+                        }
                     },
                     options: {
                         inventoryBehaviour: DECREMENT_IGNORING_POLICY
@@ -157,7 +165,7 @@ struct OrdersRequest: AlamofireAPIService.GraphQLRequest {
     var body: String {
         return """
             query Order {
-                orders(first: \(limit), query: "customer_id:\(customerUUID)") {
+                orders(first: \(limit), query: "customer_id:\(customerUUID)", reverse: true) {
                     nodes {
                         currencyCode
                         discountCodes

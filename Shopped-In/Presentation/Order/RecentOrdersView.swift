@@ -31,48 +31,59 @@ struct RecentOrdersView: View {
                         
                 case .success(let orders):
                     VStack(alignment: .leading) {
-                        ForEach(orders, id: \.id) { (order: Order) in
-                            let orderDM = order.toDisplayModel()
-                            
-                            NavigationLink {
-                                OrderView(order: order)
-                            } label: {
-                                HStack(spacing: 16) {
-                                    AsyncImage(url: orderDM.imageURL) { image in
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fill)
-                                            .frame(width: 70, height: 70)
-                                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                                    } placeholder: {
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .frame(width: 70, height: 70)
-                                            .foregroundStyle(Color.gray)
-                                    }
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text(orderDM.title)
-                                            .font(.callout)
-                                            .multilineTextAlignment(.leading)
-                                            .lineSpacing(-2)
-                                            .lineLimit(2)
-                                        
-                                        Text(orderDM.totalAmount)
-                                            .font(.callout.weight(.medium))
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    Image(systemName: "chevron.right")
-                                        .tint(.blue)
-                                        .padding(.trailing, 8)
-                                }
+                        if orders.isEmpty {
+                            HStack {
+                                Spacer()
+                                
+                                Text("No orders yet.")
+                                    .foregroundStyle(.secondary)
+                                
+                                Spacer()
                             }
-                            .tint(.black)
-                            
-                            Divider()
-                                .padding(.top, -2)
+                        } else {
+                            ForEach(orders, id: \.id) { (order: Order) in
+                                let orderDM = order.toDisplayModel()
+                                
+                                NavigationLink {
+                                    OrderView(order: order)
+                                } label: {
+                                    HStack(spacing: 16) {
+                                        AsyncImage(url: orderDM.imageURL) { image in
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fill)
+                                                .frame(width: 70, height: 70)
+                                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                        } placeholder: {
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .frame(width: 70, height: 70)
+                                                .foregroundStyle(Color.gray)
+                                        }
+                                        
+                                        VStack(alignment: .leading) {
+                                            Text(orderDM.title)
+                                                .font(.callout)
+                                                .multilineTextAlignment(.leading)
+                                                .lineSpacing(-2)
+                                                .lineLimit(2)
+                                            
+                                            Text(orderDM.totalAmount)
+                                                .font(.callout.weight(.medium))
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .tint(.blue)
+                                            .padding(.trailing, 8)
+                                    }
+                                }
+                                .tint(.black)
+                                
+                                Divider()
+                                    .padding(.top, -2)
+                            }
                         }
                     }
                     .padding(.horizontal, 8)

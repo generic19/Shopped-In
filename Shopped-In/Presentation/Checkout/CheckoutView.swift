@@ -130,7 +130,7 @@ struct CheckoutView: View {
                         }
                         .padding(.bottom, 8)
                         
-                        if let addresses: [Address] = viewModel.addresses {
+                        if let addresses: [Address] = viewModel.addresses, !addresses.isEmpty {
                             LazyVStack(alignment: .leading) {
                                 ForEach(addresses, id: \.id) { (address: Address) in
                                     Button {
@@ -248,33 +248,34 @@ struct CheckoutView: View {
                                 .fill(Color(.secondarySystemFill))
                         }
                         
-                        Button {
-                            viewModel.completeCheckout()
-                        } label: {
-                            Text({
-                                switch viewModel.selectedPaymentMethod {
-                                    case .applePay: "Pay with Pay"
-                                    default: "Complete Order"
+                        switch viewModel.selectedPaymentMethod {
+                            case .applePay:
+                                Button {
+                                    viewModel.checkoutWithApplePay()
+                                } label: {
+                                    Text("Pay with Pay")
+                                        .font(.title3)
+                                        .frame(maxWidth: .infinity)
                                 }
-                            }())
-                            .font({
-                                switch viewModel.selectedPaymentMethod {
-                                    case .applePay: .title3
-                                    default: .body
+                                .tint(Color.primary)
+                                .disabled(viewModel.isCheckoutDisabled)
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.large)
+                                .padding(.vertical)
+                                
+                            default:
+                                Button {
+                                    viewModel.completeCheckout()
+                                } label: {
+                                    Text("Complete Order")
+                                        .font(.body)
+                                        .frame(maxWidth: .infinity)
                                 }
-                            }())
-                            .frame(maxWidth: .infinity)
+                                .disabled(viewModel.isCheckoutDisabled)
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.large)
+                                .padding(.vertical)
                         }
-                        .disabled(viewModel.isCheckoutDisabled)
-                        .buttonStyle(.borderedProminent)
-                        .tint({
-                            switch viewModel.selectedPaymentMethod {
-                                case .applePay: return Color.primary
-                                default: return Color.blue
-                            }
-                        }())
-                        .controlSize(.large)
-                        .padding(.vertical)
                     }
                 }
                 .padding(.horizontal)
@@ -302,8 +303,4 @@ struct CheckoutView: View {
             viewModel.load()
         }
     }
-}
-
-#Preview {
-    CheckoutView() {}
 }
