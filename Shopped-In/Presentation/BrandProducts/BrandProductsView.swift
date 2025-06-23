@@ -3,33 +3,40 @@ import SwiftUI
 
 struct BrandProductsView: View {
     let brand: Brand
-
+    
     @ObservedObject var viewModel: BrandProductsViewModel = DIContainer.shared.resolve()
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading) {
-                if viewModel.isLoading {
-                    ProgressView {
-                        Text("Loading products...")
-                    }
-                } else if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .foregroundStyle(.red)
-                } else if let products = viewModel.products {
-                    LazyVGrid(
-                        columns: [GridItem(.flexible()), GridItem(.flexible())],
-                        spacing: 16
-                    ) {
-                        ForEach(products, id: \.id) { product in
-                            ProductItemView(product: product)
-                                .padding(16)
+            LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
+                Section {
+                    ZStack {
+                        if viewModel.isLoading {
+                            ProgressView {
+                                Text("Loading products...")
+                            }
+                        } else if let errorMessage = viewModel.errorMessage {
+                            Text(errorMessage)
+                                .foregroundStyle(.red)
+                        } else if let products = viewModel.products {
+                            LazyVGrid(
+                                columns: [GridItem(.flexible()), GridItem(.flexible())],
+                                spacing: 16
+                            ) {
+                                ForEach(products, id: \.id) { product in
+                                    ProductItemView(product: product)
+                                        .padding(16)
+                                }
+                            }
                         }
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+                } header: {
+                    ProductTypeFilterBar(selectedProductType: $viewModel.productType)
+                        .padding(.horizontal)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle(brand.title)

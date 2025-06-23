@@ -8,7 +8,7 @@ final class ProductRepositoryImpl: ProductRepository {
         self.remote = remote
     }
     
-    func getProductsByBrand(brandID: String, sort: ProductsSort, completion: @escaping (ProductsResponse) -> Void) {
+    func getProductsByBrand(brandID: String, sort: ProductsSort, completion: @escaping (CategorizedProductsResponse) -> Void) {
         remote.getProductsForBrand(brandID: brandID, sort: sort) { result in
             switch result {
                 case .success(let products):

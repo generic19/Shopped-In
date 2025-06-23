@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let productTypeChoices: [ProductType?] = [nil] + ProductType.allCases
+
 
 struct CategoriesView: View {
     @StateObject var viewModel: CategoriesViewModel = DIContainer.shared.resolve()
@@ -29,16 +29,7 @@ struct CategoriesView: View {
                             }
                         }
                     } header: {
-                        Picker("Product Type", selection: $viewModel.selectedProductType) {
-                            ForEach(productTypeChoices, id: \.self) { productType in
-                                Text(productType?.rawValue.capitalized ?? "All").tag(productType)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 16)
-                        .background(.regularMaterial)
-                        .padding(.horizontal, -16)
+                        ProductTypeFilterBar(selectedProductType: $viewModel.selectedProductType)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -79,6 +70,8 @@ struct CategoriesView: View {
         }
     }
 }
+
+
 
 struct DemographicFilterMenu: View {
     @Binding var categoryFilter: CategoryFilter

@@ -9,17 +9,10 @@ class BrandProductsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
-    @Published private var allProducts: [ProductListItem]?
+    @Published private var allProducts: [CategorizedProductListItem]?
     @Published var query = ""
-    @Published private var debouncedQuery = ""
-    
-    var products: [ProductListItem]? {
-        debouncedQuery.isEmpty
-            ? allProducts
-            : allProducts?.filter {
-                $0.title.localizedCaseInsensitiveContains(debouncedQuery)
-            }
-    }
+    @Published var productType: ProductType?
+    @Published var products: [ProductListItem]?
     
     @Published var sort: ProductsSort = .bestSellers {
         didSet {
@@ -32,9 +25,22 @@ class BrandProductsViewModel: ObservableObject {
     init(getProductsByBrandUseCase: GetProductsByBrandUseCase) {
         self.getProductsByBrandUseCase = getProductsByBrandUseCase
         
-        $query.debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+        let debouncedQuery = $query
+            .debounce(for: .milliseconds(250), scheduler: RunLoop.main)
             .removeDuplicates()
-            .assign(to: &$debouncedQuery)
+        
+        $allProducts
+            .combineLatest($productType, debouncedQuery) { allProducts, productType, debouncedQuery in
+                allProducts?
+                    .filter { item in
+                        let typeMatch = productType == nil || item.category.productType == productType
+                        let titleMatch = debouncedQuery.isEmpty || item.item.title.localizedCaseInsensitiveContains(debouncedQuery)
+                        
+                        return typeMatch && titleMatch
+                    }
+                    .map(\.item)
+            }
+            .assign(to: &$products)
     }
     
     func getProducts(brand: Brand) {

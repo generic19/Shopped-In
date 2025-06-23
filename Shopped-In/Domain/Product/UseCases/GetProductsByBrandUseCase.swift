@@ -1,7 +1,7 @@
 import Foundation
 
 protocol GetProductsByBrandUseCase {
-    func execute(brand: Brand, sort: ProductsSort, completion: @escaping (ProductsResponse) -> Void)
+    func execute(brand: Brand, sort: ProductsSort, completion: @escaping (CategorizedProductsResponse) -> Void)
 }
 
 class GetProductsByBrandUseCaseImpl: GetProductsByBrandUseCase {
@@ -11,7 +11,7 @@ class GetProductsByBrandUseCaseImpl: GetProductsByBrandUseCase {
         self.repository = repository
     }
 
-    func execute(brand: Brand, sort: ProductsSort, completion: @escaping (ProductsResponse) -> Void) {
+    func execute(brand: Brand, sort: ProductsSort, completion: @escaping (CategorizedProductsResponse) -> Void) {
         repository.getProductsByBrand(brandID: brand.id, sort: sort, completion: completion)
     }
 }
