@@ -6,6 +6,7 @@ class CategoriesViewModel: ObservableObject {
     let getProductsUseCase: GetProductsUseCase
     
     @Published var categoryFilter = CategoryFilter(demographic: nil, productType: nil, onSale: nil)
+    @Published var selectedProductType: ProductType?
     
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -24,6 +25,12 @@ class CategoriesViewModel: ObservableObject {
     
     init(getProductsUseCase: GetProductsUseCase) {
         self.getProductsUseCase = getProductsUseCase
+        
+        $selectedProductType
+            .combineLatest($categoryFilter, { productType, categoryFilter in
+                categoryFilter.withProductType(productType)
+            })
+            .assign(to: &$categoryFilter)
         
         $categorizedProducts
             .combineLatest($categoryFilter, { products, categoryFilter in

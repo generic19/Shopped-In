@@ -1,39 +1,59 @@
 import SwiftUI
 
+private let productTypeChoices: [ProductType?] = [nil] + ProductType.allCases
+
 struct CategoriesView: View {
     @StateObject var viewModel: CategoriesViewModel = DIContainer.shared.resolve()
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading) {
-                    if viewModel.isLoading {
-                        ProgressView {
-                            Text("Loading products...")
-                        }
-                    } else if let errorMessage = viewModel.errorMessage {
-                        Text(errorMessage)
-                            .foregroundStyle(.red)
-                    } else if let products = viewModel.products {
-                        LazyVGrid(
-                            columns: [GridItem(.flexible()), GridItem(.flexible())],
-                            spacing: 16
-                        ) {
-                            ForEach(products, id: \.id) { product in
-                                ProductItemView(product: product)
-                                    .padding(16)
+                LazyVStack(alignment: .leading, pinnedViews: .sectionHeaders) {
+                    Section {
+                        if viewModel.isLoading {
+                            ProgressView {
+                                Text("Loading products...")
+                            }
+                        } else if let errorMessage = viewModel.errorMessage {
+                            Text(errorMessage)
+                                .foregroundStyle(.red)
+                        } else if let products = viewModel.products {
+                            LazyVGrid(
+                                columns: [GridItem(.flexible()), GridItem(.flexible())],
+                                spacing: 16
+                            ) {
+                                ForEach(products, id: \.id) { product in
+                                    ProductItemView(product: product)
+                                        .padding(16)
+                                }
                             }
                         }
+                    } header: {
+                        Picker("Product Type", selection: $viewModel.selectedProductType) {
+                            ForEach(productTypeChoices, id: \.self) { productType in
+                                Text(productType?.rawValue.capitalized ?? "All").tag(productType)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                        .background(.regularMaterial)
+                        .padding(.horizontal, -16)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding()
+                .padding(.horizontal)
             }
+            
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .searchable(text: $viewModel.query, prompt: "Search")
             .toolbarTitleDisplayMode(.inline)
-            .toolbar(content: {
+            .toolbarBackgroundVisibility(.visible, for: .navigationBar)
+            .toolbar {
                 ToolbarItem(placement: .principal) {
-                    DemographicFilterMenu(categoryFilter: $viewModel.categoryFilter)
+                    VStack {
+                        DemographicFilterMenu(categoryFilter: $viewModel.categoryFilter)
+                    }
                 }
                 
                 ToolbarItem(placement: .primaryAction) {
@@ -52,11 +72,10 @@ struct CategoriesView: View {
                         .foregroundStyle(.orange)
                     }
                 }
-            })
-            .searchable(text: $viewModel.query, prompt: "Search")
-            .onAppear {
-                viewModel.loadProducts()
             }
+        }
+        .onAppear {
+            viewModel.loadProducts()
         }
     }
 }
