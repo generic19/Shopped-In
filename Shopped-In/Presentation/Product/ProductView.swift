@@ -115,7 +115,7 @@ struct ProductDetailView: View {
                                             Text(size)
                                                 .padding(.vertical, 8)
                                                 .padding(.horizontal, size.count > 1 ? 16 : 12)
-                                                .background(viewModel.selectedSize == size ? Color.orange.opacity(0.7) : Color.gray.opacity(0.2))
+                                                .background(viewModel.selectedSize == size ? Color.blue.opacity(0.7) : Color.gray.opacity(0.2))
                                                 .foregroundColor(.black)
                                                 .cornerRadius(8)
                                                 .onTapGesture {
@@ -136,7 +136,7 @@ struct ProductDetailView: View {
                                                 .frame(width: 30, height: 30)
                                                 .overlay(
                                                     Circle()
-                                                        .stroke(viewModel.selectedColor == colorOption.name ? Color.orange : Color.clear, lineWidth: 3)
+                                                        .stroke(viewModel.selectedColor == colorOption.name ? Color.blue : Color.clear, lineWidth: 3)
                                                 )
                                                 .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
                                                 .onTapGesture {
@@ -185,7 +185,7 @@ struct ProductDetailView: View {
                                             .font(.title2)
                                             .bold()
                                             .frame(width: 40, height: 40)
-                                            .background(Color.orange)
+                                            .background(Color.blue)
                                             .foregroundColor(.white)
                                             .cornerRadius(10)
                                     }
@@ -203,7 +203,7 @@ struct ProductDetailView: View {
                                             .font(.title2)
                                             .bold()
                                             .frame(width: 40, height: 40)
-                                            .background(Color.orange)
+                                            .background(Color.blue)
                                             .foregroundColor(.white)
                                             .cornerRadius(10)
                                     }
@@ -249,7 +249,7 @@ struct ProductDetailView: View {
                                         .bold()
                                         .frame(maxWidth: .infinity)
                                         .padding()
-                                        .background(Color.orange)
+                                        .background(Color.blue)
                                         .foregroundColor(.white)
                                         .cornerRadius(10)
                                 }
