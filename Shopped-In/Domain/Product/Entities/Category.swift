@@ -5,7 +5,7 @@ struct Category {
     let onSale: Bool
 }
 
-struct CategoryFilter: Equatable {
+struct CategoryFilter: Equatable, Hashable {
     let demographic: Demographic?
     let productType: ProductType?
     let onSale: Bool?
@@ -35,7 +35,7 @@ enum Demographic {
     case kids
 }
 
-enum ProductType {
+enum ProductType: String, CaseIterable {
     case shoes
     case shirts
     case accessories

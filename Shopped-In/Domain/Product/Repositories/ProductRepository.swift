@@ -11,7 +11,7 @@ enum CategorizedProductsResponse {
 }
 
 protocol ProductRepository {
-    func getProductsByBrand(brandID: String, sort: ProductsSort, completion: @escaping (ProductsResponse) -> Void)
+    func getProductsByBrand(brandID: String, sort: ProductsSort, completion: @escaping (CategorizedProductsResponse) -> Void)
     func getProducts(sort: ProductsSort, completion: @escaping (CategorizedProductsResponse) -> Void)
     func fetchProduct(by id: String, completion: @escaping (Product?) -> Void)
 }

@@ -14,22 +14,28 @@ final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
         self.service = service
     }
     
-    func getProductsForBrand(brandID: String, sort: ProductsSort, completion: @escaping (Result<[ProductListItem], Error>) -> Void) {
+    func getProductsForBrand(brandID: String, sort: ProductsSort, completion: @escaping (Result<[CategorizedProductListItem], Error>) -> Void) {
         let query = Storefront.buildQuery {
             $0.collection(id: .init(rawValue: brandID)) {
                 $0.products(first: 100, reverse: sort.reversed, sortKey: sort.collectionSortKey) {
-                    $0.nodes {
-                        $0.id()
-                            .title()
-                            .featuredImage {
-                                $0.url()
+                    $0.nodes { $0
+                        .id()
+                        .title()
+                        .featuredImage {
+                            $0.url()
+                        }
+                        .productType()
+                        .collections(first: 100) {
+                            $0.nodes {
+                                $0.title()
                             }
-                            .priceRange {
-                                $0.minVariantPrice {
-                                    $0.amount()
-                                        .currencyCode()
-                                }
+                        }
+                        .priceRange {
+                            $0.minVariantPrice {
+                                $0.amount()
+                                    .currencyCode()
                             }
+                        }
                     }
                 }
             }
@@ -37,7 +43,7 @@ final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
         
         service.client.queryGraphWith(query, cachePolicy: .cacheFirst(expireIn: 30)) { query, error in
             if let dtos = query?.collection?.products.nodes {
-                let products = dtos.compactMap { $0.toDomainListItem() }
+                let products = dtos.compactMap { $0.toDomainCategorizedListItem() }
                 completion(.success(products))
             } else {
                 completion(.failure(error ?? .noData))
@@ -86,24 +92,24 @@ final class ProductRemoteDataSourceImpl: ProductRemoteDataSource {
     func getProducts(sort: ProductsSort, completion: @escaping (Result<[CategorizedProductListItem], any Error>) -> Void) {
         let query = Storefront.buildQuery {
             $0.products(first: 100, reverse: sort.reversed, sortKey: sort.productSortKey) {
-                $0.nodes {
-                    $0.id()
-                        .title()
-                        .productType()
-                        .featuredImage {
-                            $0.url()
+                $0.nodes { $0
+                    .id()
+                    .title()
+                    .productType()
+                    .featuredImage {
+                        $0.url()
+                    }
+                    .collections(first: 100) {
+                        $0.nodes {
+                            $0.title()
                         }
-                        .collections(first: 100) {
-                            $0.nodes {
-                                $0.title()
-                            }
+                    }
+                    .priceRange {
+                        $0.minVariantPrice {
+                            $0.amount()
+                                .currencyCode()
                         }
-                        .priceRange {
-                            $0.minVariantPrice {
-                                $0.amount()
-                                    .currencyCode()
-                            }
-                        }
+                    }
                 }
             }
         }
