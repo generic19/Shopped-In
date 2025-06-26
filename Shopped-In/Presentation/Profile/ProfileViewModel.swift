@@ -2,18 +2,24 @@ import Combine
 
 class ProfileViewModel: ObservableObject {
     @Published var user: User?
-    private var getCurrentUserUseCase: GetCurrentUserUseCase = DIContainer.resolve()
+    
+    private let getCurrentUserUseCase: GetCurrentUserUseCase
+    private let signOut: SignOutUseCase
+    private let deleteCartUseCase: DeleteCartUseCase
 
-    private var signOut: SignOutUseCase = DIContainer.resolve()
-
-    init() {
-        getCurrentUserUseCase.execute().assign(to: &$user)
+    init(getCurrentUserUseCase: GetCurrentUserUseCase, signOut: SignOutUseCase, deleteCartUseCase: DeleteCartUseCase) {
+        self.getCurrentUserUseCase = getCurrentUserUseCase
+        self.signOut = signOut
+        self.deleteCartUseCase = deleteCartUseCase
     }
 
+    func load() {
+        getCurrentUserUseCase.execute().assign(to: &$user)
+    }
+    
     func signOutUser(completion: @escaping () -> Void) {
         signOut.execute {
-            let deleteCartUseCase: DeleteCartUseCase = DIContainer.resolve()
-            deleteCartUseCase.execute()
+            self.deleteCartUseCase.execute()
             completion()
         }
     }

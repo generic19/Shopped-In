@@ -39,6 +39,7 @@
 		FBC47E452DE7BB580008DEFF /* Shopped-In.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shopped-In.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBC47E542DE7BB5A0008DEFF /* Shopped-InTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shopped-InTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FBC47E5E2DE7BB5A0008DEFF /* Shopped-InUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Shopped-InUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FBE8ADFE2E0D58E9000366CC /* Shopped-In.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Shopped-In.xctestplan"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -109,6 +110,7 @@
 		FBC47E3C2DE7BB580008DEFF = {
 			isa = PBXGroup;
 			children = (
+				FBE8ADFE2E0D58E9000366CC /* Shopped-In.xctestplan */,
 				FBC47E472DE7BB580008DEFF /* Shopped-In */,
 				FBC47E572DE7BB5A0008DEFF /* Shopped-InTests */,
 				FBC47E612DE7BB5A0008DEFF /* Shopped-InUITests */,

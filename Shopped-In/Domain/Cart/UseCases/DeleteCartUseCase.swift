@@ -14,5 +14,3 @@ class DeleteCartUseCaseImpl: DeleteCartUseCase {
         repo.deleteCart()
     }
 }
-
-

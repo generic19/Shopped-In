@@ -30,6 +30,7 @@ class DIContainer {
             CartAssembly(),
             OrderAssembly(),
             ProductAssembly(),
+            ProfileAssembly(),
             TokenAssembly(),
             SettingsAssembly(),
         ]

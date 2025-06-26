@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "A861DB02-BB87-45AA-A9AC-5DF475B6FA57",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Shopped-In.xcodeproj",
+      "identifier" : "FBC47E442DE7BB580008DEFF",
+      "name" : "Shopped-In"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Shopped-In.xcodeproj",
+        "identifier" : "FBC47E532DE7BB5A0008DEFF",
+        "name" : "Shopped-InTests"
+      }
+    }
+  ],
+  "version" : 1
+}
