@@ -7,9 +7,7 @@
 import XCTest
 @testable import Shopped_In
 
-enum TestError: Error, Equatable {
-    case sampleError
-}
+
 
 class StubGetCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase {
     private let tokenToReturn: String?

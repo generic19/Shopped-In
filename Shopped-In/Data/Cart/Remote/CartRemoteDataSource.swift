@@ -13,15 +13,3 @@ protocol CartRemoteDataSource {
 
     func addDiscountCode(cartId: String, code: String, completion: @escaping (CartOperationResponse) -> Void)
 }
-
-enum CartOperationResponse {
-    case success
-    case failure(Error)
-    case errorMessage(String)
-}
-
-enum CartCreationResponse {
-    case success(cartId: String)
-    case failure(Error)
-    case errorMessage(String)
-}
