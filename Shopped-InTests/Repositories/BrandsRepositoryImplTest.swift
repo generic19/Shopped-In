@@ -69,7 +69,7 @@ final class BrandRepositoryImplTests: XCTestCase {
         var receivedError = false
 
         repository.getAllBrands(sort: .relevance, forceNetwork: true) { response in
-            if case let .error(message) = response {
+            if case let .error(_) = response {
                 receivedError = true
             } else {
                 XCTFail("Expected an .error response, got \(response) instead")
