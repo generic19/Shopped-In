@@ -6,12 +6,12 @@
 //
 
 final class TokenRepoImpl : TokenRepo{
-    private let keychain: KeychainHelper
+    private let keychain: KeychainHelperProtocol
     
     private let service = "com.shoppedin.auth"
     private let account = "customerAccessToken"
 
-    init(keychain: KeychainHelper) {
+    init(keychain: KeychainHelperProtocol) {
         self.keychain = keychain
     }
     

@@ -1,8 +1,6 @@
-import FirebaseAuth
-import FirebaseCore
-import FirebaseFirestore
 import Foundation
 import Combine
+import UIKit
 
 class AuthRepositoryImpl: AuthRepository {
     private let tokenRepository: TokenRepo
