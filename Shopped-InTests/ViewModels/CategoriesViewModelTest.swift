@@ -25,7 +25,6 @@ fileprivate class StubGetProductsUseCase: GetProductsUseCase {
     }
 }
 
-
 final class CategoriesViewModelTest: XCTestCase {
     var cancellables = Set<AnyCancellable>()
 

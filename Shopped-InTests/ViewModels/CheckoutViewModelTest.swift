@@ -9,8 +9,6 @@ import Combine
 import PassKit
 @testable import Shopped_In
 
-// MARK: — Stubs
-
 fileprivate class StubGetCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase {
     private let token: String?
     init(token: String?) { self.token = token }
@@ -67,9 +65,7 @@ fileprivate class StubCreateOrderUseCase: CreateOrderUseCase {
         fixedDiscount: Double?,
         fractionalDiscount: Double?,
         completion: @escaping (CreateOrderResult) -> Void
-    ) {
-        // no-op
-    }
+    ) {}
 }
 
 fileprivate class StubResendVerificationEmailUseCase: ResendVerificationEmailUseCase {
@@ -81,8 +77,6 @@ fileprivate class StubReloadUserUseCase: ReloadUserUseCase {
     private(set) var executeCalled = false
     func execute() { executeCalled = true }
 }
-
-// MARK: — Tests
 
 final class CheckoutViewModelTests: XCTestCase {
     var cancellables = Set<AnyCancellable>()
