@@ -81,7 +81,7 @@ class FireBaseAuthRemoteDataSourceImpl : FireBaseAuthRemoteDataSource {
         }
     }
     
-    func getCurrentUser() -> FirebaseAuth.User? {
+    func getCurrentUser() -> FirebaseUser? {
         return Auth.auth().currentUser
     }
     

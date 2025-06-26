@@ -9,6 +9,6 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct UserDTO {
-    let firebaseUser: FirebaseAuth.User
+    let firebaseUser: FirebaseUser
     let randomToken: String
 }
