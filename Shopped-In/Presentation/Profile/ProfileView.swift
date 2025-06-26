@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 struct ProfileView: View {
-    @StateObject private var viewModel: ProfileViewModel = ProfileViewModel()
+    @StateObject private var viewModel: ProfileViewModel = DIContainer.resolve()
     @State private var navigateToSettings = false
     @EnvironmentObject private var appSwitch: AppSwitch
     
@@ -65,7 +65,9 @@ struct ProfileView: View {
                 SettingsView()
             }
         }
-        
+        .onAppear {
+            viewModel.load()
+        }
     }
 }
 

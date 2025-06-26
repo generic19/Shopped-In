@@ -8,7 +8,7 @@ import XCTest
 import Combine
 @testable import Shopped_In
 
-class StubFetchProductUseCase: FetchProductUseCase {
+fileprivate class StubFetchProductUseCase: FetchProductUseCase {
     var executedId: String?
     var productToReturn: Product?
     func execute(id: String, completion: @escaping (Product?) -> Void) {
@@ -17,7 +17,7 @@ class StubFetchProductUseCase: FetchProductUseCase {
     }
 }
 
-class StubCheckFavoriteUseCase: CheckFavoriteProductUseCase {
+fileprivate class StubCheckFavoriteUseCase: CheckFavoriteProductUseCase {
     var executedProductID: String?
     var favoriteToReturn: Bool = false
     func execute(productID: String, completion: @escaping (Bool) -> Void) {
@@ -26,7 +26,7 @@ class StubCheckFavoriteUseCase: CheckFavoriteProductUseCase {
     }
 }
 
-class StubAddFavoriteUseCase: AddFavoriteProductUseCase {
+fileprivate class StubAddFavoriteUseCase: AddFavoriteProductUseCase {
     var addedProduct: Product?
     var executeCalled = false
     var errorToReturn: Error? = nil
@@ -37,7 +37,7 @@ class StubAddFavoriteUseCase: AddFavoriteProductUseCase {
     }
 }
 
-class StubRemoveFavoriteUseCase: RemoveFavoriteProductUseCase {
+fileprivate class StubRemoveFavoriteUseCase: RemoveFavoriteProductUseCase {
     var removedProductID: String?
     var executeCalled = false
     var errorToReturn: Error? = nil
