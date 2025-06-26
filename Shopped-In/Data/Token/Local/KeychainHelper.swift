@@ -8,7 +8,13 @@
 import Foundation
 import Security
 
-final class KeychainHelper {
+protocol KeychainHelperProtocol {
+    func save(_ value: String, service: String, account: String)
+    func load(service: String, account: String) -> String?
+    func delete(service: String, account: String)
+}
+
+final class KeychainHelper: KeychainHelperProtocol {
     private func createQuery(service: String, account: String, data: Data? = nil) ->
     (asOriginalDic:[CFString : Any], asCFDic: CFDictionary) {
         var query = [
