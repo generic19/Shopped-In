@@ -9,7 +9,7 @@ import Combine
 import UIKit
 @testable import Shopped_In
 
-class StubSignUpUseCase: SignUpUseCase {
+fileprivate class StubSignUpUseCase: SignUpUseCase {
     var executeCalled = false
     var receivedUser: User?
     var receivedPassword: String?
@@ -27,7 +27,7 @@ class StubSignUpUseCase: SignUpUseCase {
     }
 }
 
-class StubSignInUseCase: SignInUseCase {
+fileprivate class StubSignInUseCase: SignInUseCase {
     var executeCalled = false
     var receivedEmail: String?
     var receivedPassword: String?
@@ -45,7 +45,7 @@ class StubSignInUseCase: SignInUseCase {
     }
 }
 
-class StubSignInWithGoogleUseCase: SignInWithGoogleUseCase {
+fileprivate class StubSignInWithGoogleUseCase: SignInWithGoogleUseCase {
     var executeCalled = false
     var receivedViewController: UIViewController?
     var errorToReturn: Error?
@@ -61,7 +61,7 @@ class StubSignInWithGoogleUseCase: SignInWithGoogleUseCase {
     }
 }
 
-class StubSignOutUseCase: SignOutUseCase {
+fileprivate class StubSignOutUseCase: SignOutUseCase {
     var executeCalled = false
 
     func execute(completion: @escaping () -> Void) {
@@ -70,7 +70,7 @@ class StubSignOutUseCase: SignOutUseCase {
     }
 }
 
-class StubGetCurrentUserUseCase: GetCurrentUserUseCase {
+fileprivate class StubGetCurrentUserUseCase: GetCurrentUserUseCase {
     var userToReturn: User?
 
     init(user: User?) {

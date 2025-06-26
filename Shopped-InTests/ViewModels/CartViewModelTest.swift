@@ -7,28 +7,28 @@
 import XCTest
 @testable import Shopped_In
 
-class StubGetCartItemsUseCase: GetCartItemsUseCase {
+fileprivate class StubGetCartItemsUseCase: GetCartItemsUseCase {
     private(set) var executeCalled = false
     func execute(completion: @escaping (Result<Cart, Error>) -> Void) {
         executeCalled = true
     }
 }
 
-class StubCreateCartUseCase: CreateCartUseCase {
+fileprivate class StubCreateCartUseCase: CreateCartUseCase {
     private(set) var executeCalled = false
     func execute(variantId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
         executeCalled = true
     }
 }
 
-class StubDeleteCartUseCase: DeleteCartUseCase {
+fileprivate class StubDeleteCartUseCase: DeleteCartUseCase {
     private(set) var executeCalled = false
     func execute() {
         executeCalled = true
     }
 }
 
-class StubAddToCartUseCase: AddToCartUseCase {
+fileprivate class StubAddToCartUseCase: AddToCartUseCase {
     private(set) var executeCalled = false
     var response: CartOperationResponse? = nil
     
@@ -41,21 +41,21 @@ class StubAddToCartUseCase: AddToCartUseCase {
     }
 }
 
-class StubRemoveFromCartUseCase: RemoveFromCartUseCase {
+fileprivate class StubRemoveFromCartUseCase: RemoveFromCartUseCase {
     private(set) var executeCalled = false
     func execute(lineItemId: String, completion: @escaping (CartOperationResponse) -> Void) {
         executeCalled = true
     }
 }
 
-class StubUpdateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase {
+fileprivate class StubUpdateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase {
     private(set) var executeCalled = false
     func execute(lineItemId: String, quantity: Int, completion: @escaping (CartOperationResponse) -> Void) {
         executeCalled = true
     }
 }
 
-class StubSetDiscountCodeUseCase: SetDiscountCodeUseCase {
+fileprivate class StubSetDiscountCodeUseCase: SetDiscountCodeUseCase {
     private(set) var executeCalled = false
     func execute(code: String, completion: @escaping (CartOperationResponse) -> Void) {
         executeCalled = true
@@ -63,13 +63,13 @@ class StubSetDiscountCodeUseCase: SetDiscountCodeUseCase {
 }
 
 final class CartViewModelTests: XCTestCase {
-    var getCartItemsUC: StubGetCartItemsUseCase!
-    var createCartUC: StubCreateCartUseCase!
-    var deleteCartUC: StubDeleteCartUseCase!
-    var addToCartUC: StubAddToCartUseCase!
-    var removeFromCartUC: StubRemoveFromCartUseCase!
-    var updateQuantityUC: StubUpdateCartItemQuantityUseCase!
-    var setDiscountUC: StubSetDiscountCodeUseCase!
+    fileprivate var getCartItemsUC: StubGetCartItemsUseCase!
+    fileprivate var createCartUC: StubCreateCartUseCase!
+    fileprivate var deleteCartUC: StubDeleteCartUseCase!
+    fileprivate var addToCartUC: StubAddToCartUseCase!
+    fileprivate var removeFromCartUC: StubRemoveFromCartUseCase!
+    fileprivate var updateQuantityUC: StubUpdateCartItemQuantityUseCase!
+    fileprivate var setDiscountUC: StubSetDiscountCodeUseCase!
     
     var viewModel: CartViewModel!
     

@@ -8,7 +8,7 @@ import XCTest
 import Combine
 @testable import Shopped_In
 
-class StubGetProductsUseCase: GetProductsUseCase {
+fileprivate class StubGetProductsUseCase: GetProductsUseCase {
     private let response: CategorizedProductsResponse
 
     private(set) var executeCalled = false

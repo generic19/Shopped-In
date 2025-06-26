@@ -7,15 +7,13 @@
 import XCTest
 @testable import Shopped_In
 
-
-
-class StubGetCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase {
+fileprivate class StubGetCustomerAccessTokenUseCase: GetCustomerAccessTokenUseCase {
     private let tokenToReturn: String?
     init(token: String?) { self.tokenToReturn = token }
     func execute() -> String? { tokenToReturn }
 }
 
-class StubGetAddressesUseCase: GetAddressesUseCase {
+fileprivate class StubGetAddressesUseCase: GetAddressesUseCase {
     var executeCalled = false
     var receivedToken: String?
     var resultToReturn: AddressResponse?
@@ -29,7 +27,7 @@ class StubGetAddressesUseCase: GetAddressesUseCase {
     }
 }
 
-class StubDeleteAddressUseCase: DeleteAddressUseCase {
+fileprivate class StubDeleteAddressUseCase: DeleteAddressUseCase {
     var executeCalled = false
     var receivedToken: String?
     var receivedAddressId: String?
@@ -45,7 +43,7 @@ class StubDeleteAddressUseCase: DeleteAddressUseCase {
     }
 }
 
-class StubSetDefaultAddressUseCase: SetDefaultAddressUseCase {
+fileprivate class StubSetDefaultAddressUseCase: SetDefaultAddressUseCase {
     var executeCalled = false
     var receivedToken: String?
     var receivedAddressId: String?

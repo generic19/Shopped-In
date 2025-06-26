@@ -7,7 +7,7 @@
 import XCTest
 @testable import Shopped_In
 
-class StubGetProductsByBrandUseCase: GetProductsByBrandUseCase {
+fileprivate class StubGetProductsByBrandUseCase: GetProductsByBrandUseCase {
     var executeCalled = false
     var receivedBrand: Brand?
     var receivedSort: ProductsSort?
