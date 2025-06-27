@@ -26,15 +26,13 @@ struct ProductDetailView: View {
     @StateObject private var favoriteViewModel: FavoriteViewModel = DIContainer.shared.resolve()
     @StateObject private var cartViewModel: CartViewModel = DIContainer.shared.resolve()
     @State private var currencyConverter: CurrencyConverter = DIContainer.shared.resolve()
-    
+
     let productID: String
     @State var toastMessage = ""
     @State var toastColor = Color.green
 
     @State private var currentExchangeRate: Double = 1
     @State private var currentCurrency: String = "EGP"
-
-    @State private var navigateToFavorites = false
 
     init(productID: String) {
         self.productID = productID
@@ -64,14 +62,32 @@ struct ProductDetailView: View {
                                 .tabViewStyle(PageTabViewStyle())
 
                                 Button(action: {
-                                    Auth.auth().currentUser?.reload { error in
-                                        if let error = error {
-                                            print("Error reloading user: \(error)")
-                                        } else if Auth.auth().currentUser != nil {
-                                            viewModel.toggleFavorite()
-                                            navigateToFavorites = true
-                                        } else {
-                                            print("User not signed in")
+                                    if let user = Auth.auth().currentUser {
+                                        user.reload { error in
+                                            if let error {
+                                                toastMessage = "something went Wrong: \(error)"
+                                                toastColor = Color.red
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                                    toastMessage = ""
+                                                }
+                                                return
+                                            } else if Auth.auth().currentUser != nil {
+                                                viewModel.toggleFavorite()
+                                                return
+                                            } else {
+                                                toastMessage = "You must login to add items to Favorite!"
+                                                toastColor = Color.red
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                                    toastMessage = ""
+                                                }
+                                                return
+                                            }
+                                        }
+                                    } else {
+                                        toastMessage = "You must login to add items to Favorite!"
+                                        toastColor = Color.red
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            toastMessage = ""
                                         }
                                     }
                                 }) {
@@ -221,7 +237,7 @@ struct ProductDetailView: View {
                                         return
                                     }
                                     if let variantId = viewModel.selectedVariantId,
-                                        let variantQuantity = viewModel.selectedVariantQuantity {
+                                       let variantQuantity = viewModel.selectedVariantQuantity {
                                         if variantQuantity > 0 {
                                             cartViewModel.addToCart(variantId: variantId, quantity: 1)
                                             toastMessage = "Added to cart successfully!"
@@ -235,7 +251,6 @@ struct ProductDetailView: View {
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                                 toastMessage = ""
                                             }
-
                                         }
                                     } else {
                                         toastMessage = "Failed to add to cart,\nplease choose Color and Size!"
@@ -265,7 +280,6 @@ struct ProductDetailView: View {
                 }
             }
 
-           
             .onAppear {
                 viewModel.fetchProduct(by: productID)
                 cartViewModel.loadCart()
