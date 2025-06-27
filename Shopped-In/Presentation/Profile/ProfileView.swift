@@ -1,11 +1,11 @@
-import SwiftUI
 import Combine
+import SwiftUI
 
 struct ProfileView: View {
     @StateObject private var viewModel: ProfileViewModel = DIContainer.resolve()
     @State private var navigateToSettings = false
     @EnvironmentObject private var appSwitch: AppSwitch
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -14,50 +14,76 @@ struct ProfileView: View {
                         .font(.title)
                         .bold()
                         .padding(.top)
-                    // CartButton
-                    NavigationLink(destination: CartView()) {
-                        HStack {
-                            Image(systemName: "cart")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30)
-                                .foregroundStyle(.white)
-                            
-                            Text("Go to Cart")
-                                .font(.headline)
-                                .foregroundStyle(.white)
+                    if viewModel.user != nil {
+                        // CartButton
+                        NavigationLink(destination: CartView()) {
+                            HStack {
+                                Image(systemName: "cart")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30)
+                                    .foregroundStyle(.white)
+
+                                Text("Go to Cart")
+                                    .font(.headline)
+                                    .foregroundStyle(.white)
+                            }
+
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(10)
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
+
+                        // Orders Section
+                        RecentOrdersView(viewModel: DIContainer.shared.resolve())
+
+                        // Favorites Section
+                        FavoriteSectionView()
+                    } else {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "person.fill.questionmark")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 250)
+                            Spacer()
+                        }.padding(.top, 80)
+
+                        Button {
+                            viewModel.signOutUser {
+                                appSwitch.switchTo(.authentication)
+                            }
+                        } label: {
+                            Text("Sign In to Access Your Profile")
+                                .foregroundStyle(.white)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
                     }
-                    
-                    // Orders Section
-                    RecentOrdersView(viewModel: DIContainer.shared.resolve())
-                    
-                    // Favorites Section
-                    FavoriteSectionView()
                 }
                 .padding()
-            }
-            .navigationTitle("Profile")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        navigateToSettings = true
-                    }) {
-                        Image(systemName: "gear")
-                    }
-                }
-                
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: {
-                        viewModel.signOutUser {
-                            appSwitch.switchTo(.authentication)
+                .navigationTitle("Profile")
+                .toolbar {
+                    if viewModel.user != nil {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(action: {
+                                navigateToSettings = true
+                            }) {
+                                Image(systemName: "gear")
+                            }
                         }
-                    }) {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                        ToolbarItem(placement: .primaryAction) {
+                            Button(action: {
+                                viewModel.signOutUser {
+                                    appSwitch.switchTo(.authentication)
+                                }
+                            }) {
+                                Image(systemName: "rectangle.portrait.and.arrow.right")
+                            }
+                        }
                     }
                 }
             }
