@@ -28,7 +28,7 @@ class SplashViewModel: ObservableObject {
         
         group.notify(queue: DispatchQueue.main) {
             if let success = self.signInSuccess {
-                self.destination = success ? .mainTabs : .onboarding
+                self.destination = success ? .mainTabs : .authentication
             }
         }
         
