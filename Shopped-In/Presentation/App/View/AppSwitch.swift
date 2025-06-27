@@ -8,7 +8,6 @@ import SwiftUI
 
 enum SwitchRoute {
     case splash
-    case onboarding
     case authentication
     case mainTabs
 }
