@@ -67,14 +67,14 @@ struct ProfileView: View {
                 .padding()
                 .navigationTitle("Profile")
                 .toolbar {
-                    if viewModel.user != nil {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button(action: {
-                                navigateToSettings = true
-                            }) {
-                                Image(systemName: "gear")
-                            }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(action: {
+                            navigateToSettings = true
+                        }) {
+                            Image(systemName: "gear")
                         }
+                    }
+                    if viewModel.user != nil {
                         ToolbarItem(placement: .primaryAction) {
                             Button(action: {
                                 viewModel.signOutUser {
