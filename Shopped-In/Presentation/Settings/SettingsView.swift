@@ -33,7 +33,6 @@ struct SettingsView: View {
                 }
                 .padding(.vertical)
             }
-            .padding(.vertical)
             .confirmationDialog("Choose Currency", isPresented: $showCurrencyActionSheet, titleVisibility: .visible) {
                 Button("USD") {
                     selectedCurrency = "USD"
@@ -56,7 +55,6 @@ struct SettingsView: View {
                 }
                 .padding(.vertical)
             }
-            .padding(.vertical)
             .sheet(isPresented: $showContactSheet) {
                 VStack {
                     Text("Contact Us")
@@ -82,20 +80,63 @@ struct SettingsView: View {
                 }
                 .padding(.vertical)
             }
-            .padding(.vertical)
             .sheet(isPresented: $showAboutSheet) {
-                VStack {
-                    Text("About Us")
-                        .font(.title)
-                        .padding()
-                    Text("We are a leading shopping app helping people find and buy what they love.")
-                    Spacer()
-                    Button("Close") {
-                        showAboutSheet = false
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        Text("About Us")
+                            .font(.title.bold())
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                        
+                        Text("Shopped In is a modern m-commerce mobile application designed to enhance the online shopping experience with a fast, intuitive, and personalized interface. Our app allows users to explore curated product collections, manage their carts seamlessly, and complete purchases with ease using Cash on Delivery and Apple Pay.")
+                        
+                        Text("This project was developed with a focus on performance, functionality, and a clean user experience. It integrates the Shopify Storefront API using GraphQL, and follows clean architecture principles with MVVM for scalable development.")
+                        .padding(.top, 8)
+                        
+                        Text("Team Members")
+                            .font(.title2.bold())
+                            .padding(.vertical)
+                        
+                        HStack {
+                            Image("member_basel")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 48, height: 48)
+                                .clipShape(Circle())
+                            
+                            Text("Basel Alasadi")
+                        }
+                        
+                        HStack {
+                            Image("member_omar")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 48, height: 48)
+                                .clipShape(Circle())
+                            
+                            Text("Omar Abdulaziz")
+                        }
+                        
+                        HStack {
+                            Image("member_aya")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 48, height: 48)
+                                .clipShape(Circle())
+                            
+                            Text("Ayatullah Salah")
+                        }
+                        
+                        Spacer()
+                        Button("Close") {
+                            showAboutSheet = false
+                        }
+                        .buttonStyle(.bordered)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 32)
                     }
                     .padding()
                 }
-                .padding()
             }
         }
         .navigationTitle("Settings")

@@ -25,7 +25,9 @@ struct CheckoutView: View {
                     
                     if let errorActions = viewModel.errorActions, !errorActions.isEmpty {
                         HStack(spacing: 8) {
-                            Button(action: errorActions[0].action) {
+                            Button {
+                                errorActions[0].action()
+                            } label: {
                                 Text(errorActions[0].title)
                                     .frame(maxWidth: .infinity)
                             }
@@ -33,7 +35,9 @@ struct CheckoutView: View {
                             .controlSize(.large)
                             
                             ForEach(errorActions[1..<errorActions.count], id: \.title) { errorAction in
-                                Button(action: errorAction.action) {
+                                Button {
+                                    errorAction.action()
+                                } label: {
                                     Text(errorAction.title)
                                         .frame(maxWidth: .infinity)
                                 }

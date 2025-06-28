@@ -48,7 +48,9 @@ struct ProfileView: View {
                                 .scaledToFit()
                                 .frame(height: 250)
                             Spacer()
-                        }.padding(.top, 80)
+                        }
+                        .foregroundStyle(Color.secondary)
+                        .padding(72)
 
                         Button {
                             viewModel.signOutUser {
