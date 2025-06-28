@@ -312,14 +312,18 @@ class AuthRepositoryImpl: AuthRepository {
         let oldUser = self.currentUserSubject.value
         
         firebaseSource.reloadUser { dto in
-            if oldUser?.email != dto?.firebaseUser.email ||
-                oldUser?.isVerified != dto?.firebaseUser.isEmailVerified
+            guard let dto else {
+                self.currentUserSubject.value = nil
+                return
+            }
+            
+            let newEmail = dto.firebaseUser.email
+            let isVerified = dto.firebaseUser.isEmailVerified
+            
+            if oldUser?.email != newEmail ||
+                oldUser?.isVerified != isVerified || true
             {
-                if let dto {
-                    self.signInCustomer(userDTO: dto) { _ in }
-                } else {
-                    self.currentUserSubject.value = nil
-                }
+                self.signInCustomer(userDTO: dto) { _ in }
             }
         }
     }
