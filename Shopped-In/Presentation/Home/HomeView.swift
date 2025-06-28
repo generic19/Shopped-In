@@ -8,7 +8,7 @@ enum HomeRoute: Route {
 struct HomeView: View {
     @State var showCopyMessage: Bool = false
     @ObservedObject var brandsViewModel: BrandsViewModel = DIContainer.shared.resolve()
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -45,14 +45,21 @@ struct HomeView: View {
                         .background(in: RoundedRectangle(cornerRadius: 3))
                         .backgroundStyle(.background)
                 }
-                
+
                 ToolbarItem(placement: .primaryAction) {
                     NavigationLink {
                         CartView()
                     } label: {
                         Image(systemName: "cart")
                     }
+                }
 
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink {
+                        FavoriteProductsView(viewModel: DIContainer.resolve())
+                    } label: {
+                        Image(systemName: "heart")
+                    }
                 }
             }
             .toolbarTitleDisplayMode(.inline)
