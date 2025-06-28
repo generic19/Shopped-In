@@ -1,5 +1,7 @@
 
 import SwiftUI
+import FirebaseAuth
+
 
 struct SettingsView: View {
     @State private var showCurrencyActionSheet = false
@@ -18,6 +20,7 @@ struct SettingsView: View {
                         .foregroundStyle(.blue)
                 }
             }
+            .disabled(Auth.auth().currentUser == nil)
             .padding(.vertical)
 
             Button {
